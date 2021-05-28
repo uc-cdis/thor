@@ -1,7 +1,7 @@
 # Thor
 The Gen3 Release Orchestrator
 
-![GitHub Logo](/images/logo.png){ width=25% }
+<img src="/images/logo.png" alt="drawing" width="250"/>
 _Image by [cromaconceptovisual](https://pixabay.com/users/cromaconceptovisual-4595909/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4898879) from [Pixabay](https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4898879)_
 
 # Overview
