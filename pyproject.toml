@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "thor"
+version = "0.0.1"
+description = "Gen3 Release Orchestrator"
+authors = ["CTDS UChicago <cdis@uchicago.edu>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+fastapi = "^0.65.1"
+uvicorn = "^0.14.0"
+gunicorn = "^20.1.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
