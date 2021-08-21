@@ -32,7 +32,7 @@ pipeline {
         }
         stage('Update CI environment') {
             steps {
-              withCredentials([string(credentialsId: 'themarcelor-github-token', variable: 'GITHUB_TOKEN')]) {
+              withCredentials([usernamePassword(credentialsId: 'themarcelor-github-token', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
                 dir("gen3-release-utils") {
                     sh '''
                       cd gen3release-sdk
