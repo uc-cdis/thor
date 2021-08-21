@@ -35,7 +35,7 @@ while IFS= read -r repo; do
   git clone "${urlPrefix}${repo}"
   ls -ilha
   repo_folder=$(echo $repo | awk -F'/' '{print $1}')
-  echo "### stepping into ${repo_folder}...""
+  echo "### stepping into ${repo_folder}..."
   cd "${repo_folder}" || exit 1
   git checkout "${sourceBranchName}"
   result=$(git checkout -b "${targetBranchName}")
