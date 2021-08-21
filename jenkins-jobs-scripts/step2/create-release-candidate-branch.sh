@@ -15,7 +15,7 @@ else
 fi
 
 urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
-sourceBranchName="master"
+sourceBranchName="$FORK_FROM"
 targetBranchName="integration${YEAR_STR}${BRANCH_NAME}"
 
 if find . -name "gen3-integration" -type d; then
