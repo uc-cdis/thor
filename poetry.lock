@@ -219,8 +219,20 @@ docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [[package]]
+name = "jeepney"
+version = "0.7.1"
+description = "Low-level, pure Python DBus protocol wrapper."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+test = ["pytest", "pytest-trio", "pytest-asyncio", "testpath", "trio", "async-timeout"]
+trio = ["trio", "async-generator"]
+
+[[package]]
 name = "jira"
-version = "2.0.0"
+version = "3.0.0.0a0"
 description = "Python library for interacting with JIRA via REST APIs."
 category = "main"
 optional = false
@@ -228,17 +240,34 @@ python-versions = "*"
 
 [package.dependencies]
 defusedxml = "*"
-oauthlib = {version = ">=1.0.0", extras = ["signedtoken"]}
+keyring = "*"
 pbr = ">=3.0.0"
 requests = ">=2.10.0"
-requests-oauthlib = ">=0.6.1"
+requests-oauthlib = ">=1.1.0"
 requests-toolbelt = "*"
-six = ">=1.10.0"
 
 [package.extras]
 async = ["requests-futures (>=0.9.7)"]
-cli = ["ipython (>=4.0.0,<6.0.0)", "ipython (>=4.0.0)"]
+cli = ["ipython (>=4.0.0)"]
 opt = ["filemagic (>=1.6)", "pyjwt", "requests-jwt", "requests-kerberos"]
+
+[[package]]
+name = "keyring"
+version = "23.1.0"
+description = "Store and access your passwords safely."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+importlib-metadata = ">=3.6"
+jeepney = {version = ">=0.4.2", markers = "sys_platform == \"linux\""}
+pywin32-ctypes = {version = "<0.1.0 || >0.1.0,<0.1.1 || >0.1.1", markers = "sys_platform == \"win32\""}
+SecretStorage = {version = ">=3.2", markers = "sys_platform == \"linux\""}
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
 name = "oauthlib"
@@ -247,10 +276,6 @@ description = "A generic, spec-compliant, thorough implementation of the OAuth r
 category = "main"
 optional = false
 python-versions = ">=3.6"
-
-[package.dependencies]
-cryptography = {version = ">=3.0.0,<4", optional = true, markers = "extra == \"signedtoken\""}
-pyjwt = {version = ">=2.0.0,<3", optional = true, markers = "extra == \"signedtoken\""}
 
 [package.extras]
 rsa = ["cryptography (>=3.0.0,<4)"]
@@ -347,6 +372,14 @@ docs = ["sphinx (>=1.6.5)", "sphinx-rtd-theme"]
 tests = ["pytest (>=3.2.1,!=3.3.0)", "hypothesis (>=3.27.0)"]
 
 [[package]]
+name = "pywin32-ctypes"
+version = "0.2.0"
+description = ""
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "requests"
 version = "2.26.0"
 description = "Python HTTP for Humans."
@@ -389,6 +422,18 @@ python-versions = "*"
 
 [package.dependencies]
 requests = ">=2.0.1,<3.0.0"
+
+[[package]]
+name = "secretstorage"
+version = "3.3.1"
+description = "Python bindings to FreeDesktop.org Secret Service API"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+cryptography = ">=2.0"
+jeepney = ">=0.6"
 
 [[package]]
 name = "six"
@@ -478,7 +523,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "fc5588c792855fcad88f8a47db330aecc2ac1ecd9a8fb8b29e476a9d6abb32e2"
+content-hash = "c0aeae4a4e9c9e178dd81e4722a5bb729786a9fc519fb102351c2ae6352e8ea0"
 
 [metadata.files]
 asgiref = [
@@ -597,9 +642,17 @@ importlib-metadata = [
     {file = "importlib_metadata-4.4.0-py3-none-any.whl", hash = "sha256:960d52ba7c21377c990412aca380bf3642d734c2eaab78a2c39319f67c6a5786"},
     {file = "importlib_metadata-4.4.0.tar.gz", hash = "sha256:e592faad8de1bda9fe920cf41e15261e7131bcf266c30306eec00e8e225c1dd5"},
 ]
+jeepney = [
+    {file = "jeepney-0.7.1-py3-none-any.whl", hash = "sha256:1b5a0ea5c0e7b166b2f5895b91a08c14de8915afda4407fb5022a195224958ac"},
+    {file = "jeepney-0.7.1.tar.gz", hash = "sha256:fa9e232dfa0c498bd0b8a3a73b8d8a31978304dcef0515adc859d4e096f96f4f"},
+]
 jira = [
-    {file = "jira-2.0.0-py2.py3-none-any.whl", hash = "sha256:9adeead4d5f5a6aff74c630787f8bd2d4b0e154f3a3036641298064e91b2d25d"},
-    {file = "jira-2.0.0.tar.gz", hash = "sha256:e2a94adff98e45b29ded030adc76103eab34fa7d4d57303f211f572bedba0e93"},
+    {file = "jira-3.0.0.0a0-py2.py3-none-any.whl", hash = "sha256:7b34b52e6676a7ef4ee88fc243a1aba8000febc6069f67bfcbbc978f9fb19258"},
+    {file = "jira-3.0.0.0a0.tar.gz", hash = "sha256:3f7badd712bf5dd268c9fe8aadcab6060a67134058965d944de6b03aa8df6e10"},
+]
+keyring = [
+    {file = "keyring-23.1.0-py3-none-any.whl", hash = "sha256:b32397fd7e7063f8dd74a26db910c9862fc2109285fa16e3b5208bcb42a3e579"},
+    {file = "keyring-23.1.0.tar.gz", hash = "sha256:b7e0156667f5dcc73c1f63a518005cd18a4eb23fe77321194fefcc03748b21a4"},
 ]
 oauthlib = [
     {file = "oauthlib-3.1.1-py2.py3-none-any.whl", hash = "sha256:42bf6354c2ed8c6acb54d971fce6f88193d97297e18602a3a886603f9d7730cc"},
@@ -688,6 +741,10 @@ pynacl = [
     {file = "PyNaCl-1.4.0-cp38-cp38-win_amd64.whl", hash = "sha256:7c6092102219f59ff29788860ccb021e80fffd953920c4a8653889c029b2d420"},
     {file = "PyNaCl-1.4.0.tar.gz", hash = "sha256:54e9a2c849c742006516ad56a88f5c74bf2ce92c9f67435187c3c5953b346505"},
 ]
+pywin32-ctypes = [
+    {file = "pywin32-ctypes-0.2.0.tar.gz", hash = "sha256:24ffc3b341d457d48e8922352130cf2644024a4ff09762a2261fd34c36ee5942"},
+    {file = "pywin32_ctypes-0.2.0-py2.py3-none-any.whl", hash = "sha256:9dc2d991b3479cc2df15930958b674a48a227d5361d413827a4cfd0b5876fc98"},
+]
 requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},
     {file = "requests-2.26.0.tar.gz", hash = "sha256:b8aa58f8cf793ffd8782d3d8cb19e66ef36f7aba4353eec859e74678b01b07a7"},
@@ -700,6 +757,10 @@ requests-oauthlib = [
 requests-toolbelt = [
     {file = "requests-toolbelt-0.9.1.tar.gz", hash = "sha256:968089d4584ad4ad7c171454f0a5c6dac23971e9472521ea3b6d49d610aa6fc0"},
     {file = "requests_toolbelt-0.9.1-py2.py3-none-any.whl", hash = "sha256:380606e1d10dc85c3bd47bf5a6095f815ec007be7a8b69c878507068df059e6f"},
+]
+secretstorage = [
+    {file = "SecretStorage-3.3.1-py3-none-any.whl", hash = "sha256:422d82c36172d88d6a0ed5afdec956514b189ddbfb72fefab0c8a1cee4eaf71f"},
+    {file = "SecretStorage-3.3.1.tar.gz", hash = "sha256:fd666c51a6bf200643495a04abb261f83229dcb6fd8472ec393df7ffc8b6f195"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
