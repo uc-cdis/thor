@@ -1,7 +1,40 @@
 pipeline {
-    agent {
-        docker {
-            image 'gen3-qa-worker:master'
+agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: gen3-load-tests
+    netnolimit: "yes"
+spec:
+  containers:
+  - name: shell
+    image: quay.io/cdis/gen3-qa-worker:master
+    command:
+    - sleep
+    args:
+    - infinity
+    env:
+    - name: AWS_DEFAULT_REGION
+      value: us-east-1
+    - name: JAVA_OPTS
+      value: "-Xmx3072m"
+    - name: AWS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secret
+          key: aws_access_key_id
+    - name: AWS_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secret
+          key: aws_secret_access_key
+  serviceAccount: gen3-self-service-account
+  serviceAccountName: gen3-self-service-account
+'''
+            defaultContainer 'shell'
         }
     }
     stages {
