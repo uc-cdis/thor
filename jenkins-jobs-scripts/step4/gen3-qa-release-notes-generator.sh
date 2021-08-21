@@ -27,9 +27,8 @@ echo " Iterating through repos in repos_list.txt and fetch release notes"
 echo "------------------------------------------------------------------------------"
 
 # Utilize gen3git (aka: release-helper) to fetch bullet points from PR descriptions
-pip3 install -U pip --user
-pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@gen3release#egg=gen3git --user
-pip3 install pygit2 --user
+# this CLI utility is installed through poetry
+poetry install
 
 startDate="$START_DATE"
 echo "### startDate is ${startDate} ###"
@@ -49,7 +48,7 @@ echo >> gen3_release_notes.md
 repo_list="repo_list.txt"
 while IFS= read -r repo; do
   echo "### Getting the release notes for repo ${repo} ###"
-  result=$(gen3git --repo "${repo}" --github-access-token "${githubAccessToken}" --from-date "${startDate}" gen --to-date "${endDate}" --markdown)
+  result=$(poetry run gen3git --repo "${repo}" --github-access-token "${githubAccessToken}" --from-date "${startDate}" gen --to-date "${endDate}" --markdown)
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "$result"

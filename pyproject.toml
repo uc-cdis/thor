@@ -12,6 +12,8 @@ uvicorn = "^0.14.0"
 gunicorn = "^20.1.0"
 cdislogging = "^1.0.0"
 jira = "2.0"
+gen3git = {git = "https://github.com/uc-cdis/release-helper.git", rev = "gen3release"}
+pygit2 = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
 
