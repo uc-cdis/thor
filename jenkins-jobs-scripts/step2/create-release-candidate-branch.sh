@@ -1,20 +1,19 @@
 #!/bin/bash
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$#" -ne 2 ]; then
-  echo "------------------------------------------------------------------------------"
-  echo "Usage - make_branch <source_branch> <target_branch>"
-  echo ""
-  echo "Provide the list of repositories to operate upon in a file named repo_list.txt"
-  echo ""
-  echo "The script generates the repo urls using urlPrefix and the repo names listed on"
-  echo "separate lines in the repo_list.txt file"
-  echo "-------------------------------------------------------------------------------"
-  exit 0;
-fi;
+BRANCH_NAME=""
+if [[ $RELEASE_VERSION =~ [0-9]{4}\.([0-9]{2}) ]]; then
+  echo "match"
+  CONVERTED_MONHT_STR_TO_NUMBER=$(expr ${BASH_REMATCH[1]} + 0)
+  BRANCH_NAME=$(printf "%02d\n" $CONVERTED_MONHT_STR_TO_NUMBER)
+  echo "creating branch integration2021${BRANCH_NAME}..."
+else
+  echo "not match. Skip branch creation."
+  exit 1
+fi
 
 urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
-sourceBranchName=$1
-targetBranchName=$2
+sourceBranchName="master"
+targetBranchName="integration2021${BRANCH_NAME}"
 
 if find . -name "gen3-integration" -type d; then
   echo "Deleting existing gen3-integration folder"
