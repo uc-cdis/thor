@@ -1,11 +1,14 @@
 #!/bin/bash
 
 BRANCH_NAME=""
+YEAR_STR=""
+BRANCH_NAME=""
 if [[ $RELEASE_VERSION =~ [0-9]{4}\.([0-9]{2}) ]]; then
   echo "match"
+  YEAR_STR="${BASH_REMATCH[0]}"
   CONVERTED_MONHT_STR_TO_NUMBER=$(expr ${BASH_REMATCH[1]} + 0)
   BRANCH_NAME=$(printf "%02d\n" $CONVERTED_MONHT_STR_TO_NUMBER)
-  echo "creating branch integration2021${BRANCH_NAME}..."
+  echo "creating branch integration${YEAR_STR}${BRANCH_NAME}..."
 else
   echo "not match. Skip branch creation."
   exit 1
@@ -13,7 +16,7 @@ fi
 
 urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
 sourceBranchName="master"
-targetBranchName="integration2021${BRANCH_NAME}"
+targetBranchName="integration${YEAR_STR}${BRANCH_NAME}"
 
 if find . -name "gen3-integration" -type d; then
   echo "Deleting existing gen3-integration folder"
@@ -30,7 +33,8 @@ repo_list="../repo_list.txt"
 while IFS= read -r repo; do
   echo "### Cutting ${targetBranchName} branch for repo ${repo} ###"
   git clone "${urlPrefix}${repo}"
-  cd "${repo}" || exit 1
+  repo_folder=$(echo $repo | awk -F'/' '{print $1}')
+  cd "${repo_folder}" || exit 1
   git checkout "${sourceBranchName}"
   result=$(git checkout -b "${targetBranchName}")
   RC=$?
