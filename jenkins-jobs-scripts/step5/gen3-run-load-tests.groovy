@@ -148,7 +148,6 @@ spec:
                             echo "Selected Sheepdog import clinical metadata"
                             # FOR SHEEPDOG IMPORT
                             sed -i 's/"num_of_records": 1000,/"num_of_records": $SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT,/' load-testing/sample-descriptors/load-test-sheepdog-import-clinical-metadata.json
-                            sed -i 's/"override_access_token": "<place_access_token_here>",/"override_access_token": "$ACCESS_TOKEN",/' load-testing/sample-descriptors/load-test-sheepdog-import-clinical-metadata.json
                             SELECTED_LOAD_TEST_DESCRIPTOR="load-test-sheepdog-import-clinical-metadata.json"
                             ;;
                         create-indexd-records)
