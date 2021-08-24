@@ -150,13 +150,6 @@ spec:
                             sed -i 's/"num_of_records": 1000,/"num_of_records": $SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT,/' load-testing/sample-descriptors/load-test-sheepdog-import-clinical-metadata.json
                             SELECTED_LOAD_TEST_DESCRIPTOR="load-test-sheepdog-import-clinical-metadata.json"
                             ;;
-                        create-indexd-records)
-                            echo "Selected create indexd records"
-                            # FOR INDEXD RECORDS CREATION
-                            mv "$ED_DEV_ENV_CREDS_JSON" credentials.json
-                            sed -i 's/"num_of_records": 1000,/"num_of_records": $INDEXD_NUM_OF_RECORDS_TO_CREATE,/' load-testing/sample-descriptors/load-test-create-indexd-records.json
-                            SELECTED_LOAD_TEST_DESCRIPTOR="load-test-create-indexd-records.json"
-                            ;;
                         metadata-service-create-and-query)
                             echo "Selected Metadata Service create and query test"
                             # FOR MDS create and query
