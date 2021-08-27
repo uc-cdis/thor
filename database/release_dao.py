@@ -5,15 +5,6 @@ from sqlalchemy.orm import sessionmaker
 
 # Needs to implement all CRUD operations on the given database.
 
-# should:   "pick up http request to /releases endpoint"
-#           "call some releases.py script with a ReleaseManager class"
-# that:     "imports release_dao.py script / ReleaseDAO class function"
-# that:     "imports Release class from models layer"
-# then:     "use SQLAlchemy ORM to fetch rows from releases table"
-
-
-# Ah, whatever. I'll write the CRUD functions here and worry about the rest later.
-
 engine = sa.create_engine(DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
@@ -74,17 +65,14 @@ def readRelease(id):
 
     try:
         rel = s.query(Release).get(id)
-        # print(rel, rel == None)
         assert rel != None
     except Exception as e:
         pass
-        # print("The ID " + str(id) + " is not in the database. ")
     else:
         outstring = "ID: '{}', Name: '{}', Version: '{}', Result: '{}'".format(
             rel.id, rel.name, rel.version, rel.result
         )
 
-        # print(rel.name, rel.version, rel.result)
     return outstring
 
 
@@ -148,20 +136,6 @@ def getkeys():
     for rel in s.query(Release):
         keylist.append(rel.id)
     return keylist
-
-
-if __name__ == "__main__":
-
-    # manCreateRelease(7, "testlol", "2021.xd", "IDK")
-    # createRelease("testjojo", "2021.ora", "ORA")
-    # print(readRelease(15))
-    # updateRelease(15, "id", "12")
-    # print(readRelease(15))
-    # delRelease("banans")
-    # deleteRelease([10, 11, 12, 13])
-    # print(getnum())
-    # print(getkeys())
-    True
 
 s.commit()
 
