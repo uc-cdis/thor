@@ -26,3 +26,42 @@ This new tool (THOR) has the following features:
 # Architectural diagrams
 
 TBD
+
+# How to run Thor
+
+## Create the database
+
+```
+psql -U postgres -c "create database thor_test_tmp"
+```
+
+## Create tables
+
+```
+cd src
+poetry run python database/create_all_tables.py
+```
+
+You should see something like:
+
+```
+% psql -U postgres
+psql (13.3)
+Type "help" for help.
+
+postgres=# \c thor_test_tmp;
+You are now connected to database "thor_test_tmp" as user "postgres".
+thor_test_tmp=# \dt;
+          List of relations
+ Schema |   Name   | Type  |  Owner
+--------+----------+-------+----------
+ public | releases | table | postgres
+ public | tasks    | table | postgres
+```
+
+## Start the FastAPI web server
+
+```
+cd src
+poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker
+```
