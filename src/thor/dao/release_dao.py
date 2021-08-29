@@ -31,7 +31,6 @@ def session_scope():
 engine = sa.create_engine(config.DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
-session = Session()
 
 def manCreateRelease(id, version, result):
     """ Given int ID, string version, and string result, 

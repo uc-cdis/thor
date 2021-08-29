@@ -15,7 +15,7 @@ app = FastAPI()
 
 
 @app.get("/releases")
-async def getall():
+async def read_releases():
     releases_to_return = []    
     keylist = getkeys()
     for id in keylist:
@@ -25,4 +25,7 @@ async def getall():
 
     return JSONResponse(content={ "releases": releases_to_return })
 
-
+@app.get("/releases/{release_id}")
+async def read_release(release_id):
+    r = jsonable_encoder(readRelease(release_id))
+    return {"release": r}
