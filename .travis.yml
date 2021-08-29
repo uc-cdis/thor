@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - "3.8"
+
+sudo: false
+
+cache: pip
+
+addons:
+  postgresql: "9.6"
+
+install:
+  - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+  - source $HOME/.poetry/env
+  - poetry install -vv
+  - psql -c 'SELECT version();' -U postgres
+  - psql -U postgres -c "create database thor_test_tmp"
+  - PYTHONPATH=src/thor/ poetry run python -m create_all_tables
+  - pip list
+
+script:
+  - PYTHONPATH=src/thor/ poetry run pytest -vv -s tests
