@@ -4,6 +4,9 @@ version = "0.0.1"
 description = "Gen3 Release Orchestrator"
 authors = ["CTDS UChicago <cdis@uchicago.edu>"]
 license = "Apache-2.0"
+packages = [
+    { include = "thor" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -16,6 +19,7 @@ gen3git = {git = "https://github.com/uc-cdis/release-helper.git", rev = "gen3rel
 pygit2 = "^1.6.1"
 SQLAlchemy = "^1.4.23"
 psycopg2 = "^2.9.1"
+pytest = "^6.2.4"
 
 [tool.poetry.dev-dependencies]
 
