@@ -38,8 +38,8 @@ psql -U postgres -c "create database thor_test_tmp"
 ## Create tables
 
 ```
-cd src
-poetry run python database/create_all_tables.py
+cd src/thor
+poetry run python -m create_all_tables
 ```
 
 You should see something like:
@@ -57,11 +57,18 @@ thor_test_tmp=# \dt;
 --------+----------+-------+----------
  public | releases | table | postgres
  public | tasks    | table | postgres
+
+thor_test_tmp=# select * from releases;
+ id | version |   result
+----+---------+-------------
+  3 | 2021.09 | In Progress
+  4 | 2021.07 | Completed
+(2 rows)
 ```
 
 ## Start the FastAPI web server
 
 ```
-cd src
-poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker
+cd src/thor
+poetry run gunicorn main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
 ```
