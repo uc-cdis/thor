@@ -4,9 +4,6 @@ version = "0.0.1"
 description = "Gen3 Release Orchestrator"
 authors = ["CTDS UChicago <cdis@uchicago.edu>"]
 license = "Apache-2.0"
-packages = [
-    { include = "thor" },
-]
 
 [tool.poetry.dependencies]
 python = "^3.7"
