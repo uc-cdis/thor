@@ -20,7 +20,7 @@ class Release(Base):
         )
 
 
-class task(Base):
+class Task(Base):
     __tablename__ = "tasks"
 
     task_id = Column(

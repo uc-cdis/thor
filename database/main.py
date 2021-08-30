@@ -1,31 +1,27 @@
 # main.py
 
-import sqlalchemy as sa
+import os
+import logging
 
 from fastapi import FastAPI
-from sqlalchemy.orm import sessionmaker
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
-from config import DATABASE_URL
 from release_dao import readRelease, getkeys
 
-engine = sa.create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
-
-s = Session()
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+log = logging.getLogger(__name__)
 
 app = FastAPI()
 
 
 @app.get("/releases")
-async def getall():
-    objectString = "{ "
-    keylist = getkeys()
+async def getReleases():
+    releases_to_return = []
+    keylist = getkeys
     for id in keylist:
-        objectString += readRelease(id)
-    objectString += " }"
+        r = jsonable_encoder(readRelease(id))
+        log.info(f"successfully obtained release instance from DAO layer: {r}")
+        releases_to_return.append(r)
 
-    return {"message": objectString}
-
-
-s.commit()
-s.close()
+    return JSONResponse(content={"releases": releases_to_return})

@@ -2,15 +2,15 @@
 
 # Scheme: "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>" pragma: allowlist secret
 
-username = "username"  # pragma: allowlist secret
+username = "postgres"  # pragma: allowlist secret
 
-password = "password"  # pragma: allowlist secret
+password = ""  # pragma: allowlist secret
 
 IPadd = "localhost"  # pragma: allowlist secret
 
-portNum = "1234"  # pragma: allowlist secret
+portNum = "5432"  # pragma: allowlist secret
 
-DBname = "ReleaseTask"  # pragma: allowlist secret
+DBname = "thor_test_tmp"  # pragma: allowlist secret
 
 DATABASE_URL = (
     "postgresql+psycopg2://"  # pragma: allowlist secret
@@ -24,5 +24,3 @@ DATABASE_URL = (
     + "/"
     + DBname  # pragma: allowlist secret
 )
-
-# print(DATABASE_URL)
