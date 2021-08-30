@@ -87,7 +87,7 @@ def createTask(name, status, release_id):
 
 
 def readTask(id):
-    """ Given the (int) ID of the Task to be read, returns a string in the format:
+    """ Given the (int) ID of the Task to be read, returns a Task object in the format:
     'ID: %ID, Name: %name, Version: %version, Result: %result', where 
     each %value is the value corresponding to the given ID. 
     Assumes that the given ID is present in the database. """

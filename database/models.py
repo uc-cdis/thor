@@ -30,6 +30,9 @@ class Task(Base):
     status = Column(String)  # expected to be "success", "failed", or "in progress"
     release_id = Column(Integer, ForeignKey("releases.id"), nullable=False)
 
+    def get_release_id(self):
+        return self.release_id
+
     def __repr__(self):
         return "ID: '{}', Name: '{}', Status: '{}', Release ID: '{}'".format(
             self.task_id, self.task_name, self.status, self.release_id
