@@ -28,7 +28,7 @@ class Task(Base):
     )  # Unique arbitrary int assigned at input
     task_name = Column(String)  # Name of task (e.g. "cut_integration_branch")
     status = Column(String)  # expected to be "success", "failed", or "in progress"
-    release_id = Column(Integer, ForeignKey("release.id"), nullable=False)
+    release_id = Column(Integer, ForeignKey("releases.id"), nullable=False)
 
     def __repr__(self):
         return "ID: '{}', Name: '{}', Status: '{}', Release ID: '{}'".format(

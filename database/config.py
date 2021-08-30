@@ -10,9 +10,9 @@ IPadd = "localhost"  # pragma: allowlist secret
 
 portNum = "5432"  # pragma: allowlist secret
 
-DBname = "thor_test_tmp"  # pragma: allowlist secret
+RDBname = "thor_test_tmp"  # pragma: allowlist secret
 
-DATABASE_URL = (
+RELEASE_DATABASE_URL = (
     "postgresql+psycopg2://"  # pragma: allowlist secret
     + username  # pragma: allowlist secret
     + ":"
@@ -22,5 +22,5 @@ DATABASE_URL = (
     + ":"
     + portNum  # pragma: allowlist secret
     + "/"
-    + DBname  # pragma: allowlist secret
+    + RDBname  # pragma: allowlist secret
 )

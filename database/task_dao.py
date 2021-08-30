@@ -2,14 +2,14 @@ import sqlalchemy as sa
 import os
 import logging
 
-from config import TASK_DATABASE_URL
+from config import RELEASE_DATABASE_URL
 from models import Task
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(TASK_DATABASE_URL)
+engine = sa.create_engine(RELEASE_DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -41,13 +41,15 @@ def manCreateTask(id, name, status, release_id):
     Note that release_id is a foreign key corresponding to Release DB. 
     Assumes that the id given is unique. """
 
-    with session_scope as s:
+    with session_scope() as s:
         try:
-            if id in getkeys():
+            if id in getTKeys():
                 raise Exception(
                     "That keyvalue (" + str(id) + ") is already in the database. "
                 )
-            currentTask = Task(id=id, name=name, status=status, release_id=release_id)
+            currentTask = Task(
+                task_id=id, task_name=name, status=status, release_id=release_id
+            )
         except Exception as e:
             print(e)
             return None
@@ -63,8 +65,8 @@ def createTask(name, status, release_id):
     Uses the minimum unused integer (min 0). 
     Depends on getkeys. """
 
-    with session_scope as s:
-        currIDs = getkeys()
+    with session_scope() as s:
+        currIDs = getTKeys()
         currIDs.sort()
         minID = currIDs[0]
         for id in currIDs[1:]:
@@ -76,7 +78,9 @@ def createTask(name, status, release_id):
         if minID == currIDs[-1]:
             minID += 1
 
-        currentTask = Task(id=minID, name=name, status=status, release_id=release_id)
+        currentTask = Task(
+            task_id=minID, task_name=name, status=status, release_id=release_id
+        )
         l.info(f"Added task {minID} to Tasks table")
 
         s.add(currentTask)
@@ -88,7 +92,7 @@ def readTask(id):
     each %value is the value corresponding to the given ID. 
     Assumes that the given ID is present in the database. """
 
-    with session_scope as s:
+    with session_scope() as s:
         # outstring = "The ID (" + str(id) + ") is not in the database. "
 
         try:
@@ -115,7 +119,7 @@ def updateTask(id, property, newValue):
     We assume that the id exists in the DB, that the property is a legit 
     property name, and that the newValue is appropriate (type checking). """
 
-    with session_scope as s:
+    with session_scope() as s:
         rel = s.query(Task).get(id)
         setattr(rel, property, newValue)
         l.info(f"Changed parameter {property} of {id} to {newValue}. ")
@@ -126,7 +130,7 @@ def delTask(id):
     If the id is not in the database, prints an error message. 
     SUPERSEDED BY deleterelease, which should be more general. """
 
-    with session_scope as s:
+    with session_scope() as s:
         try:
             if type(id) != int:
                 raise Exception(id)
@@ -151,7 +155,7 @@ def deleteTask(input):
     throwing an exception message only for the absent key. 
     Relies on delTask for each operation.  """
 
-    with session_scope as s:
+    with session_scope() as s:
 
         if type(input) is int:
             delTask(input)
@@ -161,23 +165,23 @@ def deleteTask(input):
             l.info(f"All entries in list {input} were deleted. ")
 
 
-def getnum():
+def getTNum():
     """ Gets the number of entries in the current database table. 
     Returns this number as an integer. """
 
-    with session_scope as s:
+    with session_scope() as s:
 
         rows = s.query(Task).count()
         return rows
 
 
-def getkeys():
+def getTKeys():
     """ Gets all primary keys from the current database table (Task DB). 
     All keys are currently ints, so will return all ints. """
     keylist = []
 
-    with session_scope as s:
+    with session_scope() as s:
 
         for rel in s.query(Task):
-            keylist.append(rel.id)
+            keylist.append(rel.task_id)
         return keylist
