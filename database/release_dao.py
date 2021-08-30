@@ -2,14 +2,14 @@ import sqlalchemy as sa
 import os
 import logging
 
-from config import DATABASE_URL
+from config import RELEASE_DATABASE_URL
 from models import Release
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(DATABASE_URL)
+engine = sa.create_engine(RELEASE_DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -50,7 +50,7 @@ def manCreateRelease(id, version, result):
         except Exception as e:
             print(e)
             return None
-        l.info("Adding entry to Releases table.")
+        l.info(f"Manually adding entry {id} to Releases table.")
         s.add(currentRelease)
 
 
@@ -76,7 +76,7 @@ def createRelease(version, result):
             minID += 1
 
         currentRelease = Release(id=minID, version=version, result=result)
-
+        l.info(f"Added release {minID} to Releases table")
         s.add(currentRelease)
 
 
@@ -116,6 +116,7 @@ def updateRelease(id, property, newValue):
     with session_scope as s:
         rel = s.query(Release).get(id)
         setattr(rel, property, newValue)
+        l.info(f"Changed parameter {property} of {id} to {newValue}. ")
 
 
 def delRelease(id):
@@ -135,6 +136,7 @@ def delRelease(id):
             s.delete(s.query(Release).get(id))
         except Exception as e:
             print("Cannot delete: " + str(id) + " is not in the database")
+        l.info(f"Entry {id} was deleted from Releases table. ")
 
 
 def deleteRelease(input):
@@ -154,6 +156,7 @@ def deleteRelease(input):
         elif type(input) is list:
             for i in input:
                 delRelease(i)
+            l.info(f"All entries in list {input} were deleted. ")
 
 
 def getnum():

@@ -51,7 +51,7 @@ def manCreateTask(id, name, status, release_id):
         except Exception as e:
             print(e)
             return None
-        l.info("Adding entry to Tasks table.")
+        l.info(f"Manually adding entry {id} to Tasks table.")
         s.add(currentTask)
 
 
@@ -77,6 +77,7 @@ def createTask(name, status, release_id):
             minID += 1
 
         currentTask = Task(id=minID, name=name, status=status, release_id=release_id)
+        l.info(f"Added task {minID} to Tasks table")
 
         s.add(currentTask)
 
@@ -117,6 +118,7 @@ def updateTask(id, property, newValue):
     with session_scope as s:
         rel = s.query(Task).get(id)
         setattr(rel, property, newValue)
+        l.info(f"Changed parameter {property} of {id} to {newValue}. ")
 
 
 def delTask(id):
@@ -136,6 +138,7 @@ def delTask(id):
             s.delete(s.query(Task).get(id))
         except Exception as e:
             print("Cannot delete: " + str(id) + " is not in the database")
+        l.info(f"Entry {id} was deleted from Tasks table. ")
 
 
 def deleteTask(input):
@@ -155,6 +158,7 @@ def deleteTask(input):
         elif type(input) is list:
             for i in input:
                 delTask(i)
+            l.info(f"All entries in list {input} were deleted. ")
 
 
 def getnum():
