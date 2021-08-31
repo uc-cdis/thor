@@ -26,3 +26,53 @@ This new tool (THOR) has the following features:
 # Architectural diagrams
 
 TBD
+
+# How to run Thor
+
+## Create the database
+
+```
+psql -U postgres -c "create database thor_test_tmp"
+```
+
+## Create tables and test data
+
+```
+PYTHONPATH=src/thor/ poetry run python -m create_all_tables
+```
+
+You should see something like:
+
+```
+% psql -U postgres
+psql (13.3)
+Type "help" for help.
+
+postgres=# \c thor_test_tmp;
+You are now connected to database "thor_test_tmp" as user "postgres".
+thor_test_tmp=# \dt;
+          List of relations
+ Schema |   Name   | Type  |  Owner
+--------+----------+-------+----------
+ public | releases | table | postgres
+ public | tasks    | table | postgres
+
+thor_test_tmp=# select * from releases;
+ id | version |   result
+----+---------+-------------
+  3 | 2021.09 | In Progress
+  4 | 2021.07 | Completed
+(2 rows)
+```
+
+## How to test
+
+```
+PYTHONPATH=src/thor/ poetry run pytest -vv -s tests
+```
+
+## Start the FastAPI web server
+
+```
+PYTHONPATH=src/thor/ poetry run gunicorn main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
+```
