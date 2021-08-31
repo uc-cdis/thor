@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from dao.release_dao import readRelease, getkeys
+from dao.release_dao import readRelease, getRKeys
 
 import logging
 
@@ -17,7 +17,7 @@ app = FastAPI()
 @app.get("/releases")
 async def read_releases():
     releases_to_return = []    
-    keylist = getkeys()
+    keylist = getRKeys()
     for id in keylist:
       r = jsonable_encoder(readRelease(id))
       log.info(f"successfully obtained a release instance from the DAO layer: {r}")

@@ -4,7 +4,7 @@ from dao import config
 from dao import release_dao
 from sqlalchemy.orm import sessionmaker
 
-engine = sa.create_engine(config.DATABASE_URL)
+engine = sa.create_engine(config.RELEASE_DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
 
