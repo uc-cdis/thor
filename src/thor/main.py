@@ -17,6 +17,7 @@ app = FastAPI()
 @app.get("/releases")
 async def read_releases():
     releases_to_return = []    
+    # TODO: fetch all objects at once instead of fetching IDs and iterating over them
     keylist = getRKeys()
     for id in keylist:
       r = jsonable_encoder(readRelease(id))
