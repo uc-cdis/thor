@@ -2,8 +2,8 @@ import sqlalchemy as sa
 import os
 import logging
 
-from config import RELEASE_DATABASE_URL
-from models import Task
+from dao.config import RELEASE_DATABASE_URL
+from dao.models import Task
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 

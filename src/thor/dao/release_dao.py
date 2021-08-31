@@ -1,7 +1,7 @@
 import os
 import sqlalchemy as sa
-from . import config
-from models.models import Release
+from dao.config import RELEASE_DATABASE_URL
+from dao.models import Release
 
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
@@ -12,7 +12,7 @@ from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(config.RELEASE_DATABASE_URL)
+engine = sa.create_engine(RELEASE_DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
