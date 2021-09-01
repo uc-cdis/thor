@@ -2,9 +2,10 @@ from sqlalchemy import Table, Column, Integer, String, ForeignKey, MetaData
 import sqlalchemy as sa
 from dao import config
 from dao import release_dao
+from dao import task_dao
 from sqlalchemy.orm import sessionmaker
 
-engine = sa.create_engine(config.RELEASE_DATABASE_URL)
+engine = sa.create_engine(config.DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
 
@@ -40,6 +41,16 @@ def setup_db_and_create_test_data():
     print("creating rows in the releases table...")
     release_dao.manual_create_release(3, "2021.09", "In Progress")
     release_dao.manual_create_release(4, "2021.07", "Completed")
+
+    task_dao.manual_create_task(
+        6, "Merge integration branch into stable and tag release", "success", 4
+    )
+    task_dao.manual_create_task(
+        7, "Mark gen3 release as released in JIRA", "success", 4
+    )
+
+    task_dao.manual_create_task(1, "Create Release in JIRA", "success", 3)
+    task_dao.manual_create_task(2, "Cut integration branch", "success", 3)
 
 
 if __name__ == "__main__":

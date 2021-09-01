@@ -2,14 +2,15 @@ import sqlalchemy as sa
 import os
 import logging
 
-from config import DATABASE_URL
-from models import Task
+# from config import DATABASE_URL
+from . import config
+from .models import Task
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(DATABASE_URL)
+engine = sa.create_engine(config.DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))

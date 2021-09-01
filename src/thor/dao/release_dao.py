@@ -1,7 +1,9 @@
 import os
 import sqlalchemy as sa
-from config import DATABASE_URL
-from models import Release
+
+# from config import DATABASE_URL
+from . import config
+from .models import Release
 
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
@@ -12,7 +14,7 @@ from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(DATABASE_URL)
+engine = sa.create_engine(config.DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -84,9 +86,9 @@ def create_release(version, result):
 
 def read_release(key):
     """ Given the (int) key of the Release to be read, returns a Release Object in the format:
-  'Key: %key, Name: %name, Version: %version, Result: %result', where 
-  each %value is the value corresponding to the given key. 
-  Assumes that the given key is present in the database. """
+    'Key: %key, Name: %name, Version: %version, Result: %result', where 
+    each %value is the value corresponding to the given key. 
+    Assumes that the given key is present in the database. """
 
     with session_scope() as session:
 

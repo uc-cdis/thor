@@ -9,7 +9,8 @@ from fastapi.responses import JSONResponse
 
 from dao.release_dao import read_release, get_rel_keys
 from dao.task_dao import read_task, get_task_keys
-from dao.models import Task
+
+# from dao.models import Task
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ async def get_releases():
 
 
 @app.get("/releases/{release_id}")
-async def read_release(release_id):
+async def get_single_release(release_id):
     """ Reads out the release associated with a particular release_id. """
     release = jsonable_encoder(read_release(release_id))
     log.info(f"Successfully obtained release info for {release_id}. ")
@@ -64,7 +65,7 @@ async def get_release_tasks(release_id: int, task_id: int):
     task_key_list = get_task_keys()
 
     for key in task_key_list:
-        if read_task(id).get_release_id() == release_id:
+        if read_task(key).get_release_id() == release_id:
             if key == task_id:
                 tasks_to_return.append(read_task(key))
     log.info(f"Successfully obtained task info for {release_id}, {task_id}. ")
@@ -72,7 +73,7 @@ async def get_release_tasks(release_id: int, task_id: int):
 
 
 @app.get("/tasks")
-async def get_tasks():
+async def tasks():
     """ Returns all the tasks in the Tasks table. """
     tasks_to_return = []
     key_list = get_task_keys()
@@ -85,7 +86,7 @@ async def get_tasks():
 
 
 @app.get("/tasks/{task_id}")
-async def read_task(task_id):
+async def get_single_task(task_id):
     """ Reads out the task associated with a given task_id. """
     t = jsonable_encoder(read_task(task_id))
     log.info(f"Successfully obtained task info for {task_id}. ")
