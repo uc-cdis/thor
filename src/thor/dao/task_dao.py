@@ -108,7 +108,7 @@ def read_task(key):
         return task
 
 
-def updateTask(key, property, new_value):
+def update_task(key, property, new_value):
     """ Given the key of a Task, the name of the property to be changed, 
     and the intended new value of the property, change the value in the 
     database to reflect the intended change. 

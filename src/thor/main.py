@@ -7,8 +7,9 @@ from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from dao.release_dao import readRelease, getRKeys
-from dao.task_dao import readTask, getTKeys
+from dao.release_dao import read_release, get_rel_keys
+from dao.task_dao import read_task, get_task_keys
+from dao.models import Task
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -17,24 +18,24 @@ app = FastAPI()
 
 
 @app.get("/releases")
-async def getReleases():
+async def get_releases():
     """ Returns all the releases in the Releases table. """
     releases_to_return = []
-    keylist = getRKeys()
-    for id in keylist:
-        r = jsonable_encoder(readRelease(id))
-        log.info(f"Successfully obtained release instance from DAO layer: {r}")
-        releases_to_return.append(r)
+    key_list = get_rel_keys()
+    for key in key_list:
+        release = jsonable_encoder(read_release(key))
+        log.info(f"Successfully obtained release instance from DAO layer: {release}")
+        releases_to_return.append(release)
 
     return JSONResponse(content={"releases": releases_to_return})
 
 
 @app.get("/releases/{release_id}")
 async def read_release(release_id):
-    """ Reads out the release associated with a particular release id. """
-    r = jsonable_encoder(readRelease(release_id))
+    """ Reads out the release associated with a particular release_id. """
+    release = jsonable_encoder(read_release(release_id))
     log.info(f"Successfully obtained release info for {release_id}. ")
-    return {"release": r}
+    return {"release": release}
 
 
 @app.get("/releases/{release_id}/tasks")
@@ -43,11 +44,11 @@ async def get_release_tasks(release_id: int):
     Currently, it fails without support if release_id is not an int, so this should
     be addressed when appropriate. """
     tasks_to_return = []
-    tKeyList = getTKeys()
+    tKeyList = get_task_keys()
 
     for id in tKeyList:
-        if readTask(id).get_release_id() == release_id:
-            tasks_to_return.append(readTask(id))
+        if read_task(id).get_release_id() == release_id:
+            tasks_to_return.append(read_task(id))
     log.info(f"Successfully obtained all tasks info for {release_id}. ")
     return tasks_to_return
 
@@ -60,25 +61,25 @@ async def get_release_tasks(release_id: int, task_id: int):
     Currently, it fails without support if either release_id or task_id are not ints, 
     so this should be addressed when appropriate. """
     tasks_to_return = []
-    tKeyList = getTKeys()
+    task_key_list = get_task_keys()
 
-    for id in tKeyList:
-        if readTask(id).get_release_id() == release_id:
-            if id == task_id:
-                tasks_to_return.append(readTask(id))
+    for key in task_key_list:
+        if read_task(id).get_release_id() == release_id:
+            if key == task_id:
+                tasks_to_return.append(read_task(key))
     log.info(f"Successfully obtained task info for {release_id}, {task_id}. ")
     return tasks_to_return
 
 
 @app.get("/tasks")
-async def getTasks():
+async def get_tasks():
     """ Returns all the tasks in the Tasks table. """
     tasks_to_return = []
-    keylist = getTKeys()
-    for id in keylist:
-        r = jsonable_encoder(readTask(id))
-        log.info(f"Successfully obtained task instance from DAO layer: {r}")
-        tasks_to_return.append(r)
+    key_list = get_task_keys()
+    for key in key_list:
+        release = jsonable_encoder(read_task(key))
+        log.info(f"Successfully obtained task instance from DAO layer: {release}")
+        tasks_to_return.append(release)
 
     return JSONResponse(content={"tasks": tasks_to_return})
 
@@ -86,6 +87,6 @@ async def getTasks():
 @app.get("/tasks/{task_id}")
 async def read_task(task_id):
     """ Reads out the task associated with a given task_id. """
-    t = jsonable_encoder(readTask(task_id))
+    t = jsonable_encoder(read_task(task_id))
     log.info(f"Successfully obtained task info for {task_id}. ")
     return {"task": t}
