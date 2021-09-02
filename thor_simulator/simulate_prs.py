@@ -6,6 +6,7 @@ import json
 import time
 import sys
 import os
+import shutil
 
 
 def create_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_description):
@@ -60,6 +61,10 @@ def create_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_description):
         sys.exit(1)
 
     # delete cloned repo folder
+    try:
+        shutil.rmtree(saved_path)
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
 
 
 def simulate_prs(repo_list, dev_dictionary, description_list, nums_of_pr_to_create):
