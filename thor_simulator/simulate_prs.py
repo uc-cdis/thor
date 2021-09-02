@@ -67,13 +67,12 @@ def create_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_description):
         print("Error: %s - %s." % (e.filename, e.strerror))
 
 
-def simulate_prs(repo_list, dev_dictionary, description_list, nums_of_pr_to_create):
-    select_repo = random.choice(repo_list)
-    select_username, select_useremail = random.choice(list(dev_dictionary.items()))
-    GITHUB_TOKEN = os.environ[f"{select_username}_GITHUB_TOKEN"]
-    select_description = random.choice(description_list)
-    
+def simulate_prs(repo_list, dev_dictionary, description_list, nums_of_pr_to_create):    
     for i in range(0, nums_of_pr_to_create):
+        select_repo = random.choice(repo_list)
+        select_username, select_useremail = random.choice(list(dev_dictionary.items()))
+        GITHUB_TOKEN = os.environ[f"{select_username}_GITHUB_TOKEN"]
+        select_description = random.choice(description_list)
         create_a_pr(select_username, select_useremail, select_repo, GITHUB_TOKEN, select_description)
         # sleep for 1-5 mins randomly
         if i < nums_of_pr_to_create - 1:
