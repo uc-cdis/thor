@@ -32,7 +32,7 @@ def create_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_description):
     # commit change
     cloned_repo.git.add(filename)
     cloned_repo.index.commit(f"add {pr_description}")
-    print("### ##committed new change")
+    print(f"### ##committed new change by {GITHUB_USERNAME}")
     # push change
     origin = cloned_repo.remote(name="origin")
     cloned_repo.create_head(pr_head)
