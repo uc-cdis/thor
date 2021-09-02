@@ -74,7 +74,7 @@ def simulate_prs(repo_list, dev_dictionary, description_list, nums_of_pr_to_crea
     select_description = random.choice(description_list)
     
     for i in range(0,int(nums_of_pr_to_create)):
-        create_a_pr(select_username, select_useremail, select_repo, GITHUB_TOKEN, pr_description)
+        create_a_pr(select_username, select_useremail, select_repo, GITHUB_TOKEN, select_description)
         # sleep for 1-5 mins randomly
         if i < nums_of_pr_to_create - 1:
             time.sleep(randint(60,300))
