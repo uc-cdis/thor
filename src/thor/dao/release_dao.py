@@ -48,9 +48,7 @@ def manual_create_release(release_id, version, result):
         try:
             if release_id in get_release_keys():
                 raise Exception(
-                    "That keyvalue ("
-                    + str(release_id)
-                    + ") is already in the database. "
+                    f"That keyvalue {str(release_id)} is already in the database. "
                 )
             current_release = Release(
                 release_id=release_id, version=version, result=result
@@ -140,7 +138,7 @@ def delete_release(release_id):
         try:
             session.delete(session.query(Release).get(release_id))
         except Exception:
-            print("Cannot delete: " + str(release_id) + " is not in the database")
+            print(f"Cannot delete: {release_id} is not in the database")
             log.info(f"Entry {release_id} was deleted from Releases table. ")
 
 

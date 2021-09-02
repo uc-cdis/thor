@@ -46,7 +46,7 @@ def manual_create_task(key, name, status, release_id):
         try:
             if key in get_task_keys():
                 raise Exception(
-                    "That keyvalue (" + str(key) + ") is already in the database. "
+                    f"That keyvalue {str(key)} is already in the database. "
                 )
             current_task = Task(
                 task_id=key, task_name=name, status=status, release_id=release_id
@@ -139,7 +139,7 @@ def del_task(key):
         try:
             session.delete(session.query(Task).get(key))
         except Exception as e:
-            print("Cannot delete: " + str(key) + " is not in the database")
+            print(f"Cannot delete: {str(key)} is not in the database")
             log.info(f"Failed to find entry with key {key} to delete. ")
         log.info(f"Entry {key} was deleted from Tasks table. ")
 
