@@ -178,4 +178,4 @@ def get_release_keys():
     All keys are currently ints, so will return a list of ints. """
 
     with session_scope() as session:
-        return [release.release_id for release in session.Query(Release)]
+        return [release.release_id for release in session.query(Release)]
