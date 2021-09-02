@@ -126,10 +126,10 @@ def update_release(release_id, property, new_value):
         log.info(f"Changed parameter {property} of entry {release_id} to {new_value}. ")
 
 
-def del_release(release_id):
+def delete_release(release_id):
     """ Given the release_id of a particular Release, delete it from the table. 
     If the release_id is not in the database, prints an error message. 
-    SUPERSEDED BY deleterelease, which should be more general. """
+    Used by delete_releases. """
 
     with session_scope() as session:
         # Did not use type() below, to guard against possible subclasses of int
@@ -144,25 +144,24 @@ def del_release(release_id):
             log.info(f"Entry {release_id} was deleted from Releases table. ")
 
 
-def delete_release(input):
-    """ Given the release_id of a particular Release, delete it from the table. 
-    If input is an integer, use that as the release_id. 
-    If input is a list of integers, delete each object with one of the 
+def delete_releases(input):
+    """ Given a list of release_ids (ints), delete each object with one of the 
     given release_ids in the list. 
+
+    If the input is not a list, throws a TypeError. 
     If an input within the list is not in the database, or is not an 
-    integer, deleteRelease will delete the others as expected, 
+    integer, deleteReleases will delete the others as expected, 
     throwing an exception message only for the absent release_id. 
-    Relies on del_release for each operation.  """
+
+    Relies on delete_release for each operation.  """
 
     with session_scope() as session:
-        if isinstance(input, int):
-            del_release(input)
-        elif isinstance(input, list):
-            for i in input:
-                del_release(i)
-            log.info(f"All entries in list {input} were deleted. ")
+        if not isinstance(input, list):
+            raise TypeError(input)
         else:
-            print("The variable given as input was neither an integer nor a list. ")
+            for i in input:
+                delete_release(i)
+            log.info(f"All entries in list {input} were deleted. ")
 
 
 def get_release_num():
