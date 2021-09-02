@@ -1,7 +1,6 @@
 import os
 import sqlalchemy as sa
 
-# from config import DATABASE_URL
 from . import config
 from .models import Release
 
@@ -158,7 +157,7 @@ def delete_release(input):
             log.info(f"All entries in list {input} were deleted. ")
 
 
-def get_rel_num():
+def get_release_num():
     """ Gets the number of entries in the current database table. 
     Returns this number as an integer. """
 
@@ -167,13 +166,9 @@ def get_rel_num():
         return rows
 
 
-def get_rel_keys():
+def get_release_keys():
     """ Gets all primary keys from the current database table (Releases). 
-    All keys are currently ints, so will return all ints. """
-
-    key_list = []
+    All keys are currently ints, so will return a list of ints. """
 
     with session_scope() as session:
-        for release in session.query(Release):
-            key_list.append(release.release_id)
-        return key_list
+        return [release.release_id for release in session.Query(Release)]
