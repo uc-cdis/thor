@@ -127,6 +127,7 @@ def read_release(release_id):
 
         try:
             if not isinstance(release_id, int):
+                print(release_id, type(release_id))
                 raise TypeError(
                     f"The value given for release_id, {release_id} is not an int."
                 )
@@ -155,9 +156,22 @@ def read_all_releases():
     Primarily to be used by main:app/releases, as it must call get_all_releases
     in a somewhat inefficient manner otherwise. """
 
-    with session_scope as session:
+    print("\n\n read_all_releases start \n\n")
 
-        return [release for release in session.query(Release)]
+    with session_scope() as session:
+
+        # There's something seriously screwed up here.
+        # Returning the list directly causes the test to fail,
+        # and the encoder outputs empty dicts instead of proper
+        # formatted objects. But if we go through a "temp" variable,
+        # everything works for some reason.
+        #
+        # The expunge is also necessary, but I *don't know how it works.*
+        # It has to be in this location, or the same error occurs.
+
+        temp = [release for release in session.query(Release)]
+        session.expunge_all()
+        return temp
 
 
 def update_release(release_id, property, new_value):

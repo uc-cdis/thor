@@ -114,9 +114,20 @@ def read_all_tasks():
     Primarily to be used by main:app/tasks, as it must call get_all_tasks
     in a somewhat inefficient manner otherwise. """
 
-    with session_scope as session:
+    with session_scope() as session:
 
-        return [task for task in session.query(Task)]
+        # There's something seriously screwed up here.
+        # Returning the list directly causes the test to fail,
+        # and the encoder outputs empty dicts instead of proper
+        # formatted objects. But if we go through a "temp" variable,
+        # everything works for some reason.
+        #
+        # The expunge is also necessary, but I *don't know how it works.*
+        # It has to be in this location, or the same error occurs.
+
+        temp = [task for task in session.query(Task)]
+        session.expunge_all()
+        return temp
 
 
 def update_task(key, property, new_value):

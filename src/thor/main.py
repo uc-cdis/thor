@@ -22,13 +22,13 @@ app = FastAPI()
 async def get_all_releases():
     """ Returns all the releases in the Releases table. """
 
-    releases_to_return = [jsonable_encoder(release) for release in read_all_releases()]
-    log.info("Successfully retrieved all releases from Releases. ")
-    return JSONResponse(content={"releases": releases_to_return})
+    all_releases = [jsonable_encoder(release) for release in read_all_releases()]
+
+    return JSONResponse(content={"releases": all_releases})
 
 
 @app.get("/releases/{release_id}")
-async def get_single_release(release_id):
+async def get_single_release(release_id: int):
     """ Reads out the release associated with a particular release_id. """
 
     release = jsonable_encoder(read_release(release_id))
