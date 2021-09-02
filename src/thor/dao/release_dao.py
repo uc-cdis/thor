@@ -132,16 +132,14 @@ def del_release(release_id):
     SUPERSEDED BY deleterelease, which should be more general. """
 
     with session_scope() as session:
-        try:
-            if type(release_id) != int:
-                raise Exception(release_id)
-        except Exception as e:
-            print(str(e) + " is not an int. Check your types. ")
+        # Did not use type() below, to guard against possible subclasses of int
+        if not isinstance(release_id, int):
+            print(str(release_id) + " is not an int. Check your types. ")
             return
 
         try:
             session.delete(session.query(Release).get(release_id))
-        except Exception as e:
+        except Exception:
             print("Cannot delete: " + str(release_id) + " is not in the database")
             log.info(f"Entry {release_id} was deleted from Releases table. ")
 
@@ -157,12 +155,14 @@ def delete_release(input):
     Relies on del_release for each operation.  """
 
     with session_scope() as session:
-        if type(input) is int:
+        if isinstance(input, int):
             del_release(input)
-        elif type(input) is list:
+        elif isinstance(input, list):
             for i in input:
                 del_release(i)
             log.info(f"All entries in list {input} were deleted. ")
+        else:
+            print("The variable given as input was neither an integer nor a list. ")
 
 
 def get_release_num():
