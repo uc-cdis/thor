@@ -2,7 +2,6 @@ import sqlalchemy as sa
 import os
 import logging
 
-# from config import DATABASE_URL
 from . import config
 from .models import Task
 from sqlalchemy.orm import sessionmaker
@@ -35,6 +34,7 @@ def session_scope():
         session.close()
 
 
+# TODO: Investigate possibility of merging this functionality with release_dao.
 def manual_create_task(key, name, status, release_id):
     """ Given int ID, string name, string status, and int release_id, 
     creates a Task object, and inserts it into the database controlled
