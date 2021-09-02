@@ -23,7 +23,7 @@ async def get_all_releases():
     """ Returns all the releases in the Releases table. """
 
     all_releases = [jsonable_encoder(release) for release in read_all_releases()]
-
+    log.info("Successfully retrieved all releases from Releases. ")
     return JSONResponse(content={"releases": all_releases})
 
 
