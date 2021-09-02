@@ -89,7 +89,7 @@ def main():
     repo_list = convert_parameters(os.environ["repo_list"])
     dev_dictionary = convert_parameters(os.environ["dev_dictionary"])
     description_list = convert_parameters(os.environ["description_list"])
-    nums_of_pr_to_create = convert_parameters(os.environ["nums_of_pr_to_create"])
+    nums_of_pr_to_create = os.environ["nums_of_pr_to_create"]
     simulate_prs(repo_list, dev_dictionary, description_list, nums_of_pr_to_create)
 
 if __name__ == "__main__":
