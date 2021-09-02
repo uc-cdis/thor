@@ -73,7 +73,7 @@ async def get_release_tasks(release_id: int, task_id: int):
 
 
 @app.get("/tasks")
-async def tasks():
+async def get_tasks():
     """ Returns all the tasks in the Tasks table. """
     tasks_to_return = []
     key_list = get_task_keys()
