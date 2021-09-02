@@ -91,7 +91,7 @@ def read_task(key):
     """ Given the (int) key of the Task to be read, returns a Task Object in the format:
     'Key: %key, Name: %name, Version: %version, Result: %result', where 
     each %value is the value corresponding to the given key. 
-    Assumes that the given key is present in the database. """
+    Throws an Exception if the key value is not in the database.  """
 
     with session_scope() as session:
 
@@ -107,6 +107,16 @@ def read_task(key):
         log.info(f"Retrieved task {task} from the database.")
         session.expunge_all()
         return task
+
+
+def read_all_tasks():
+    """ Returns a list of all Task objects in the Tasks table of te database. 
+    Primarily to be used by main:app/tasks, as it must call get_all_tasks
+    in a somewhat inefficient manner otherwise. """
+
+    with session_scope as session:
+
+        return [task for task in session.query(Task)]
 
 
 def update_task(key, property, new_value):

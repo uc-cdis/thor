@@ -150,6 +150,16 @@ def read_release(release_id):
         return release
 
 
+def read_all_releases():
+    """ Returns a list of all Release objects in the Releases table of te database. 
+    Primarily to be used by main:app/releases, as it must call get_all_releases
+    in a somewhat inefficient manner otherwise. """
+
+    with session_scope as session:
+
+        return [release for release in session.query(Release)]
+
+
 def update_release(release_id, property, new_value):
     """ Given the release_id of a release, the name of the property to be changed, 
     and the intended new value of the property, change the value in the 
