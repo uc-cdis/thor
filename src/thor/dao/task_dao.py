@@ -2,8 +2,8 @@ import sqlalchemy as sa
 import os
 import logging
 
-from . import config
-from .models import Task
+from dao import config
+from dao.models import Task
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
