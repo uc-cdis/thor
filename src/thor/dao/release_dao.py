@@ -1,6 +1,7 @@
 import os
 import sqlalchemy as sa
-from dao.config import RELEASE_DATABASE_URL
+
+from dao import config
 from dao.models import Release
 
 from sqlalchemy.orm import sessionmaker
@@ -12,12 +13,12 @@ from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(RELEASE_DATABASE_URL)
+engine = sa.create_engine(config.DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
-l = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 @contextmanager
@@ -37,143 +38,144 @@ def session_scope():
         session.close()
 
 
-def manCreateRelease(id, version, result):
-    """ Given int ID, string version, and string result, 
+def manual_create_release(release_id, version, result):
+    """ Given int release_id, string version, and string result, 
     creates a Release object, and inserts it into the database controlled
     by the currently active session. 
-    Assumes that the id given is unique. """
+    Assumes that the release_id given is unique. """
 
     with session_scope() as session:
-      try:
-        if id in getRKeys():
-            raise Exception(
-                "That keyvalue (" + str(id) + ") is already in the database. "
-            )
-        currentRelease = Release(id=id, version=version, result=result)
-      except Exception as e:
-        print(e)
-        return None
-      l.info("Adding entry to the releases table...")
-      session.add(currentRelease)
-
-
-def createRelease(version, result):
-    with session_scope() as s:
         try:
-            if id in getRKeys():
+            if release_id in get_release_keys():
                 raise Exception(
-                    "That keyvalue (" + str(id) + ") is already in the database. "
+                    "That keyvalue ("
+                    + str(release_id)
+                    + ") is already in the database. "
                 )
-            currentRelease = Release(id=id, version=version, result=result)
+            current_release = Release(
+                release_id=release_id, version=version, result=result
+            )
         except Exception as e:
             print(e)
             return None
-        l.info(f"Manually adding entry {id} to Releases table.")
-        s.add(currentRelease)
+        log.info(f"Adding entry {release_id} to the releases table...")
+        session.add(current_release)
 
 
-def createRelease(version, result):
+def create_release(version, result):
+    """ Given string version, and string result, creates a Release object, 
+    and inserts it into the database provided by session_scope. 
+    Autonatically generates a release_id that will work based on the keys already in the table. 
+    Uses the minimum unused integer (min 0). 
+    Depends on get_release_keys. """
+
+    curr_keys = get_release_keys()
+
     with session_scope() as session:
-      currIDs = getkeys()
-      currIDs.sort()
-      minID = currIDs[0]
-      for id in currIDs[1:]:
-        if id != minID + 1:
-            minID += 1
-            break
+        curr_keys.sort()
+
+        # Thanks to Brian for working out this set difference method.
+        # By generating 2 sets, one with the existing keys,
+        # and one with optimally allocated keys, we can use their difference
+        # to figure out the minimum keys that haven't been used.
+
+        minimal_release_ids = set(range(len(curr_keys)))
+        unused_ids = minimal_release_ids - set(curr_keys)
+        if unused_ids:
+            min_key = list(unused_ids)[0]
         else:
-            minID += 1
-      if minID == currIDs[-1]:
-        minID += 1
+            min_key = curr_keys[-1] + 1
 
-      currentRelease = Release(id=minID, version=version, result=result)
+        current_release = Release(release_id=min_key, version=version, result=result)
 
-      session.add(currentRelease)
+        session.add(current_release)
 
 
-def readRelease(id):
+def read_release(release_id):
+    """ Given the (int) release_id of the Release to be read, returns a Release Object in the format:
+    'release_id: %release_id, Name: %name, Version: %version, Result: %result', where 
+    each %value is the value corresponding to the given release_id. 
+    Assumes that the given release_id is present in the database. """
+
     with session_scope() as session:
-      outstring = "The ID (" + str(id) + ") is not in the database. "
-
-      try:
-        rel = session.query(Release).get(id)
-        assert rel != None
-      except Exception as e:
-        pass
-      
-      #outstring = "ID: '{}', Version: '{}', Result: '{}'".format(
-      #      rel.id, rel.version, rel.result
-      #  )
-
-      # log.info("### ##" + str(type(rel)))
-      log.info(f"retrieved release {rel} from the database...")
-      session.expunge_all()
-      return rel
-
-
-def readRelease(id):
-    with session_scope() as s:
-        # outstring = "The ID (" + str(id) + ") is not in the database. "
 
         try:
-            rel = s.query(Release).get(id)
-            # print(rel, rel == None)
-            assert rel != None
+            release = session.query(Release).get(release_id)
+            assert release != None
         except Exception as e:
-            pass
-            # print("The ID " + str(id) + " is not in the database. ")
-        # else:
-        #     outstring = "ID: '{}', Name: '{}', Version: '{}', Result: '{}'".format(
-        #         rel.id, rel.name, rel.version, rel.result
-        #     )
+            log.info(
+                f"Attempted to retrieve release_id {release_id} from Releases, but could not locate. "
+            )
 
-        l.info(f"Retrieved release{rel} from the database. ")
-        s.expunge_all()
-        return rel
+        # Note: check how many errors this throws if release breaks.
+        log.info(f"Retrieved release {release} from the database.")
+        session.expunge_all()
+        return release
 
 
-def updateRelease(id, property, newValue):
+def update_release(release_id, property, new_value):
+    """ Given the release_id of a release, the name of the property to be changed, 
+    and the intended new value of the property, change the value in the 
+    database to reflect the intended change. 
+    We assume that an entry with the release_id exists in the DB, that the property is a legit 
+    property name, and that the newValue is appropriate (same type). """
+
     with session_scope() as session:
-      rel = session.query(Release).get(id)
-      setattr(rel, property, newValue)
-      l.info(f"Changed parameter {property} of {id} to {newValue}. ")
+        release = session.query(Release).get(release_id)
+        setattr(release, property, new_value)
+        log.info(f"Changed parameter {property} of entry {release_id} to {new_value}. ")
 
 
-def delRelease(id):
+def delete_release(release_id):
+    """ Given the release_id of a particular Release, delete it from the table. 
+    If the release_id is not in the database, prints an error message. 
+    Used by delete_releases. """
+
     with session_scope() as session:
-      try:
-        if type(id) != int:
-            raise Exception(id)
-      except Exception as e:
-        print(str(e) + " is not an int. Check your types. ")
-        return
+        # Did not use type() below, to guard against possible subclasses of int
+        if not isinstance(release_id, int):
+            print(str(release_id) + " is not an int. Check your types. ")
+            return
 
-      try:
-        session.delete(s.query(Release).get(id))
-      except Exception as e:
-        print("Cannot delete: " + str(id) + " is not in the database")
-        l.info(f"Entry {id} was deleted from Releases table. ")
+        try:
+            session.delete(session.query(Release).get(release_id))
+        except Exception:
+            print("Cannot delete: " + str(release_id) + " is not in the database")
+            log.info(f"Entry {release_id} was deleted from Releases table. ")
 
 
-def deleteRelease(input):
+def delete_releases(input):
+    """ Given a list of release_ids (ints), delete each object with one of the 
+    given release_ids in the list. 
+
+    If the input is not a list, throws a TypeError. 
+    If an input within the list is not in the database, or is not an 
+    integer, deleteReleases will delete the others as expected, 
+    throwing an exception message only for the absent release_id. 
+
+    Relies on delete_release for each operation.  """
+
     with session_scope() as session:
-      if type(input) is int:
-        delRelease(input)
-      elif type(input) is list:
-        for i in input:
-            delRelease(i)
-        l.info(f"All entries in list {input} were deleted. ")
+        if not isinstance(input, list):
+            raise TypeError(input)
+        else:
+            for i in input:
+                delete_release(i)
+            log.info(f"All entries in list {input} were deleted. ")
 
 
-def getRNum():
+def get_release_num():
+    """ Gets the number of entries in the current database table. 
+    Returns this number as an integer. """
+
     with session_scope() as session:
-      rows = session.query(Release).count()
-      return rows
+        rows = session.query(Release).count()
+        return rows
 
-def getRKeys():
-    keylist = []
-    
+
+def get_release_keys():
+    """ Gets all primary keys (release_id) from the current database table (Releases). 
+    All keys are currently ints, so will return a list of ints. """
+
     with session_scope() as session:
-        for rel in session.query(Release):
-            keylist.append(rel.id)
-        return keylist
+        return [release.release_id for release in session.query(Release)]

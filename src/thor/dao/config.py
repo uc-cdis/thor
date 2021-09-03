@@ -10,7 +10,7 @@ portNum = "5432"  # pragma: allowlist secret
 
 DBname = "thor_test_tmp"  # pragma: allowlist secret
 
-RELEASE_DATABASE_URL = (
+DATABASE_URL = (
     "postgresql+psycopg2://"  # pragma: allowlist secret
     + username  # pragma: allowlist secret
     + ":"
