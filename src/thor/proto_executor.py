@@ -28,5 +28,23 @@ def method1():
     log_file.close()
 
 
+def method2():
+    """when called, will write-append mode to log_file. 
+    Will print out the current DateTime, along with 
+    the string 'Method 1 called.' 
+    NOTE: Differs from method1 in that it uses 
+    the local filename instead of the absolute path, 
+    so I can test this in VSCode instead of in cygwin 
+    because that's messier and more of a pain. """
+
+    log_file = open(log_file_name, "a")
+
+    current_time = dt.datetime.now()
+    out_string = str(current_time) + "  Method 2 called. \n"
+
+    log_file.write(out_string)
+    log_file.close()
+
+
 if __name__ == "__main__":
-    method1()
+    method2()
