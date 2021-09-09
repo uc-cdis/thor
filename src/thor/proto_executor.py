@@ -4,6 +4,14 @@
 # work with and call.
 # Will try to execute python read/write to sample files.
 
+
+# Cygwin notes:
+# "python" call works just fine with either full name (/usr/bin/python)
+# or just "python". However, as crontab works from root, full name of
+# the thor directory (seen here in save_path for my machine) needs to
+# be specified.
+
+
 import os.path
 
 import datetime as dt
