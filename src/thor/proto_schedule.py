@@ -52,12 +52,24 @@ def schedule_job_repeating(job_name, schedule_time, interval):
 def schedule_job_cron(job_name, cron_input):
     """ Schedules a job, using the same conventions 
     as in schedule_job_once, but takes a cron_input 
-    instead of a DateTime. """
+    instead of a DateTime. 
+    
+    Special note: Due to how python-crontab's setall
+    works, cron_inputs can be input into schedule_job_once
+    and work as expected (at least by the person using cron). 
+    This behavior is unintuitive and opaque, so typechecking 
+    should probably be implemented to get users to use 
+    schedule_job_cron when they want to do cron things. """
 
-    return True
+    new_job_call = "python " + thor_path + "/" + job_name + ".py"
+    new_job = cron.new(command=new_job_call)
+
+    new_job.setall(cron_input)
+    cron.write()
 
 
 if __name__ == "__main__":
     in_five_min = dt.datetime.now() + dt.timedelta(minutes=5)
-
-    schedule_job_once("proto_executor", in_five_min)
+    sample_cron_text = "6 12 9 9 *"
+    # schedule_job_once("proto_executor", in_five_min)
+    schedule_job_cron("proto_executor", sample_cron_text)
