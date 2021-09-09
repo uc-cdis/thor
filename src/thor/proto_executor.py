@@ -55,4 +55,4 @@ def method2():
 
 
 if __name__ == "__main__":
-    method2()
+    method1()
