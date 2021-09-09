@@ -4,19 +4,22 @@
 # work with and call.
 # Will try to execute python read/write to sample files.
 
-
 # Cygwin notes:
 # "python" call works just fine with either full name (/usr/bin/python)
 # or just "python". However, as crontab works from root, full name of
 # the thor directory (seen here in save_path for my machine) needs to
 # be specified.
 
-
 import os.path
 
 import datetime as dt
 
-save_path = "/cygdrive/c/users/henry/work/thor/thor/src/thor"
+save_path = "/cygdrive/c/users/@USER/work/thor/thor/src/thor"
+# !!! NOTE: PROVIDE @USER BEFORE RUNNING. save_path must also be modified
+# depending on how you are running this, as well as your directory structure.
+# This should eventually be passed in via environment variable,
+# config file or similar.
+
 log_file_name = "proto_log.csv"
 
 log_file_absolute_path = os.path.join(save_path, log_file_name)

@@ -5,6 +5,7 @@
 # (with very limited functionality)
 # how an administrator might go about scheduling
 # specific jobs at different times.
+
 import datetime as dt
 
 from crontab import CronTab
@@ -13,11 +14,8 @@ import proto_executor
 
 thor_path = proto_executor.save_path
 
-cron = CronTab(user="henry")  # note: this has to change for different machines
-
-
-# pe_call = "python " + thor_path + "/proto_executor.py"
-# pe_job = cron.new(command=pe_call)
+cron = CronTab(user="@USER")  # note: this has to change for different machines
+# !!! NOTE: THE ABOVE MUST BE CHANGED IN ORDER TO RUN. !!!
 
 
 def schedule_job_once(job_name, schedule_time):
@@ -128,9 +126,9 @@ def schedule_job_cron(job_name, cron_input):
     cron.write()
 
 
-if __name__ == "__main__":
-    in_five_min = dt.datetime.now() + dt.timedelta(minutes=5)
-    sample_cron_text = "6 12 9 9 *"
-    # schedule_job_once("proto_executor", in_five_min)
-    # schedule_job_cron("proto_executor", sample_cron_text)
-    schedule_job_repeating("proto_executor", in_five_min, "@hourly")
+# if __name__ == "__main__":
+#     in_five_min = dt.datetime.now() + dt.timedelta(minutes=5)
+#     sample_cron_text = "6 12 9 9 *"
+#     schedule_job_once("proto_executor", in_five_min)
+#     schedule_job_cron("proto_executor", sample_cron_text)
+#     schedule_job_repeating("proto_executor", in_five_min, "@hourly")
