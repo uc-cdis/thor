@@ -38,7 +38,7 @@ psql -U postgres -c "create database thor_test_tmp"
 ## Create tables and test data
 
 ```
-poetry run python -m create_all_tables
+poetry run python src/thor/create_all_tables.py
 ```
 
 You should see something like:
