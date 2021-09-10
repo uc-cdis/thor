@@ -65,6 +65,7 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
         sys.exit(1)
 
     # post request to merge the pr
+    time.sleep(10)
     request_url = f"https://api.github.com/repos/{repo}/pulls/{pr_num}/merge"
     headers = {"Authorization":f"token {GITHUB_TOKEN}", "Accept":"application/vnd.github.v3+json"}
     payload_data = {"commit_title":pr_head}
@@ -79,7 +80,7 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
             pr_commit_sha = json.loads(response.text)['sha']
             print(f"### ##Pull request {pr_head} merged. sha: {pr_commit_sha}")
         else:
-            print(f"Pull request failed with {response.text}")
+            print(f"Pull request can't be merged because {response.text}")
             sys.exit(1)
     except requests.exceptions.RequestException as e:
         print(e)
