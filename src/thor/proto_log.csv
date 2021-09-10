@@ -1,0 +1,26 @@
+# proto_log.csv
+
+# This file holds the results of testing with proto_scheduler
+# and proto_executor. Each method call with executor will 
+# be recorded here, along with DateTime and perhaps 
+# other parameters to be passed. 
+
+# LOG START:
+2021-09-09 11:46:01.180800  Method 1 called. 
+2021-09-09 11:46:01.184451  Method 1 called. 
+2021-09-09 11:47:01.270696  Method 1 called. 
+2021-09-09 11:48:01.356930  Method 1 called. 
+2021-09-09 11:49:01.449378  Method 1 called. 
+2021-09-09 11:50:01.544574  Method 1 called. 
+2021-09-09 11:51:01.643386  Method 1 called. 
+2021-09-09 11:52:01.730401  Method 1 called. 
+2021-09-09 11:53:01.827052  Method 1 called. 
+2021-09-09 11:53:01.828618  Method 1 called. 
+2021-09-09 11:54:01.935371  Method 1 called. 
+2021-09-09 11:54:01.936048  Method 1 called. 
+2021-09-09 11:55:02.030346  Method 1 called. 
+2021-09-09 11:56:01.123158  Method 1 called. 
+2021-09-09 11:57:01.218789  Method 1 called. 
+2021-09-09 12:06:01.399031  Method 1 called. 
+2021-09-09 14:48:48.280951  Method 1 called. 
+2021-09-09 14:57:01.823150  Method 1 called. 
