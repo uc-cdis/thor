@@ -24,8 +24,10 @@ class JenkinsJobManager(JobManager):
             # use parent default
             super().__init__()
 
-    def run_job(self, job_name):
+    def run_job(self, job_name, job_parameters):
         print(f"running jenkins job {job_name}")
+        print(f"parameters {job_parameters}")
+        # TODO: Capture parameters by reading the metadata of the job_name and see if it matches the keys of the dict
         # TODO: write python code to execute something like this
         # curl -L -s -o /dev/null -w "%{http_code}" -u user:$JENKINS_API_TOKEN "http://localhost:6579/job/this-is-a-test/buildWithParameters?token=<your_job_secret_token>&THE_NAME=William&RELEASE_VERSION=2021.09"
         pass
@@ -66,5 +68,9 @@ class JenkinsJobManager(JobManager):
 
 if __name__ == "__main__":
     jjm = JenkinsJobManager()
-    jjm.run_job("say-hello")
+    paramsDict = {
+        "RELEASE_VERSION": "2021.10",
+        "FORK_FROM": "main",
+    }
+    jjm.run_job("say-hello", paramsDict)
     jjm.check_result_of_job("say-hello", "2020.12")
