@@ -58,8 +58,10 @@ class JobManager(ABC):
         )
         return None
 
+    @abstractmethod
     def run_job(self, job_name):
         print("super class run_job. Not implemented.")
 
+    @abstractmethod
     def check_result_of_job(self, job_name):
         print("super class check_result_of_job. Not implemented.")
