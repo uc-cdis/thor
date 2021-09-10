@@ -1,0 +1,245 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/releases": {
+      "get": {
+        "summary": "Get All Releases",
+        "description": "Returns all the releases in the Releases table. ",
+        "operationId": "get_all_releases_releases_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/releases/{release_id}": {
+      "get": {
+        "summary": "Get Single Release",
+        "description": "Reads out the release associated with a particular release_id. ",
+        "operationId": "get_single_release_releases__release_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Release Id"
+            },
+            "name": "release_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/releases/{release_id}/tasks": {
+      "get": {
+        "summary": "Get All Release Tasks",
+        "description": "This returns all tasks with release_id corresponding to the given input. \nCurrently, it fails without support if release_id is not an int, so this should\nbe addressed when appropriate. ",
+        "operationId": "get_all_release_tasks_releases__release_id__tasks_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Release Id",
+              "type": "integer"
+            },
+            "name": "release_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/releases/{release_id}/tasks/{task_id}": {
+      "get": {
+        "summary": "Get Release Task Specific",
+        "description": "This returns all tasks with release_id corresponding to the given input, and \ntask_id corresponding to the given input. Task_id is theoretically unique for each\ntask, so this method is somewhat superfluous, but it's here if needed.  \nCurrently, it fails without support if either release_id or task_id are not ints, \nso this should be addressed when appropriate. ",
+        "operationId": "get_release_task_specific_releases__release_id__tasks__task_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Release Id",
+              "type": "integer"
+            },
+            "name": "release_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "integer"
+            },
+            "name": "task_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "summary": "Get All Tasks",
+        "description": "Returns all the tasks in the Tasks table. ",
+        "operationId": "get_all_tasks_tasks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{task_id}": {
+      "get": {
+        "summary": "Get Single Task",
+        "description": "Reads out the task associated with a given task_id. ",
+        "operationId": "get_single_task_tasks__task_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Task Id"
+            },
+            "name": "task_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
