@@ -38,7 +38,7 @@ psql -U postgres -c "create database thor_test_tmp"
 ## Create tables and test data
 
 ```
-PYTHONPATH=src/thor/ poetry run python -m create_all_tables
+poetry run python src/thor/create_all_tables.py
 ```
 
 You should see something like:
@@ -68,11 +68,11 @@ thor_test_tmp=# select * from releases;
 ## How to test
 
 ```
-PYTHONPATH=src/thor/ poetry run pytest -vv -s tests
+poetry run pytest -vv -s tests
 ```
 
 ## Start the FastAPI web server
 
 ```
-PYTHONPATH=src/thor/ poetry run gunicorn main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
+poetry run gunicorn main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
 ```
