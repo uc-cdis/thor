@@ -10,11 +10,14 @@
 # the thor directory (seen here in save_path for my machine) needs to
 # be specified.
 
+import os
 import os.path
 
 import datetime as dt
 
-save_path = "/cygdrive/c/users/@USER/work/thor/thor/src/thor"
+save_path = os.environ["LOG_FILE_FOLDER"]
+# TODO: use relative path with dynamic os.path functions to automatically append the base_path
+# "/cygdrive/c/users/@USER/work/thor/thor/src/thor"
 # !!! NOTE: PROVIDE @USER BEFORE RUNNING. save_path must also be modified
 # depending on how you are running this, as well as your directory structure.
 # This should eventually be passed in via environment variable,
