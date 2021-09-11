@@ -13,7 +13,7 @@ from crontab import CronTab
 
 import proto_executor
 
-thor_path = proto_executor.save_path
+thor_path = proto_executor.thor_path
 
 cron = CronTab(user=getpass.getuser())
 

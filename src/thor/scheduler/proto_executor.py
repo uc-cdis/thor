@@ -15,17 +15,17 @@ import os.path
 
 import datetime as dt
 
-save_path = os.environ["LOG_FILE_FOLDER"]
+thor_path = os.environ["LOG_FILE_FOLDER"]
 # TODO: use relative path with dynamic os.path functions to automatically append the base_path
 # "/cygdrive/c/users/@USER/work/thor/thor/src/thor"
-# !!! NOTE: PROVIDE @USER BEFORE RUNNING. save_path must also be modified
+# !!! NOTE:
 # depending on how you are running this, as well as your directory structure.
 # This should eventually be passed in via environment variable,
 # config file or similar.
 
 log_file_name = "proto_log.csv"
 
-log_file_absolute_path = os.path.join(save_path, log_file_name)
+log_file_absolute_path = os.path.join(thor_path, log_file_name)
 
 
 def method1():
