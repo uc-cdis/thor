@@ -2,9 +2,10 @@ import os
 import logging
 import requests
 import json
+import datetime
 from thor.maestro.baton import JobManager
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 log = logging.getLogger(__name__)
 
 
@@ -25,12 +26,13 @@ class JenkinsJobManager(JobManager):
             super().__init__()
 
     def run_job(self, job_name, job_parameters):
-        print(f"running jenkins job {job_name}")
-        print(f"parameters {job_parameters}")
+        log.info(f"running jenkins job {job_name}")
+        log.info(f"parameters {job_parameters}")
+        log.info(f"job invoked at: {datetime.datetime.now()}")
         # TODO: Capture parameters by reading the metadata of the job_name and see if it matches the keys of the dict
         # TODO: write python code to execute something like this
         # curl -L -s -o /dev/null -w "%{http_code}" -u user:$JENKINS_API_TOKEN "http://localhost:6579/job/this-is-a-test/buildWithParameters?token=<your_job_secret_token>&THE_NAME=William&RELEASE_VERSION=2021.09"
-        pass
+        return f"result from {job_name}"
 
     def check_result_of_job(self, job_name, expected_release_version):
         release_version = "UNKNOWN"
