@@ -17,7 +17,7 @@ from thor.maestro.jenkins import JenkinsJobManager
 # script folder
 thor_path = os.path.dirname(os.path.realpath(__file__))
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
 
