@@ -104,6 +104,7 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
 
     # delete cloned repo folder
     try:
+        os.chdir("../../")
         shutil.rmtree(saved_path)
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
