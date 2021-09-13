@@ -23,9 +23,6 @@ def test_get_all_release_tasks(release_id):
         if task["release_id"] == release_id
     ]
 
-    expected_output_for_get_all_release_tasks = (
-        f'{{ "release": {json.dumps(list_of_desired_tasks)} }}'
-    )
+    expected_output_for_get_all_release_tasks = json.dumps(list_of_desired_tasks)
 
-    print(response.json)
-    assert response.json() == json.load(expected_output_for_get_all_release_tasks)
+    assert response.json() == json.loads(expected_output_for_get_all_release_tasks)
