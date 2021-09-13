@@ -123,7 +123,7 @@ def simulate_prs(repo_list, dev_dictionary, description_list, nums_of_pr_to_crea
         else:
             merge_datetime = datetime.strptime(merge_date_for_test, "%d %b %y %z") + timedelta(hours=randint(0,48))
         # convert datetime to string
-        merge_datetime_str = datetime.strftime(merge_datetime, "%a %d %b %Y %H:%M:%S %z")
+        merge_datetime_str = datetime.strftime(merge_datetime, "%a %b %d %H:%M:%S %Y %z")
         create_and_merge_a_pr(select_username, select_useremail, select_repo, GITHUB_TOKEN, select_description, merge_datetime_str)
         # sleep 20 seconds after each pr created and merged
         if i < nums_of_pr_to_create - 1:
