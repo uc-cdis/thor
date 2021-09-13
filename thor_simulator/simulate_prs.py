@@ -98,6 +98,7 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
         print("Inserting inside-", os.getcwd())
         print(f"### ## Changing the merge time to {merge_datetime_str}")
         os.system(f"GIT_COMMITTER_DATE=\"{merge_datetime_str}\" git commit --amend --no-edit --date \"{merge_datetime_str}\"")
+        origin.push()
     except:
         print("Something wrong with specified directory. Exception- ", sys.exc_info())
         sys.exit(1)
