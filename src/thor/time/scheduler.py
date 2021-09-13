@@ -32,18 +32,18 @@ class Scheduler:
                 "job_params": {},
                 "schedule": "0 21 8-15 * 5",  # 2nd Friday of the month
                 # "schedule": "* * * * *", # every minute
+                "run_next": "step2",
             },
             "step2": {
                 "job_name": "thor-test-step2",
                 "job_params": {},
                 "schedule": None,
-                "depends_on": "step1",
+                "run_next": "step3",
             },
             "step3": {
                 "job_name": "thor-test-step3",
                 "job_params": {},
                 "schedule": "0 22 22-28 * 5",  # 4th Friday of the month
-                "depends_on": "step3",
             },
         }
 
