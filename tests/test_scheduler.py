@@ -42,7 +42,7 @@ def test_scheduler_triggers_jenkins_job_on_2nd_friday_of_the_month(
 def test_scheduler_triggers_jenkins_job_on_4th_friday_of_the_month(
     mock_jenkins_run_job,
 ):
-    # one second before the expected cron schedule 0 22 22-28 * 5 (10 pm on the 4th Friday)
+    # 5 seconds before the expected cron schedule 0 22 22-28 * 5 (10 pm on the 4th Friday)
     fake_timestamp = "2021-09-25 21:59:55"
 
     # setting +6hs due to strange behavior with freezegun on Mac OS X
