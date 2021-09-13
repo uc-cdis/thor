@@ -9,7 +9,6 @@ from concurrent.futures import ThreadPoolExecutor, wait
 
 from thor.time import say_hello_test
 from thor.time import proto_executor
-from thor.time import jobs_and_schedules.json
 
 from thor.maestro.jenkins import JenkinsJobManager
 
@@ -30,7 +29,7 @@ class Scheduler:
     """
 
         with open("test_thor_config.json", "r") as read_file:
-            self.jobs_and_schedules = json.loads(json.load(read_file))
+            self.jobs_and_schedules = json.load(json.loads(read_file))
 
     def initialize_scheduler(self):
         loop = asyncio.new_event_loop()
