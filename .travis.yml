@@ -16,8 +16,8 @@ install:
   - poetry install -vv
   - psql -c 'SELECT version();' -U postgres
   - psql -U postgres -c "create database thor_test_tmp"
-  - PYTHONPATH=src/thor/ poetry run python -m create_all_tables
+  - poetry run python src/thor/create_all_tables.py
   - pip list
 
 script:
-  - PYTHONPATH=src/thor/ poetry run pytest -vv -s tests
+  - poetry run pytest -vv -s tests

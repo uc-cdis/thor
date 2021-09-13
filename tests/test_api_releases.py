@@ -6,11 +6,9 @@ from fastapi.testclient import TestClient
 # Is there a better way to make this work?
 import sys
 
-sys.path.append("../src/thor")
-# Note: VS Code complains that it can't resolve the import, but it works fine at runtime
-import main
+from thor.main import app
 
-client = TestClient(main.app)
+client = TestClient(app)
 
 
 print("working")

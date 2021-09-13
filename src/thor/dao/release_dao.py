@@ -1,8 +1,8 @@
 import os
 import sqlalchemy as sa
 
-from dao import config
-from dao.models import Release
+from thor.dao import config
+from thor.dao.models import Release
 
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
