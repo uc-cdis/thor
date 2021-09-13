@@ -1,6 +1,8 @@
 import pytest
 import json
+import os
 
+import os.path
 from fastapi.testclient import TestClient
 
 from thor.main import app
@@ -8,7 +10,10 @@ from thor.main import app
 client = TestClient(app)
 
 
-with open("task_test_data.txt", "r") as read_task_test:
+test_data_file_name = "task_test_data.txt"
+test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
+
+with open(test_data_absolute_path, "r") as read_task_test:
     expected_output_for_get_tasks = json.load(read_task_test)
 
 
