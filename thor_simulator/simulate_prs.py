@@ -64,14 +64,14 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
         print(e)
         sys.exit(1)
 
-    # post request to merge the pr
-    time.sleep(10)
+    # put request to merge the pr
+    time.sleep(2)
     request_url = f"https://api.github.com/repos/{repo}/pulls/{pr_num}/merge"
     headers = {"Authorization":f"token {GITHUB_TOKEN}", "Accept":"application/vnd.github.v3+json"}
     payload_data = {"commit_title":pr_head}
 
     try:
-        response = requests.post(request_url,
+        response = requests.put(request_url,
                                 headers = headers,
                                 json = payload_data)
 
