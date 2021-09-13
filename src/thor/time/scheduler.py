@@ -3,11 +3,13 @@ import sys
 import time
 import asyncio
 import logging
+import json
 from aiocron import crontab
 from concurrent.futures import ThreadPoolExecutor, wait
 
 from thor.time import say_hello_test
 from thor.time import proto_executor
+from thor.time import jobs_and_schedules.json
 
 from thor.maestro.jenkins import JenkinsJobManager
 
@@ -26,26 +28,9 @@ class Scheduler:
         """
     Creates Scheduler to kick off jobs at a given point in time
     """
-        self.jobs_and_schedules = {
-            "step1": {
-                "job_name": "thor-test-step1",
-                "job_params": {},
-                "schedule": "0 21 8-15 * 5",  # 2nd Friday of the month
-                # "schedule": "* * * * *", # every minute
-                "run_next": "step2",
-            },
-            "step2": {
-                "job_name": "thor-test-step2",
-                "job_params": {},
-                "schedule": None,
-                "run_next": "step3",
-            },
-            "step3": {
-                "job_name": "thor-test-step3",
-                "job_params": {},
-                "schedule": "0 22 22-28 * 5",  # 4th Friday of the month
-            },
-        }
+
+        with open("test_thor_config.json", "r") as read_file:
+            self.jobs_and_schedules = json.loads(json.load(read_file))
 
     def initialize_scheduler(self):
         loop = asyncio.new_event_loop()
