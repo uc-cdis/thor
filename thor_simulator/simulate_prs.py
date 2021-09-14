@@ -102,7 +102,7 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
         print(change_date_output.decode("utf-8"))
         # WARNING: it will break the shared history if anyone else cloned the repo
         force_push_output = subprocess.check_output("git push --force", shell=True)
-        print(force_push_output)
+        print(force_push_output.decode("utf-8"))
     except:
         print("Something wrong with specified directory. Exception- ", sys.exc_info())
         sys.exit(1)
