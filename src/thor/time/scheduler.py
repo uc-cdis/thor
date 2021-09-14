@@ -29,7 +29,7 @@ class Scheduler:
     """
 
         with open(thor_config_file, "r") as read_file:
-            self.jobs_and_schedules = json.loads(json.load(read_file))
+            self.jobs_and_schedules = json.load(read_file)
 
     def initialize_scheduler(self):
         loop = asyncio.new_event_loop()
