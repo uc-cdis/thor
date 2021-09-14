@@ -74,5 +74,5 @@ poetry run pytest -vv -s tests
 ## Start the FastAPI web server
 
 ```
-poetry run gunicorn main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
+poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
 ```
