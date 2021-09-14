@@ -8,8 +8,8 @@ from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from thor.dao.release_dao import read_release, get_release_keys
-from thor.dao.task_dao import read_task, get_task_keys
+from thor.dao.release_dao import read_release, read_all_releases, get_release_keys
+from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
