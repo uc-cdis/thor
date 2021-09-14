@@ -1,54 +1,34 @@
 import pytest
 import json
-from fastapi.testclient import TestClient
+import os
 
-# This is a pretty delicate thing, any change could cause it to break
-# Is there a better way to make this work?
-import sys
+import os.path
+from fastapi.testclient import TestClient
 
 from thor.main import app
 
 client = TestClient(app)
 
-print("working")
+test_data_file_name = "tests/task_test_data.txt"
+test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
 
-expected_output_for_get_task = {
-    "tasks": [
-        {
-            "release_id": 3,
-            "status": "success",
-            "task_id": 8,
-            "task_name": "Create Release in JIRA",
-        },
-        {
-            "release_id": 3,
-            "status": "success",
-            "task_id": 9,
-            "task_name": "Cut integration branch",
-        },
-        {
-            "release_id": 3,
-            "status": "success",
-            "task_id": 10,
-            "task_name": "Cut integration branch",
-        },
-    ]
-}
+with open(test_data_absolute_path, "r") as read_task_test:
+    expected_output_for_get_tasks = json.load(read_task_test)
 
-@pytest.mark.parametrize("task_id", [8, 9, 10])
+
+@pytest.mark.parametrize("task_id", range(1, 11))
 def test_read_single_task(task_id):
     response = client.get(f"/tasks/{task_id}")
-    # TODO: changed status code to 404 might need to revert to 200
     assert response.status_code == 200
-    if task_id == 8:
-      # convert py dictionary to json string
-      task8_payload = json.dumps(expected_output_for_get_tasks['tasks'][7])
-      expected_output_for_get_task = f"{{ \"task\": {task8_payload} }}"
-    elif task_id == 9:
-      task9_payload = json.dumps(expected_output_for_get_tasks['tasks'][8])
-      expected_output_for_get_task = f"{{ \"task\": {task9_payload} }}"
-    elif task_id == 10:
-      task10_payload = json.dumps(expected_output_for_get_tasks['tasks'][9])
-      expected_output_for_get_task = f"{{ \"task\": {task10_payload} }}"
+
+    # creates a dictionary associating each release with its numerical release id
+    tasks_dict_byID = {
+        task["task_id"]: task for task in expected_output_for_get_tasks["tasks"]
+    }
+
+    expected_output_for_get_task = (
+        f'{{ "task": {json.dumps(tasks_dict_byID[task_id])} }}'
+    )
+
+    # convert json string back to json object for comparison
     assert response.json() == json.loads(expected_output_for_get_task)
-    
