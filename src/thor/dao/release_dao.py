@@ -54,9 +54,9 @@ def manual_create_release(release_id, version, result):
                 raise TypeError(
                     f"The value for release_id, {release_id} is not an int."
                 )
-            if not isinstance(version, String):
+            if not isinstance(version, str):
                 raise TypeError(f"The value for version, {version} is not a string.")
-            if not isinstance(result, String):
+            if not isinstance(result, str):
                 raise TypeError(f"The value for result, {result} is not a string.")
 
             if release_id in get_release_keys():
@@ -92,10 +92,10 @@ def create_release(version, result):
         curr_keys.sort()
 
         try:
-            if not isinstance(version, String):
-                raise TypeError(f"The value for version, {version} is not an int.")
-            if not isinstance(result, String):
-                raise TypeError(f"The value for result, {result} is not an int.")
+            if not isinstance(version, str):
+                raise TypeError(f"The value for version, {version} is not a string.")
+            if not isinstance(result, str):
+                raise TypeError(f"The value for result, {result} is not a string.")
         except TypeError as type_error:
             print(type_error)
 
