@@ -62,7 +62,6 @@ class JenkinsJobManager(JobManager):
             log.info(
                 f"Latest version of {job_name} is {release_version}, and the result is {result}. "
             )
-            create_task(job_name, result, release_id_lookup(release_version))
 
         except Exception as e:
             print(f"response: {jsonOutput}")
@@ -80,6 +79,19 @@ class JenkinsJobManager(JobManager):
                 f"The release version of latest job is {release_version} while the expected version is {expected_release_version}"
             )
 
+    def write_task_result(self, job_name, expected_release_version):
+        """ Uses check_result_of_job to ... check the result of the job. 
+        Uses parameters given above (self, str job_name, str expected_r_v. 
+        Once result is gotten, uses task_dao's create_task and 
+        release_dao's release_id_lookup to create an appropriate task. 
+        Note: If a job with the same name and release_id already 
+        exists within the database, we update the result in-place
+        instead of creating a new Task. """
+
+        # create_task(job_name, result, release_id_lookup(release_version))
+
+        return True
+
     # TODO: store the task result to database
 
 
@@ -90,4 +102,4 @@ if __name__ == "__main__":
         "FORK_FROM": "main",
     }
     jjm.run_job("say-hello", paramsDict)
-    jjm.check_result_of_job("say-hello", "2021.09")
+    print("\nCHECKRESULT\n", jjm.check_result_of_job("say-hello", "2021.09"), "\n\n")

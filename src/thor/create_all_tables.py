@@ -1,8 +1,8 @@
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, MetaData
 import sqlalchemy as sa
-from dao import config
-from dao import release_dao
-from dao import task_dao
+from thor.dao import config
+from thor.dao import release_dao
+from thor.dao import task_dao
 from sqlalchemy.orm import sessionmaker
 
 engine = sa.create_engine(config.DATABASE_URL)
