@@ -37,6 +37,7 @@ class JenkinsJobManager(JobManager):
     def check_result_of_job(self, job_name, expected_release_version):
         release_version = "UNKNOWN"
         print(f"checking the results of the jenkins job {job_name}")
+        log.info(f"Checking results of jenkins job {job_name}. ")
         url = f"https://{self.base_jenkins_url}/job/{job_name}/lastBuild/api/json"
         try:
             jsonOutput = requests.get(
@@ -54,9 +55,17 @@ class JenkinsJobManager(JobManager):
             # get result
             result = json.loads(jsonOutput)["result"]
             print(f"### ##The result for the lasted build is {result}")
+            log.info(
+                f"Latest version of {job_name} is {release_version}, and the result is {result}. "
+            )
         except Exception as e:
             print(f"response: {jsonOutput}")
             print(f"### ## Something went wrong: {e}")
+            log.info(
+                f"Encountered error when accessing {job_name}: \n \
+                Exception: {e} \n \
+                    Full response: {jsonOutput}. "
+            )
 
         if release_version == expected_release_version:
             return result
@@ -75,4 +84,4 @@ if __name__ == "__main__":
         "FORK_FROM": "main",
     }
     jjm.run_job("say-hello", paramsDict)
-    jjm.check_result_of_job("say-hello", "2020.12")
+    jjm.check_result_of_job("say-hello", "2021.10")
