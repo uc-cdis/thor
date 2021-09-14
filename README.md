@@ -84,5 +84,5 @@ LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="-15d" poetry run gunicorn
 ```
 or
 ```
-LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="2020-12-24 20:30:00" poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
+LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="@2020-12-24 20:30:00" poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
 ```
