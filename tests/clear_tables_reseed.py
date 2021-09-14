@@ -64,6 +64,13 @@ def create_test_data():
     )
 
 
-if __name__ == "__main__":
+def reseed():
+    """ Combines clear_tables() and create_test_data
+    to reset the DB to a known state. """
+
     clear_tables()
     create_test_data()
+
+
+if __name__ == "__main__":
+    reseed()
