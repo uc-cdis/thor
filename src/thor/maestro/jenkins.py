@@ -6,6 +6,7 @@ import datetime
 
 from thor.maestro.baton import JobManager
 from thor.dao.task_dao import create_task
+from thor.dao.release_dao import release_id_lookup
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -61,7 +62,7 @@ class JenkinsJobManager(JobManager):
             log.info(
                 f"Latest version of {job_name} is {release_version}, and the result is {result}. "
             )
-            create_task(job_name, result, 3)
+            create_task(job_name, result, release_id_lookup(release_version))
 
         except Exception as e:
             print(f"response: {jsonOutput}")
@@ -85,8 +86,8 @@ class JenkinsJobManager(JobManager):
 if __name__ == "__main__":
     jjm = JenkinsJobManager()
     paramsDict = {
-        "RELEASE_VERSION": "2021.10",
+        "RELEASE_VERSION": "2021.09",
         "FORK_FROM": "main",
     }
     jjm.run_job("say-hello", paramsDict)
-    jjm.check_result_of_job("say-hello", "2021.10")
+    jjm.check_result_of_job("say-hello", "2021.09")
