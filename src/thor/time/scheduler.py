@@ -23,12 +23,12 @@ log = logging.getLogger(__name__)
 
 
 class Scheduler:
-    def __init__(self):
+    def __init__(self, thor_config_file):
         """
     Creates Scheduler to kick off jobs at a given point in time
     """
 
-        with open("test_thor_config.json", "r") as read_file:
+        with open(thor_config_file, "r") as read_file:
             self.jobs_and_schedules = json.loads(json.load(read_file))
 
     def initialize_scheduler(self):
