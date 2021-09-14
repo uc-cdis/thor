@@ -1,5 +1,6 @@
 import os
 import sqlalchemy as sa
+from sqlalchemy.sql.sqltypes import String
 
 from thor.dao import config
 from thor.dao.models import Release
@@ -42,22 +43,37 @@ def manual_create_release(release_id, version, result):
     """ Given int release_id, string version, and string result, 
     creates a Release object, and inserts it into the database controlled
     by the currently active session. 
-    Assumes that the release_id given is unique. """
+    Assumes that the release_id given is unique. 
+
+    Throws errors if any input type is not as expected, 
+    or if the given release_id is already present in the database. """
 
     with session_scope() as session:
         try:
+            if not isinstance(release_id, int):
+                raise TypeError(
+                    f"The value for release_id, {release_id} is not an int."
+                )
+            if not isinstance(version, String):
+                raise TypeError(f"The value for version, {version} is not an int.")
+            if not isinstance(result, String):
+                raise TypeError(f"The value for result, {result} is not an int.")
+
             if release_id in get_release_keys():
-                raise Exception(
-                    "That keyvalue ("
-                    + str(release_id)
-                    + ") is already in the database. "
+                raise ValueError(
+                    f"ERROR: That keyvalue {str(release_id)} is already in the database. "
                 )
             current_release = Release(
                 release_id=release_id, version=version, result=result
             )
+
+        except ValueError as value_error:
+            print(value_error)
+        except TypeError as type_error:  # this is also raised if we don't have enough parameters input
+            print(type_error)
         except Exception as e:
             print(e)
-            return None
+
         log.info(f"Adding entry {release_id} to the releases table...")
         session.add(current_release)
 
@@ -67,12 +83,21 @@ def create_release(version, result):
     and inserts it into the database provided by session_scope. 
     Autonatically generates a release_id that will work based on the keys already in the table. 
     Uses the minimum unused integer (min 0). 
-    Depends on get_release_keys. """
+    Depends on get_release_keys. 
+    Throws errors if the given 'version' or 'result' are not Strings. """
 
     curr_keys = get_release_keys()
 
     with session_scope() as session:
         curr_keys.sort()
+
+        try:
+            if not isinstance(version, String):
+                raise TypeError(f"The value for version, {version} is not an int.")
+            if not isinstance(result, String):
+                raise TypeError(f"The value for result, {result} is not an int.")
+        except TypeError as type_error:
+            print(type_error)
 
         # Thanks to Brian for working out this set difference method.
         # By generating 2 sets, one with the existing keys,
@@ -95,14 +120,27 @@ def read_release(release_id):
     """ Given the (int) release_id of the Release to be read, returns a Release Object in the format:
     'release_id: %release_id, Name: %name, Version: %version, Result: %result', where 
     each %value is the value corresponding to the given release_id. 
-    Assumes that the given release_id is present in the database. """
+    Assumes that the given release_id is present in the database. 
+    Throws errors if the given release_id is not an int, or if it is not in the database. """
 
     with session_scope() as session:
 
         try:
+            if not isinstance(release_id, int):
+                print(release_id, type(release_id))
+                raise TypeError(
+                    f"The value given for release_id, {release_id} is not an int."
+                )
+
             release = session.query(Release).get(release_id)
+
             assert release != None
-        except Exception as e:
+
+        except TypeError as type_error:
+            print(type_error)
+            log.info("Could not retrieve: " + str(type_error))
+
+        except Exception:
             log.info(
                 f"Attempted to retrieve release_id {release_id} from Releases, but could not locate. "
             )
@@ -111,6 +149,29 @@ def read_release(release_id):
         log.info(f"Retrieved release {release} from the database.")
         session.expunge_all()
         return release
+
+
+def read_all_releases():
+    """ Returns a list of all Release objects in the Releases table of te database. 
+    Primarily to be used by main:app/releases, as it must call get_all_releases
+    in a somewhat inefficient manner otherwise. """
+
+    print("\n\n read_all_releases start \n\n")
+
+    with session_scope() as session:
+
+        # There's something seriously screwed up here.
+        # Returning the list directly causes the test to fail,
+        # and the encoder outputs empty dicts instead of proper
+        # formatted objects. But if we go through a "temp" variable,
+        # everything works for some reason.
+        #
+        # The expunge is also necessary, but I *don't know how it works.*
+        # It has to be in this location, or the same error occurs.
+
+        temp = [release for release in session.query(Release)]
+        session.expunge_all()
+        return temp
 
 
 def update_release(release_id, property, new_value):
@@ -140,7 +201,7 @@ def delete_release(release_id):
         try:
             session.delete(session.query(Release).get(release_id))
         except Exception:
-            print("Cannot delete: " + str(release_id) + " is not in the database")
+            print(f"Cannot delete: {release_id} is not in the database")
             log.info(f"Entry {release_id} was deleted from Releases table. ")
 
 

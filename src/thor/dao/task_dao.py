@@ -46,7 +46,7 @@ def manual_create_task(key, name, status, release_id):
         try:
             if key in get_task_keys():
                 raise Exception(
-                    "That keyvalue (" + str(key) + ") is already in the database. "
+                    f"That keyvalue {str(key)} is already in the database. "
                 )
             current_task = Task(
                 task_id=key, task_name=name, status=status, release_id=release_id
@@ -91,7 +91,7 @@ def read_task(key):
     """ Given the (int) key of the Task to be read, returns a Task Object in the format:
     'Key: %key, Name: %name, Version: %version, Result: %result', where 
     each %value is the value corresponding to the given key. 
-    Assumes that the given key is present in the database. """
+    Throws an Exception if the key value is not in the database.  """
 
     with session_scope() as session:
 
@@ -107,6 +107,27 @@ def read_task(key):
         log.info(f"Retrieved task {task} from the database.")
         session.expunge_all()
         return task
+
+
+def read_all_tasks():
+    """ Returns a list of all Task objects in the Tasks table of te database. 
+    Primarily to be used by main:app/tasks, as it must call get_all_tasks
+    in a somewhat inefficient manner otherwise. """
+
+    with session_scope() as session:
+
+        # There's something seriously screwed up here.
+        # Returning the list directly causes the test to fail,
+        # and the encoder outputs empty dicts instead of proper
+        # formatted objects. But if we go through a "temp" variable,
+        # everything works for some reason.
+        #
+        # The expunge is also necessary, but I *don't know how it works.*
+        # It has to be in this location, or the same error occurs.
+
+        temp = [task for task in session.query(Task)]
+        session.expunge_all()
+        return temp
 
 
 def update_task(key, property, new_value):
@@ -139,7 +160,7 @@ def del_task(key):
         try:
             session.delete(session.query(Task).get(key))
         except Exception as e:
-            print("Cannot delete: " + str(key) + " is not in the database")
+            print(f"Cannot delete: {str(key)} is not in the database")
             log.info(f"Failed to find entry with key {key} to delete. ")
         log.info(f"Entry {key} was deleted from Tasks table. ")
 
