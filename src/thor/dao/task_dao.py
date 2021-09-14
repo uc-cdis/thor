@@ -59,25 +59,27 @@ def manual_create_task(key, name, status, release_id):
 
 
 def create_task(name, status, release_id):
-    """ Given string version, and string result, 
+    """ Given string name (version name), string status, and int release_id, 
     creates a Task object, and inserts it into the database controlled
     by the currently active session (TaskDB). 
     Autonatically generates an ID that will work based on the IDs already in the table. 
     Uses the minimum unused integer (min 0). 
-    Depends on getkeys. """
+    Depends on getkeys. 
+    NOTE: release_id is expected to correspond with an existing release
+    in the database. If not, probably nothing should break, but we may 
+    see some unexpected behavior. Best to avoid if possible. """
 
     with session_scope() as session:
         curr_keys = get_task_keys()
         curr_keys.sort()
-        min_key = curr_keys[0]
-        for key in curr_keys[1:]:
-            if key != min_key + 1:
-                min_key += 1
-                break
-            else:
-                min_key += 1
-        if min_key == curr_keys[-1]:
-            min_key += 1
+
+        # The following code generates the minimum working ID in the database.
+        minimal_task_ids = set(range(len(curr_keys)))
+        unused_ids = minimal_task_ids - set(curr_keys)
+        if unused_ids:
+            min_key = list(unused_ids)[0]
+        else:
+            min_key = curr_keys[-1] + 1
 
         currentTask = Task(
             task_id=min_key, task_name=name, status=status, release_id=release_id
@@ -203,3 +205,7 @@ def get_task_keys():
         for release in session.query(Task):
             key_list.append(release.task_id)
         return key_list
+
+
+if __name__ == "__main__":
+    print(read_all_tasks())

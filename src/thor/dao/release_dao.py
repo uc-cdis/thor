@@ -240,3 +240,15 @@ def get_release_keys():
 
     with session_scope() as session:
         return [release.release_id for release in session.query(Release)]
+
+
+def release_id_lookup(version):
+    """ Given a string version of a specific release, 
+    return as int the corresponding release_id of the release. 
+    Currently behaves badly if 'version' does not correspond exactly
+    to a version string already in the database. 
+    Should fix to be more resilient. """
+
+
+if __name__ == "__main__":
+    print(read_all_releases())

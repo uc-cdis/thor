@@ -3,7 +3,10 @@ import logging
 import requests
 import json
 import datetime
+
 from thor.maestro.baton import JobManager
+from thor.dao.task_dao import create_task
+
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -58,6 +61,8 @@ class JenkinsJobManager(JobManager):
             log.info(
                 f"Latest version of {job_name} is {release_version}, and the result is {result}. "
             )
+            create_task(job_name, result, 3)
+
         except Exception as e:
             print(f"response: {jsonOutput}")
             print(f"### ## Something went wrong: {e}")
