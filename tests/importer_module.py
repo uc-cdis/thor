@@ -1,19 +1,7 @@
-import pytest
+# importer_module.py
+
 import json
-from fastapi.testclient import TestClient
 
-# This is a pretty delicate thing, any change could cause it to break
-# Is there a better way to make this work?
-import sys
-
-from thor.main import app
-
-client = TestClient(app)
-
-
-print("working")
-# Question: Would it be better to put the expected outputs into a separate file,
-# to avoid making the code harder to read?
 expected_output_for_get_releases = {
     "releases": [
         {"version": "2021.09", "result": "In Progress", "release_id": 3},
@@ -86,29 +74,5 @@ expected_output_for_get_tasks = {
     ]
 }
 
-
-def test_read_releases():
-    response = client.get("/releases")
-    assert response.status_code == 200
-    assert response.json() == expected_output_for_get_releases
-
-
-@pytest.mark.parametrize("release_id", [3, 4])
-def test_read_single_release(release_id):
-    response = client.get(f"/releases/{release_id}")
-    assert response.status_code == 200
-    if release_id == 3:
-        # convert py dictionary to json string
-        release3_payload = json.dumps(expected_output_for_get_releases["releases"][0])
-        expected_output_for_get_release = f'{{ "release": {release3_payload} }}'
-    elif release_id == 4:
-        release4_payload = json.dumps(expected_output_for_get_releases["releases"][1])
-        expected_output_for_get_release = f'{{ "release": {release4_payload} }}'
-    # convert json string back to json object for comparison
-    assert response.json() == json.loads(expected_output_for_get_release)
-
-
-def test_get_tasks():
-    response = client.get("/tasks")
-    assert response.status_code == 200
-    assert response.json() == expected_output_for_get_tasks
+with open("task_test_data.txt", "w") as output_file:
+    json.dump(expected_output_for_get_tasks, output_file)
