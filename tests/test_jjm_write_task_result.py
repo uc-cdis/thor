@@ -8,7 +8,7 @@ from thor.maestro.jenkins import JenkinsJobManager
 from thor.dao.task_dao import read_task, get_task_num
 from thor.dao.clear_tables_reseed import reseed
 
-from thor.dao.release_dao import look_upper
+from thor.dao.release_dao import release_id_lookup_class
 from thor.dao.models import Task
 
 
@@ -24,7 +24,7 @@ def returnThree(self, input1):
 
 ## Test writing result when there is no prior value
 @mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
-@mock.patch.object(look_upper, "release_id_lookup", returnThree)
+@mock.patch.object(release_id_lookup_class, "release_id_lookup", returnThree)
 def test_write_no_prior():
     """ For the purposes of this test, we use an object with known
     values for each variable. write_task_result expects to use 

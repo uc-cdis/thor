@@ -6,7 +6,7 @@ import datetime
 
 from thor.maestro.baton import JobManager
 from thor.dao.task_dao import create_task, lookup_key, update_task
-from thor.dao.release_dao import look_upper
+from thor.dao.release_dao import release_id_lookup_class
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -90,7 +90,7 @@ class JenkinsJobManager(JobManager):
         instead of creating a new Task. """
 
         result = self.check_result_of_job(job_name, expected_release_version)
-        lu = look_upper()
+        lu = release_id_lookup_class()
         corresponding_release_id = lu.release_id_lookup(expected_release_version)
 
         expected_key = lookup_key(job_name, corresponding_release_id)
@@ -100,7 +100,6 @@ class JenkinsJobManager(JobManager):
         if expected_key:
             update_task(expected_key, "status", result)
         else:
-            lu = look_upper()
             create_task(job_name, result, corresponding_release_id)
 
 

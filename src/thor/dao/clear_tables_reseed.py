@@ -36,6 +36,9 @@ def clear_tables():
 
 
 def create_test_data():
+    """ Creates test data. 
+    Uses release_dao and task_dao's methods, 
+    plus hardcoded parameters, to do so. """
     s = Session()
 
     # Add dummy release entries for testing purposes
