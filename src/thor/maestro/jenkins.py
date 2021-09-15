@@ -5,7 +5,7 @@ import json
 import datetime
 
 from thor.maestro.baton import JobManager
-from thor.dao.task_dao import create_task
+from thor.dao.task_dao import create_task, lookup_key, update_task
 from thor.dao.release_dao import look_upper
 
 
@@ -91,18 +91,29 @@ class JenkinsJobManager(JobManager):
 
         result = self.check_result_of_job(job_name, expected_release_version)
         lu = look_upper()
-        create_task(job_name, result, lu.release_id_lookup(expected_release_version))
+        corresponding_release_id = lu.release_id_lookup(expected_release_version)
 
-        return True
+        expected_key = lookup_key(job_name, corresponding_release_id)
 
-    # TODO: store the task result to database
+        # If expected_key returns None, then there is no job with the
+        # corresponding job_name and release_version.
+        if expected_key:
+            update_task(expected_key, "status", result)
+        else:
+            lu = look_upper()
+            create_task(job_name, result, corresponding_release_id)
 
 
 if __name__ == "__main__":
     jjm = JenkinsJobManager()
-    paramsDict = {
-        "RELEASE_VERSION": "2021.09",
-        "FORK_FROM": "main",
-    }
-    jjm.run_job("say-hello", paramsDict)
-    print("\nCHECKRESULT\n", jjm.check_result_of_job("say-hello", "2021.09"), "\n\n")
+    # paramsDict = {
+    #     "RELEASE_VERSION": "2021.09",
+    #     "FORK_FROM": "main",
+    # }
+    # jjm.run_job("say-hello", paramsDict)
+    # print("\nCHECKRESULT\n", jjm.check_result_of_job("say-hello", "2021.09"), "\n\n")
+
+    test_task_name = "Update CI env with the latest integration branch"
+    test_task_version = "2021.09"
+
+    jjm.write_task_result(test_task_name, test_task_version)

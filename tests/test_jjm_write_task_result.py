@@ -1,6 +1,4 @@
-# test_jjm_write_task_result.py
 import pytest
-import json
 import mock
 import os
 
@@ -10,13 +8,8 @@ from thor.maestro.jenkins import JenkinsJobManager
 from thor.dao.task_dao import read_task, get_task_num
 from thor.dao.clear_tables_reseed import reseed
 
-# from clear_tables_reseed import reseed
 from thor.dao.release_dao import look_upper
 from thor.dao.models import Task
-
-# from thor.maestro.jenkins import write_task_result
-
-## Test writing result when there is no prior value
 
 
 def returnSuccess(self, input1, input2):
@@ -29,6 +22,7 @@ def returnThree(self, input1):
     return 3
 
 
+## Test writing result when there is no prior value
 @mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
 @mock.patch.object(look_upper, "release_id_lookup", returnThree)
 def test_write_no_prior():
@@ -92,6 +86,7 @@ def test_write_while_prior():
     test_jjm = JenkinsJobManager()
     test_jjm.write_task_result(test_task_name, test_task_version)
 
+    # checking to make sure we've altered instead of inserting
     assert get_task_num() == 10
 
     written_task = read_task(10)

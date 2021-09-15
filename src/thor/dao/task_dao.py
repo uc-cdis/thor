@@ -207,5 +207,35 @@ def get_task_keys():
         return key_list
 
 
+def lookup_key(desired_task_name, desired_release_id):
+    """ Given string task_name and int release_id, 
+    searches the Tasks database for matching Tasks, 
+    and returns an int corresponding to the matching Task. 
+    If there is no corresponding Task, returns None. 
+    
+    NOTE: The combination of task_name and release_id 
+    should be unique for each Task. TODO: Make this throw
+    loud errors if it discovers more than one Task
+    with corresponding task_name and release_id. """
+
+    with session_scope() as session:
+        key_list = get_task_keys()
+
+        for key in key_list:
+            current_task = read_task(key)
+            if (
+                current_task.task_name == desired_task_name
+                and current_task.release_id == desired_release_id
+            ):
+
+                return key
+        return None
+
+
 if __name__ == "__main__":
     print(read_all_tasks())
+
+    wanted_string = "Update CI env with the latest integration branch"
+    wanted_id = 3
+
+    # print(lookup_key(wanted_string, wanted_id))
