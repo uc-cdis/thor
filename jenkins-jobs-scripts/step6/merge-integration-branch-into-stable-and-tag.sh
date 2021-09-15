@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 echo "### ## name_of_the_branch: $GIT_BRANCH"
 
 if [[ "$GIT_BRANCH" == "origin/master" ]]; then
@@ -9,7 +11,9 @@ else
   exit 1
 fi
 
-urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/"
+git config --global user.email "cdis@uchicago.edu"
+
+urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
 sourceBranchName="$BRANCH_NAME"
 tagName="$RELEASE_VERSION"
 targetBranchName="stable"
