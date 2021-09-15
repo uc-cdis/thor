@@ -1,1 +1,20 @@
-"{\n    \"step1\": {\n        \"job_name\": \"thor-test-step1\",\n        \"job_params\": {},\n        \"schedule\": \"0 21 8-15 * 5\",\n        \"run_next\": \"step2\"\n    },\n    \"step2\": {\n        \"job_name\": \"thor-test-step2\",\n        \"job_params\": {},\n        \"schedule\": null,\n        \"run_next\": \"step3\"\n    },\n    \"step3\": {\n        \"job_name\": \"thor-test-step3\",\n        \"job_params\": {},\n        \"schedule\": \"0 22 22-28 * 5\"\n    }\n}"
+{
+    "step1": {
+        "job_name":  "thor-test-step1",  
+        "job_params": {},  
+        "schedule":  "0 21 8-15 * 5",  
+        "run_next":  "step2" 
+    },   
+
+    "step2": {  
+        "job_name":  "thor-test-step2",  
+        "job_params": {},  
+        "schedule": null,  
+        "run_next":  "step3"
+    },   
+
+    "step3": {  
+        "job_name":  "thor-test-step3",  
+        "job_params": {},  
+        "schedule":  "0 22 22-28 * 5" }
+}
