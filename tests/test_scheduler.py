@@ -23,7 +23,8 @@ def test_scheduler_triggers_jenkins_job_on_2nd_friday_of_the_month(
 
     freezer = freeze_time(fake_timestamp, tick=True)
     freezer.start()
-    sch = Scheduler()
+
+    sch = Scheduler("test_thor_config.json")
 
     # We just need step1 for this test, deleting the others from the dict
     del sch.jobs_and_schedules["step2"]
@@ -51,7 +52,8 @@ def test_scheduler_triggers_jenkins_job_on_4th_friday_of_the_month(
 
     freezer = freeze_time(fake_timestamp, tick=True)
     freezer.start()
-    sch = Scheduler()
+
+    sch = Scheduler("test_thor_config.json")
 
     # We just need step3 for this test, deleting the others from the dict
     del sch.jobs_and_schedules["step1"]
