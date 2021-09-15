@@ -84,6 +84,7 @@ class JenkinsJobManager(JobManager):
         Uses parameters given above (self, str job_name, str expected_r_v. 
         Once result is gotten, uses task_dao's create_task and 
         release_dao's release_id_lookup to create an appropriate task. 
+        
         Note: If a job with the same name and release_id already 
         exists within the database, we update the result in-place
         instead of creating a new Task. """

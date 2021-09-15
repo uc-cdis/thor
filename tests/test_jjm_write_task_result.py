@@ -7,7 +7,7 @@ import os
 import os.path
 
 from thor.maestro.jenkins import JenkinsJobManager
-from thor.dao.task_dao import read_task
+from thor.dao.task_dao import read_task, get_task_num
 from thor.dao.clear_tables_reseed import reseed
 
 # from clear_tables_reseed import reseed
@@ -67,6 +67,36 @@ def test_write_no_prior():
 
 ## Test writing result when there is a prior value
 ## In this case, the method switches to modify-in-place value
+
+
+@mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
+def test_write_while_prior():
+    """ The objective of this test is to ensure write_task_result
+    overwrites the status of a task instead of creating a new task
+    when another task with the same name and release_id exists 
+    within the Tasks database. 
+    
+    The target of this test is the Task with ID 10:
+        ID: '10', Name: 'Update CI env with the latest integration branch', 
+        Status: 'in progress', Release ID: '3'
+
+        The corresponding version for Release ID is 2021.09. 
+    The write_task_result should simply overwrite the status of this Task
+    and change its value to "success". 
+    """
+    reseed()
+
+    test_task_name = "Update CI env with the latest integration branch"
+    test_task_version = "2021.09"
+
+    test_jjm = JenkinsJobManager()
+    test_jjm.write_task_result(test_task_name, test_task_version)
+
+    assert get_task_num() == 10
+
+    written_task = read_task(10)
+    assert written_task.status == "success"
+
 
 if __name__ == "__main__":
     test_write_no_prior()
