@@ -9,7 +9,7 @@ else
   exit 1
 fi
 
-urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/"
+urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
 sourceBranchName="$BRANCH_NAME"
 tagName="$RELEASE_VERSION"
 targetBranchName="stable"
