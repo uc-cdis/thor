@@ -75,7 +75,7 @@ poetry run pytest -vv -s tests
 
 ```
 poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
-
+```
 
 ## Time travel
 
