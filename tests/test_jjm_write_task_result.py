@@ -33,7 +33,7 @@ def test_write_no_prior():
     
     We mock both check_result_of_job and release_id_lookup to 
     guarantee that the results will be 'success' and int(4), respectively. 
-    Then, we call write_task_result with job_name 'test_job_420' and 
+    Then, we call write_task_result with job_name 'test_job_42' and 
     expected_release_version '2002.09', which should definitely not 
     be in the table. Afterwards, we check the task with ID 0, which should
     be the task we want. We compare this task to the known task, and 
