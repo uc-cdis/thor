@@ -242,21 +242,25 @@ def get_release_keys():
         return [release.release_id for release in session.query(Release)]
 
 
-def release_id_lookup(given_version):
-    """ Given a string version of a specific release, 
-    return as int the corresponding release_id of the release. 
-    Currently behaves badly if 'version' does not correspond exactly
-    to a version string already in the database. 
-    Should fix to be more resilient. 
-    Also assumes that 'version' is unique to each Release object. 
-        This is a design decision that may cause problems in the 
-        future, but having a 1-to-1 mapping from 'version' to id
-        will be quite valuable for creating Tasks linked to Releases. """
+class look_upper:
+    def __init__(self):
+        True
 
-    with session_scope() as session:
-        for release in session.query(Release):
-            if release.version == given_version:
-                return release.release_id
+    def release_id_lookup(self, given_version):
+        """ Given a string version of a specific release, 
+        return as int the corresponding release_id of the release. 
+        Currently behaves badly if 'version' does not correspond exactly
+        to a version string already in the database. 
+        Should fix to be more resilient. 
+        Also assumes that 'version' is unique to each Release object. 
+            This is a design decision that may cause problems in the 
+            future, but having a 1-to-1 mapping from 'version' to id
+            will be quite valuable for creating Tasks linked to Releases. """
+
+        with session_scope() as session:
+            for release in session.query(Release):
+                if release.version == given_version:
+                    return release.release_id
 
 
 if __name__ == "__main__":

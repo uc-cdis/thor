@@ -6,7 +6,7 @@ import datetime
 
 from thor.maestro.baton import JobManager
 from thor.dao.task_dao import create_task
-from thor.dao.release_dao import release_id_lookup
+from thor.dao.release_dao import look_upper
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -88,7 +88,9 @@ class JenkinsJobManager(JobManager):
         exists within the database, we update the result in-place
         instead of creating a new Task. """
 
-        # create_task(job_name, result, release_id_lookup(release_version))
+        result = self.check_result_of_job(job_name, expected_release_version)
+        lu = look_upper()
+        create_task(job_name, result, lu.release_id_lookup(expected_release_version))
 
         return True
 

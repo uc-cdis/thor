@@ -1,27 +1,72 @@
 # test_jjm_write_task_result.py
 import pytest
 import json
+import mock
 import os
 
 import os.path
 
+from thor.maestro.jenkins import JenkinsJobManager
 from thor.dao.task_dao import read_task
-from thor.tests.clear_tables_reseed import reseed
-from thor.maestro.jenkins import write_task_result
+from thor.dao.clear_tables_reseed import reseed
+
+# from clear_tables_reseed import reseed
+from thor.dao.release_dao import look_upper
+from thor.dao.models import Task
+
+# from thor.maestro.jenkins import write_task_result
 
 ## Test writing result when there is no prior value
 
 
+def returnSuccess(self, input1, input2):
+    """ Returns 'success' to mock check_result_of_job. """
+    return "success"
+
+
+def returnThree(self, input1):
+    """ Returns int 3 to mock result of release_id_lookup. """
+    return 3
+
+
+@mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
+@mock.patch.object(look_upper, "release_id_lookup", returnThree)
 def test_write_no_prior():
-    """ For the purposes of this test, we use an object with completely 
-    novel values for each variable. This prevents any chance of overlap
-    with the known values already in the database. 
-    Feels bad hardcoding it, but it's a test anyway. 
-    job_name should be 'liek_mudkip.lol' and version should be '-1'. """
+    """ For the purposes of this test, we use an object with known
+    values for each variable. write_task_result expects to use 
+    check_result_of_job to find its 'status' parameter, and 
+    release_id_lookup to find its 'release_id' parameter. 
+    
+    We mock both check_result_of_job and release_id_lookup to 
+    guarantee that the results will be 'success' and int(4), respectively. 
+    Then, we call write_task_result with job_name 'test_job_420' and 
+    expected_release_version '2002.09', which should definitely not 
+    be in the table. Afterwards, we check the task with ID 0, which should
+    be the task we want. We compare this task to the known task, and 
+    assert that they are the same. """
     reseed()
 
-    return True
+    test_jjm = JenkinsJobManager()
+
+    test_task_id = 0
+    test_task_name = "test_job_42"
+    test_task_status = "success"
+    test_release_id = 3
+    test_task_version = "2002.09"
+
+    test_jjm.write_task_result(test_task_name, test_task_version)
+
+    written_task = read_task(0)
+
+    assert written_task.task_id == test_task_id
+    assert written_task.task_name == test_task_name
+    assert written_task.status == test_task_status
+    assert written_task.release_id == test_release_id
+    assert type(written_task) == Task
 
 
-## Test writing result when ther eis a prior value
+## Test writing result when there is a prior value
 ## In this case, the method switches to modify-in-place value
+
+if __name__ == "__main__":
+    test_write_no_prior()
