@@ -11,6 +11,8 @@ else
   exit 1
 fi
 
+git config --global user.email "cdis@uchicago.edu"
+
 urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
 sourceBranchName="$BRANCH_NAME"
 tagName="$RELEASE_VERSION"
