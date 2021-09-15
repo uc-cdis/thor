@@ -46,7 +46,8 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
     # post request to create a pr
     request_url = f"https://api.github.com/repos/{repo}/pulls"
     headers = {"Authorization":f"token {GITHUB_TOKEN}", "Accept":"application/vnd.github.v3+json"}
-    payload_data = {"head":pr_head,"base":"main", "title":pr_head,"body":pr_description}
+    pr_body = f"### {pr_description} \n - merge time: {merge_datetime_str}"
+    payload_data = {"head":pr_head,"base":"main", "title":pr_head,"body":pr_body}
 
     try:
         response = requests.post(request_url,
