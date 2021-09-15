@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 echo "### ## name_of_the_branch: $GIT_BRANCH"
 
 if [[ "$GIT_BRANCH" == "origin/master" ]]; then
