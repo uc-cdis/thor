@@ -242,7 +242,7 @@ def get_release_keys():
         return [release.release_id for release in session.query(Release)]
 
 
-class release_id_look_up_class:
+class release_id_lookup_class:
     def __init__(self):
         True
 
