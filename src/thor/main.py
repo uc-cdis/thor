@@ -2,6 +2,7 @@
 
 import os
 import logging
+import datetime
 
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
@@ -94,3 +95,9 @@ async def get_single_task(task_id):
     t = jsonable_encoder(read_task(task_id))
     log.info(f"Successfully obtained task info for {task_id}. ")
     return {"task": t}
+
+
+@app.get("/time/test")
+async def what_time_is_it():
+    """ auxiliary api endpoint to return the current timestamp in which Thor is operating. """
+    return {"current_time": datetime.datetime.now()}
