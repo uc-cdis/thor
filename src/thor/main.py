@@ -37,7 +37,7 @@ async def get_single_release(release_id: int):
 
     release = jsonable_encoder(read_release(release_id))
     log.info(f"Successfully obtained release info for {release_id}. ")
-    return {"release": release}
+    return JSONResponse(content={"release": release})
 
 
 @app.get("/releases/{release_id}/tasks")

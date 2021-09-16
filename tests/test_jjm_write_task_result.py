@@ -22,12 +22,30 @@ def returnThree(self, input1):
     return 3
 
 
-class Mocker(object):
-    def mock_functions(self):
-        self.patcher = mock.patch(
-            "thor.dao.release_dao.release_id_lookup_class.release_id_lookup",
-            return_value=3,
-        )
+# class Mocker(object):
+#     def mock_functions(self):
+#         self.release_id_lookup_patch = mock.patch(\
+#             "thor.dao.release_dao.release_id_lookup_class.release_id_lookup", \
+#                 return_value = 3)
+
+#         self.check_result_of_job_patch = mock.patch(\
+#             "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job", \
+#                 return_value = "success")
+
+# class Mocker(object):
+#     def mock_functions(self):
+#         self.patcher = mock.patch("thor.maestro.jenkins.JenkinsJobManager.check_result_of_job", return_value="success")
+
+# @pytest.fixture(scope="function")
+# def jenkins_job_manager_instance():
+#     mocker = Mocker()
+#     mocker.mock_functions()
+
+
+# @pytest.fixture(scope="function")
+# def jenkins_job_manager_instance():
+#     mocker = Mocker()
+#     mocker.mock_functions()
 
 
 @pytest.fixture
