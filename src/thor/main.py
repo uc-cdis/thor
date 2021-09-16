@@ -52,7 +52,9 @@ async def get_all_release_tasks(release_id: int):
         if read_task(id).get_release_id() == release_id:
             tasks_to_return.append(read_task(id))
     log.info(f"Successfully obtained all tasks info for {release_id}. ")
-    return tasks_to_return
+
+    all_tasks = [jsonable_encoder(task) for task in tasks_to_return]
+    return JSONResponse(content={"release_tasks": all_tasks})
 
 
 @app.get("/releases/{release_id}/tasks/{task_id}")
@@ -70,7 +72,9 @@ async def get_release_task_specific(release_id: int, task_id: int):
             if key == task_id:
                 tasks_to_return.append(read_task(key))
     log.info(f"Successfully obtained task info for {release_id}, {task_id}. ")
-    return tasks_to_return
+
+    all_tasks = [jsonable_encoder(task) for task in tasks_to_return]
+    return JSONResponse(content={"release_task": all_tasks})
 
 
 @app.get("/tasks")
@@ -88,7 +92,7 @@ async def get_single_task(task_id):
     """ Reads out the task associated with a given task_id. """
     t = jsonable_encoder(read_task(task_id))
     log.info(f"Successfully obtained task info for {task_id}. ")
-    return {"task": t}
+    return JSONResponse(content={"task": t})
 
 
 @app.get("/time/test")
