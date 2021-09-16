@@ -1,7 +1,4 @@
-# clear_tables_reseed.py
-
 import sqlalchemy as sa
-from sqlalchemy import MetaData
 from sqlalchemy.orm import sessionmaker
 
 from thor.dao import config

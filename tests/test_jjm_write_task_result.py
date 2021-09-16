@@ -22,10 +22,15 @@ def returnThree(self, input1):
     return 3
 
 
+@pytest.fixture
+def prepare_db_testing():
+    reseed()
+
+
 ## Test writing result when there is no prior value
 @mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
 @mock.patch.object(release_id_lookup_class, "release_id_lookup", returnThree)
-def test_write_no_prior():
+def test_write_no_prior(prepare_db_testing):
     """ For the purposes of this test, we use an object with known
     values for each variable. write_task_result expects to use 
     check_result_of_job to find its 'status' parameter, and 
@@ -38,7 +43,6 @@ def test_write_no_prior():
     be in the table. Afterwards, we check the task with ID 0, which should
     be the task we want. We compare this task to the known task, and 
     assert that they are the same. """
-    reseed()
 
     test_jjm = JenkinsJobManager()
 
@@ -58,13 +62,15 @@ def test_write_no_prior():
     assert written_task.release_id == test_release_id
     assert type(written_task) == Task
 
+    reseed()
+
 
 ## Test writing result when there is a prior value
 ## In this case, the method switches to modify-in-place value
 
 
 @mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
-def test_write_while_prior():
+def test_write_while_prior(prepare_db_testing):
     """ The objective of this test is to ensure write_task_result
     overwrites the status of a task instead of creating a new task
     when another task with the same name and release_id exists 
@@ -78,7 +84,6 @@ def test_write_while_prior():
     The write_task_result should simply overwrite the status of this Task
     and change its value to "success". 
     """
-    reseed()
 
     test_task_name = "Update CI env with the latest integration branch"
     test_task_version = "2021.09"
@@ -91,6 +96,8 @@ def test_write_while_prior():
 
     written_task = read_task(10)
     assert written_task.status == "success"
+
+    reseed()
 
 
 if __name__ == "__main__":
