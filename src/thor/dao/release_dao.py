@@ -265,3 +265,12 @@ class release_id_lookup_class:
 
 if __name__ == "__main__":
     print(read_all_releases())
+    # Deliberately introduced failing command:
+
+    # new_version = "2021.09"
+    # new_result = "success"
+    # create_release(new_version, new_result)
+
+    # This command doesn't actually fail. I'm suspecting that
+    # this is because the database needs to be recreated, but
+    # I don't know how to drop and recreate the entire database.

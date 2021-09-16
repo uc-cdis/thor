@@ -1,8 +1,6 @@
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, MetaData
 import sqlalchemy as sa
 from thor.dao import config
-from thor.dao import release_dao
-from thor.dao import task_dao
 from thor.dao.clear_tables_reseed import create_test_data
 from sqlalchemy.orm import sessionmaker
 
@@ -10,6 +8,7 @@ engine = sa.create_engine(config.DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
 
+# meta = MetaData(engine)
 meta = MetaData()
 
 
@@ -45,4 +44,5 @@ def setup_db_and_create_test_data():
 
 
 if __name__ == "__main__":
+    # meta.drop_all(bind=engine)
     setup_db_and_create_test_data()
