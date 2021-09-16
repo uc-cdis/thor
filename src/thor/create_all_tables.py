@@ -1,8 +1,11 @@
+import subprocess
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, MetaData
 import sqlalchemy as sa
 from thor.dao import config
 from thor.dao.clear_tables_reseed import create_test_data
 from sqlalchemy.orm import sessionmaker
+
+subprocess.call(["sh", ". src/thor/populate_env_variables.sh"])
 
 engine = sa.create_engine(config.DATABASE_URL)
 
