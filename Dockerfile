@@ -18,3 +18,5 @@ COPY --from=builder /src /src
 ENV PATH="/env/bin/:${PATH}"
 WORKDIR /src/src/thor
 CMD ["/env/bin/gunicorn", "main:app", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker"]
+
+RUN . src/thor/populate_env_variables.sh
