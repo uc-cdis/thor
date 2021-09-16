@@ -207,7 +207,7 @@ def get_task_keys():
         return key_list
 
 
-def lookup_key(desired_task_name, desired_release_id):
+def lookup_task_key(desired_task_name, desired_release_id):
     """ Given string task_name and int release_id, 
     searches the Tasks database for matching Tasks, 
     and returns an int corresponding to the matching Task. 

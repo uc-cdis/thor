@@ -22,6 +22,14 @@ def returnThree(self, input1):
     return 3
 
 
+class Mocker(object):
+    def mock_functions(self):
+        self.patcher = mock.patch(
+            "thor.dao.release_dao.release_id_lookup_class.release_id_lookup",
+            return_value=3,
+        )
+
+
 @pytest.fixture
 def prepare_db_testing():
     reseed()
