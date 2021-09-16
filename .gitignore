@@ -1,0 +1,12 @@
+.secrets.baseline
+__init__.py
+src/__init__.py
+src/thor/__init__.py
+src/thor/__pycache__/
+src/thor/dao/__init__.py
+src/thor/dao/__pycache__/
+src/thor/maestro/__pycache__/baton.cpython-38.pyc
+src/thor/maestro/__pycache__/jenkins.cpython-38.pyc
+src/thor/models/
+tests/__init__.py
+tests/__pycache__/
