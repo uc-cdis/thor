@@ -14,7 +14,6 @@ install:
   - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
   - source $HOME/.poetry/env
   - poetry install -vv
-  - . src/thor/populate_env_variables.sh
   - psql -c 'SELECT version();' -U postgres
   - psql -U postgres -c "create database thor_test_tmp"
   - poetry run python src/thor/create_all_tables.py
