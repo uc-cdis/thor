@@ -99,7 +99,7 @@ def create_and_merge_a_pr(GITHUB_USERNAME, useremail, repo, GITHUB_TOKEN, pr_des
         os.chdir(saved_path)
         print("Inserting inside-", os.getcwd())
         print(f"### ## Changing the merge time to {merge_datetime_str}")
-        change_date_and_commit_message_output = subprocess.check_output(f"GIT_COMMITTER_DATE=\"{merge_datetime_str}\" git commit --amend --no-edit --date \"{merge_datetime_str}\" -m {pr_body}",shell=True)
+        change_date_and_commit_message_output = subprocess.check_output(f"GIT_COMMITTER_DATE=\"{merge_datetime_str}\" git commit --amend --no-edit --date \"{merge_datetime_str}\" -m \"{pr_body}\"",shell=True)
         print(change_date_and_commit_message_output.decode("utf-8"))
         # WARNING: it will break the shared history if anyone else cloned the repo
         force_push_output = subprocess.check_output("git push --force", shell=True)
