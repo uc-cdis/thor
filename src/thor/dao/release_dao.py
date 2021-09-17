@@ -104,17 +104,19 @@ def create_release(version, result):
         # By generating 2 sets, one with the existing keys,
         # and one with optimally allocated keys, we can use their difference
         # to figure out the minimum keys that haven't been used.
-
-        minimal_release_ids = set(range(len(curr_keys)))
-        unused_ids = minimal_release_ids - set(curr_keys)
-        if unused_ids:
-            min_key = list(unused_ids)[0]
         else:
-            min_key = curr_keys[-1] + 1
+            minimal_release_ids = set(range(len(curr_keys)))
+            unused_ids = minimal_release_ids - set(curr_keys)
+            if unused_ids:
+                min_key = list(unused_ids)[0]
+            else:
+                min_key = curr_keys[-1] + 1
 
-        current_release = Release(release_id=min_key, version=version, result=result)
+            current_release = Release(
+                release_id=min_key, version=version, result=result
+            )
 
-        session.add(current_release)
+            session.add(current_release)
 
 
 def read_release(release_id):
