@@ -54,7 +54,10 @@ def prepare_db_testing():
 
 
 ## Test writing result when there is no prior value
-@mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
+@mock.patch(
+    "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",
+    mock.MagicMock(return_value="success"),
+)
 @mock.patch.object(release_id_lookup_class, "release_id_lookup", returnThree)
 def test_write_no_prior(prepare_db_testing):
     """ For the purposes of this test, we use an object with known

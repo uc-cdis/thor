@@ -1,38 +1,25 @@
 # Scheme: "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>" pragma: allowlist secret
-import os
-from thor import load_env_vars
+from starlette.config import Config
+from starlette.datastructures import Secret
 
-username = load_env_vars.username  # pragma: allowlist secret
+config = Config("thor.env")
 
-password = load_env_vars.password  # pragma: allowlist secret
-
-IPadd = load_env_vars.IPadd  # pragma: allowlist secret
-
-portNum = load_env_vars.portNum  # pragma: allowlist secret
-
-DBname = load_env_vars.DBname  # pragma: allowlist secret
-
-# username = os.environ["username"]  # pragma: allowlist secret
-
-# password = os.environ["password"]  # pragma: allowlist secret
-
-# IPadd = os.environ["IPadd"]  # pragma: allowlist secret
-
-# portNum = os.environ["portNum"]  # pragma: allowlist secret
-
-# DBname = os.environ["DBname"]  # pragma: allowlist secret
+DB_HOST = config("DB_HOST", default=None)
+DB_PORT = config("DB_PORT", cast=int, default=None)
+DB_USER = config("DB_USER", default=None)
+DB_PASSWORD = config("DB_PASSWORD", cast=Secret, default="")
+DB_DATABASE = config("DB_DATABASE", default=None)
 
 DATABASE_URL = (
     "postgresql+psycopg2://"  # pragma: allowlist secret
-    + username  # pragma: allowlist secret
+    + DB_USER  # pragma: allowlist secret
     + ":"
-    + password  # pragma: allowlist secret
+    + str(DB_PASSWORD)  # pragma: allowlist secret
     + "@"
-    + IPadd  # pragma: allowlist secret
-    + ":"
-    + portNum  # pragma: allowlist secret
+    + DB_HOST  # pragma: allowlist secret
+    + ":5432"
     + "/"
-    + DBname  # pragma: allowlist secret
+    + DB_DATABASE  # pragma: allowlist secret
 )
 
 if __name__ == "__main__":
