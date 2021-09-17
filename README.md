@@ -26,8 +26,11 @@ This new tool (THOR) has the following features:
 # High-level overview
 
 Thor will execute a series of steps based on a monthly release cycle. 
-In the diagram below, solid lines indicate sequential execution, while dotted lines indicate dependency of some sort. 
-<img src="/images/thor_step_flowchart.png" alt="drawing" width="500"/>
+In the diagram below, solid lines indicate sequential execution, while dotted lines indicate dependency of some sort.
+
+
+<img src="/images/thor_step_flowchart.PNG" alt="drawing" width="500"/>
+
 
 Thor is currently centered around a monthly release cycle, but is designed to be more flexible in the future. 
 The key features of the cycle are the feature freeze, which occurs on the second Friday of each month, and the code freeze, which occurs on the fourth Friday of each month. 
