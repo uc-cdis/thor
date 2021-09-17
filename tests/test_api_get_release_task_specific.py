@@ -22,9 +22,9 @@ release_task_id_list = [
 
 
 @pytest.mark.parametrize("release_task_id", release_task_id_list)
-def get_release_task_specific(release_task_id):
+def test_get_release_task_specific(release_task_id):
     release_id = release_task_id[0]
-    task_id = release_task_id[0]
+    task_id = release_task_id[1]
 
     response = client.get(f"/releases/{release_id}/tasks/{task_id}")
     assert response.status_code == 200
@@ -34,7 +34,9 @@ def get_release_task_specific(release_task_id):
         task["task_id"]: task for task in expected_output_for_get_tasks["tasks"]
     }
 
-    expected_output_for_get_release_task_specific = json.dumps(tasks_dict_byID[task_id])
+    expected_output_for_get_release_task_specific = json.dumps(
+        {"release_task": [tasks_dict_byID[task_id]]}
+    )
 
     # convert json string back to json object for comparison
     assert response.json() == json.loads(expected_output_for_get_release_task_specific)

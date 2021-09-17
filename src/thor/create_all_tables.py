@@ -1,14 +1,14 @@
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, MetaData
 import sqlalchemy as sa
-from dao import config
-from dao import release_dao
-from dao import task_dao
+from thor.dao import config
+from thor.dao.clear_tables_reseed import create_test_data
 from sqlalchemy.orm import sessionmaker
 
 engine = sa.create_engine(config.DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
 
+# meta = MetaData(engine)
 meta = MetaData()
 
 
@@ -38,30 +38,11 @@ def setup_db_and_create_test_data():
     s.close()
 
     # Add dummy release entries for testing purposes
-    print("creating rows in the releases table...")
-    release_dao.manual_create_release(3, "2021.09", "In Progress")
-    release_dao.manual_create_release(4, "2021.07", "Completed")
+    print("Creating entires in Releases and Tasks tables...")
 
-    task_dao.manual_create_task(1, "Create Release in JIRA", "success", 4)
-    task_dao.manual_create_task(2, "Cut integration branch", "success", 4)
-    task_dao.manual_create_task(
-        3, "Update CI env with the latest integration branch", "success", 4
-    )
-    task_dao.manual_create_task(4, "Generate release notes", "success", 4)
-    task_dao.manual_create_task(5, "Run Load Tests", "success", 4)
-    task_dao.manual_create_task(
-        6, "Merge integration branch into stable and tag release", "success", 4
-    )
-    task_dao.manual_create_task(
-        7, "Mark gen3 release as released in JIRA", "success", 4
-    )
-
-    task_dao.manual_create_task(8, "Create Release in JIRA", "success", 3)
-    task_dao.manual_create_task(9, "Cut integration branch", "success", 3)
-    task_dao.manual_create_task(
-        10, "Update CI env with the latest integration branch", "in progress", 3
-    )
+    create_test_data()
 
 
 if __name__ == "__main__":
+    # meta.drop_all(bind=engine)
     setup_db_and_create_test_data()

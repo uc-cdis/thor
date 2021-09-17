@@ -2,7 +2,7 @@
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.sql.schema import ForeignKey
+from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 
 Base = declarative_base()
 
@@ -13,7 +13,12 @@ class Release(Base):
     release_id = Column(
         Integer, primary_key=True
     )  # Unique arbitrary int assigned when input
-    version = Column(String)  # expected to be in form 20XX.YY
+
+    version = Column(String, unique=True)  # expected to be in form 20XX.YY
+    # Also now expected to be unique from release to release.
+    # In the future, if we move past monthly release cycles,
+    # we will need to implement names like "20XX.YYa", "20XX.YYb", etc.
+
     result = Column(String)  # expected to be "success", "failed", or "in progress"
 
     def __repr__(self):
@@ -31,6 +36,10 @@ class Task(Base):
     task_name = Column(String)  # Name of task (e.g. "cut_integration_branch")
     status = Column(String)  # expected to be "success", "failed", or "in progress"
     release_id = Column(Integer, ForeignKey("releases.release_id"), nullable=False)
+
+    UniqueConstraint("task_name", "release_id")
+    # This should enforce uniqueness when trying to write a
+    # task_name and release_id pair that are already in the DB.
 
     def get_release_id(self):
         return self.release_id

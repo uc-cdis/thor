@@ -3,7 +3,11 @@ import logging
 import requests
 import json
 import datetime
+
 from thor.maestro.baton import JobManager
+from thor.dao.task_dao import create_task, lookup_task_key, update_task
+from thor.dao.release_dao import release_id_lookup_class
+
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -37,6 +41,7 @@ class JenkinsJobManager(JobManager):
     def check_result_of_job(self, job_name, expected_release_version):
         release_version = "UNKNOWN"
         print(f"checking the results of the jenkins job {job_name}")
+        log.info(f"Checking results of jenkins job {job_name}. ")
         url = f"https://{self.base_jenkins_url}/job/{job_name}/lastBuild/api/json"
         try:
             jsonOutput = requests.get(
@@ -54,9 +59,18 @@ class JenkinsJobManager(JobManager):
             # get result
             result = json.loads(jsonOutput)["result"]
             print(f"### ##The result for the lasted build is {result}")
+            log.info(
+                f"Latest version of {job_name} is {release_version}, and the result is {result}. "
+            )
+
         except Exception as e:
             print(f"response: {jsonOutput}")
             print(f"### ## Something went wrong: {e}")
+            log.info(
+                f"Encountered error when accessing {job_name}: \n \
+                Exception: {e} \n \
+                    Full response: {jsonOutput}. "
+            )
 
         if release_version == expected_release_version:
             return result
@@ -65,14 +79,42 @@ class JenkinsJobManager(JobManager):
                 f"The release version of latest job is {release_version} while the expected version is {expected_release_version}"
             )
 
-    # TODO: store the task result to database
+    def write_task_result(self, job_name, expected_release_version):
+        """ Uses check_result_of_job to ... check the result of the job. 
+        Uses parameters given above (self, str job_name, str expected_r_v. 
+        Once result is gotten, uses task_dao's create_task and 
+        release_dao's release_id_lookup to create an appropriate task. 
+        
+        Note: If a job with the same name and release_id already 
+        exists within the database, we update the result in-place
+        instead of creating a new Task. """
+
+        result = self.check_result_of_job(job_name, expected_release_version)
+        r_id_lookup_class = release_id_lookup_class()
+        corresponding_release_id = r_id_lookup_class.release_id_lookup(
+            expected_release_version
+        )
+
+        expected_key = lookup_task_key(job_name, corresponding_release_id)
+
+        # If expected_key returns None, then there is no job with the
+        # corresponding job_name and release_version.
+        if expected_key:
+            update_task(expected_key, "status", result)
+        else:
+            create_task(job_name, result, corresponding_release_id)
 
 
 if __name__ == "__main__":
     jjm = JenkinsJobManager()
-    paramsDict = {
-        "RELEASE_VERSION": "2021.10",
-        "FORK_FROM": "main",
-    }
-    jjm.run_job("say-hello", paramsDict)
-    jjm.check_result_of_job("say-hello", "2020.12")
+    # paramsDict = {
+    #     "RELEASE_VERSION": "2021.09",
+    #     "FORK_FROM": "main",
+    # }
+    # jjm.run_job("say-hello", paramsDict)
+    # print("\nCHECKRESULT\n", jjm.check_result_of_job("say-hello", "2021.09"), "\n\n")
+
+    test_task_name = "Update CI env with the latest integration branch"
+    test_task_version = "2021.09"
+
+    jjm.write_task_result(test_task_name, test_task_version)
