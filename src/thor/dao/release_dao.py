@@ -148,10 +148,11 @@ def read_release(release_id):
                 f"Attempted to retrieve release_id {release_id} from Releases, but could not locate. "
             )
 
-        # Note: check how many errors this throws if release breaks.
-        log.info(f"Retrieved release {release} from the database.")
-        session.expunge_all()
-        return release
+        else:
+            # Note: check how many errors this throws if release breaks.
+            log.info(f"Retrieved release {release} from the database.")
+            session.expunge_all()
+            return release
 
 
 def read_all_releases():

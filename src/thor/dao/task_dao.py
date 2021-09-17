@@ -54,8 +54,9 @@ def manual_create_task(key, name, status, release_id):
         except Exception as e:
             print(e)
             return None
-        log.info(f"Manually adding entry {key} to Tasks table.")
-        session.add(current_task)
+        else:
+            log.info(f"Manually adding entry {key} to Tasks table.")
+            session.add(current_task)
 
 
 def create_task(name, status, release_id):
@@ -104,11 +105,11 @@ def read_task(key):
             log.info(
                 f"Attempted to retrieve key {key} from Tasks, but could not locate. "
             )
-
-        # Note: check how many errors this throws if release breaks.
-        log.info(f"Retrieved task {task} from the database.")
-        session.expunge_all()
-        return task
+        else:
+            # Note: check how many errors this throws if release breaks.
+            log.info(f"Retrieved task {task} from the database.")
+            session.expunge_all()
+            return task
 
 
 def read_all_tasks():
@@ -161,10 +162,10 @@ def del_task(key):
 
         try:
             session.delete(session.query(Task).get(key))
+            log.info(f"Entry {key} was deleted from Tasks table. ")
         except Exception as e:
             print(f"Cannot delete: {str(key)} is not in the database")
             log.info(f"Failed to find entry with key {key} to delete. ")
-        log.info(f"Entry {key} was deleted from Tasks table. ")
 
 
 def delete_task(input):
