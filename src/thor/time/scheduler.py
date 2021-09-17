@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 
 
 class Scheduler:
+
     def __init__(self, thor_config_file):
         """
     Creates Scheduler to kick off jobs at a given point in time
