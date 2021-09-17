@@ -45,6 +45,10 @@ On the fourth Friday of each month, the integration branch is merged into the st
 
 This new code can then be adopted by the existing userbase. 
 
+
+Note: As of 09/17/21, for the sake of simplicity and speed in programming, the steps will be run linearly, 1-5, and 6-7. There should be little to no time loss, as steps execute quickly, and the result should be the same. 
+
+
 # How to run Thor
 
 ## Create the database
