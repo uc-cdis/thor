@@ -1,6 +1,4 @@
 # Scheme: "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>" pragma: allowlist secret
-import os
-
 from starlette.config import Config
 from starlette.datastructures import Secret
 
