@@ -4,48 +4,10 @@ import os
 
 import os.path
 
-from thor.maestro.jenkins import JenkinsJobManager
 from thor.dao.task_dao import read_task, get_task_num
 from thor.dao.clear_tables_reseed import reseed
 
-from thor.dao.release_dao import release_id_lookup_class
 from thor.dao.models import Task
-
-
-def returnSuccess(self, input1, input2):
-    """ Returns 'success' to mock check_result_of_job. """
-    return "success"
-
-
-def returnThree(self, input1):
-    """ Returns int 3 to mock result of release_id_lookup. """
-    return 3
-
-
-# class Mocker(object):
-#     def mock_functions(self):
-#         self.release_id_lookup_patch = mock.patch(\
-#             "thor.dao.release_dao.release_id_lookup_class.release_id_lookup", \
-#                 return_value = 3)
-
-#         self.check_result_of_job_patch = mock.patch(\
-#             "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job", \
-#                 return_value = "success")
-
-# class Mocker(object):
-#     def mock_functions(self):
-#         self.patcher = mock.patch("thor.maestro.jenkins.JenkinsJobManager.check_result_of_job", return_value="success")
-
-# @pytest.fixture(scope="function")
-# def jenkins_job_manager_instance():
-#     mocker = Mocker()
-#     mocker.mock_functions()
-
-
-# @pytest.fixture(scope="function")
-# def jenkins_job_manager_instance():
-#     mocker = Mocker()
-#     mocker.mock_functions()
 
 
 @pytest.fixture
@@ -58,7 +20,10 @@ def prepare_db_testing():
     "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",
     mock.MagicMock(return_value="success"),
 )
-@mock.patch.object(release_id_lookup_class, "release_id_lookup", returnThree)
+@mock.patch(
+    "thor.dao.release_dao.release_id_lookup_class.release_id_lookup",
+    mock.MagicMock(return_value=3),
+)
 def test_write_no_prior(prepare_db_testing):
     """ For the purposes of this test, we use an object with known
     values for each variable. write_task_result expects to use 
