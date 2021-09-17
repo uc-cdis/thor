@@ -23,9 +23,18 @@ This new tool (THOR) has the following features:
 * Provide FULL transparency to the Gen3 Release process through a friendly GUI that should help any Project Manager (PM) observe the progress of the releases throughout the environments they own.
 * Facilitate parameterization of our release automation and make it more flexible (e.g., change cadence / time-frame between releases).
 
-# Architectural diagrams
+# High-level overview
 
-TBD
+Thor will execute a series of steps based on a monthly release cycle. 
+In the diagram below, solid lines indicate sequential execution, while dotted lines indicate dependency of some sort. 
+<img src="/images/thor_step_flowchart.png" alt="drawing" width="500"/>
+
+Thor is currently centered around a monthly release cycle, but is designed to be more flexible in the future. 
+The key features of the cycle are the feature freeze, which occurs on the second Friday of each month, and the code freeze, which occurs on the fourth Friday of each month. 
+
+On the second Friday of each month, Thor will automatically create a Release in JIRA, and will split off an integration branch within Github. 
+After splitting the integration branch, Thor will perform load tests via a Jenkins interface, and automatically generate release notes. 
+On the fourth Friday of each month, the integration branch is merged into the stable branch on Github, and the release is marked as Released on Jira. This new code can then be adopted by the existing userbase. 
 
 # How to run Thor
 
