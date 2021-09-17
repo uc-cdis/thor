@@ -49,6 +49,7 @@ def manual_create_release(release_id, version, result):
     or if the given release_id is already present in the database. """
 
     with session_scope() as session:
+        current_release = None
         try:
             if not isinstance(release_id, int):
                 raise TypeError(

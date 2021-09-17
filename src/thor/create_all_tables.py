@@ -1,12 +1,8 @@
-import subprocess
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, MetaData
 import sqlalchemy as sa
 from thor.dao import config
 from thor.dao.clear_tables_reseed import create_test_data
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-
-load_dotenv
 
 engine = sa.create_engine(config.DATABASE_URL)
 
