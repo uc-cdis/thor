@@ -4,6 +4,7 @@ import os
 
 import os.path
 
+from thor.maestro.jenkins import JenkinsJobManager
 from thor.dao.task_dao import read_task, get_task_num
 from thor.dao.clear_tables_reseed import reseed
 
@@ -63,7 +64,10 @@ def test_write_no_prior(prepare_db_testing):
 ## In this case, the method switches to modify-in-place value
 
 
-@mock.patch.object(JenkinsJobManager, "check_result_of_job", returnSuccess)
+@mock.patch(
+    "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",
+    mock.MagicMock(return_value="success"),
+)
 def test_write_while_prior(prepare_db_testing):
     """ The objective of this test is to ensure write_task_result
     overwrites the status of a task instead of creating a new task
