@@ -74,8 +74,9 @@ def manual_create_release(release_id, version, result):
         except Exception as e:
             print(e)
 
-        log.info(f"Adding entry {release_id} to the releases table...")
-        session.add(current_release)
+        else:
+            log.info(f"Adding entry {release_id} to the releases table...")
+            session.add(current_release)
 
 
 def create_release(version, result):
