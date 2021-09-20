@@ -68,6 +68,7 @@ class JenkinsJobManager(JobManager):
         release_version = "UNKNOWN"
         print(f"checking the results of the jenkins job {job_name}")
         url = f"https://{self.base_jenkins_url}/job/{job_name}/lastBuild/api/json"
+        jsonOutput = None
         try:
             jsonOutput = requests.get(
                 url, auth=(self.jenkins_username, self.jenkins_api_token)
@@ -96,6 +97,30 @@ class JenkinsJobManager(JobManager):
             )
 
     # TODO: store the task result to database
+    def write_task_result(self, job_name, expected_release_version):
+        """ Uses check_result_of_job to ... check the result of the job. 
+        Uses parameters given above (self, str job_name, str expected_r_v. 
+        Once result is gotten, uses task_dao's create_task and 
+        release_dao's release_id_lookup to create an appropriate task. 
+        
+        Note: If a job with the same name and release_id already 
+        exists within the database, we update the result in-place
+        instead of creating a new Task. """
+
+        result = self.check_result_of_job(job_name, expected_release_version)
+        r_id_lookup_class = release_id_lookup_class()
+        corresponding_release_id = r_id_lookup_class.release_id_lookup(
+            expected_release_version
+        )
+
+        expected_key = lookup_task_key(job_name, corresponding_release_id)
+
+        # If expected_key returns None, then there is no job with the
+        # corresponding job_name and release_version.
+        if expected_key:
+            update_task(expected_key, "status", result)
+        else:
+            create_task(job_name, result, corresponding_release_id)
 
 
 """#1 is to check for fork main"""

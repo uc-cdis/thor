@@ -16,6 +16,8 @@ def prepare_db_testing():
     reseed()
 
 
+# TODO: Write setup/teardown functions
+
 ## Test writing result when there is no prior value
 @mock.patch(
     "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",

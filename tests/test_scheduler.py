@@ -10,6 +10,10 @@ from thor.time.scheduler import Scheduler
 # for some mysterious reason, freezegun does not keep UTC while running on Mac OS X
 
 
+@mock.patch(
+    "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",
+    mock.MagicMock(return_value="success"),
+)
 @mock.patch.object(JenkinsJobManager, "run_job")
 def test_scheduler_triggers_jenkins_job_on_2nd_friday_of_the_month(
     mock_jenkins_run_job,
@@ -33,12 +37,18 @@ def test_scheduler_triggers_jenkins_job_on_2nd_friday_of_the_month(
     sch.initialize_scheduler()
 
     # assertion with expected job_name and empty parameters
-    mock_jenkins_run_job.assert_called_once_with("thor-test-step1", {})
+    mock_jenkins_run_job.assert_called_once_with(
+        "thor-test-step1", {"release_version": "2021.09"}
+    )
 
     # TODO: assert on database entry related to successfully executed task
     # assert task_dao result == success
 
 
+@mock.patch(
+    "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",
+    mock.MagicMock(return_value="success"),
+)
 @mock.patch.object(JenkinsJobManager, "run_job")
 def test_scheduler_triggers_jenkins_job_on_4th_friday_of_the_month(
     mock_jenkins_run_job,
