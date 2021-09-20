@@ -17,12 +17,17 @@ pygit2 = "^1.6.1"
 SQLAlchemy = "^1.4.23"
 psycopg2 = "^2.9.1"
 pytest = "^6.2.4"
+aiocron = "^1.7"
+mock = "^4.0.3"
+freezegun = "^1.1.0"
+python-dotenv = "^0.19.0"
 
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.plugins."thor.modules"]
 "dao" = "thor.dao"
 "maestro" = "thor.maestro"
+"time" = "thor.time"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
