@@ -4,6 +4,7 @@ import time
 import asyncio
 import logging
 import json
+import datetime as dt
 from aiocron import crontab
 from concurrent.futures import ThreadPoolExecutor, wait
 
@@ -23,7 +24,6 @@ log = logging.getLogger(__name__)
 
 
 class Scheduler:
-
     def __init__(self, thor_config_file):
         """
     Creates Scheduler to kick off jobs at a given point in time
@@ -36,12 +36,17 @@ class Scheduler:
         loop = asyncio.new_event_loop()
         futures = []
 
+        jjm = JenkinsJobManager()
+
+        # Replace following block with method to schedule only the jobs with
+        # fixed cron schedule.
+
         for jk, jv in self.jobs_and_schedules.items():
             log.info(f"iterating through job {jk}")
             # debugging
             time.sleep(1)
             if jv["schedule"]:
-                job_reference = JenkinsJobManager().run_job
+                job_reference = jjm.run_job
                 job_args = (jv["job_name"], jv["job_params"])
                 cron_input = jv["schedule"]
                 futures.append(
@@ -52,8 +57,19 @@ class Scheduler:
                     f"no schedule set for job {jk}, it must run immediately once the previous job is successful."
                 )
 
+        # Replace following code with methods to call the Jenkins job and
+        # keep polling Jenkins until we get a successful run of the newest job.
+
+        print("RUNNING LOUDLY")
+
         for f in futures:
+
+            print("waiting until", f, "\n", dt.datetime.now())
             loop.run_until_complete(f)
+
+            print(f)
+            # jjm.check_result_of_job()
+
             if f.done():
                 log.info(f"### ## job {str(f)} executed as per schedule.")
 
@@ -73,5 +89,5 @@ class Scheduler:
 
 
 if __name__ == "__main__":
-    sch = Scheduler()
+    sch = Scheduler("test_thor_config.json")
     sch.initialize_scheduler()

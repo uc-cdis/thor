@@ -2,7 +2,7 @@
     "step1": {
         "job_name":  "thor-test-step1",  
         "job_params": {},  
-        "schedule":  "0 21 8-15 * 5",  
+        "schedule":  "04 22 20 9 *",  
         "run_next":  "step2" 
     },   
 
@@ -16,5 +16,5 @@
     "step3": {  
         "job_name":  "thor-test-step3",  
         "job_params": {},  
-        "schedule":  "0 22 22-28 * 5" }
+        "schedule":  "1 21 8-15 * 5" }
 }
