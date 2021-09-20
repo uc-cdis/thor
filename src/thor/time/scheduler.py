@@ -7,7 +7,6 @@ import json
 from aiocron import crontab
 from concurrent.futures import ThreadPoolExecutor, wait
 
-from thor.time import say_hello_test
 from thor.time import proto_executor
 
 from thor.maestro.jenkins import JenkinsJobManager
@@ -23,7 +22,6 @@ log = logging.getLogger(__name__)
 
 
 class Scheduler:
-
     def __init__(self, thor_config_file):
         """
     Creates Scheduler to kick off jobs at a given point in time
