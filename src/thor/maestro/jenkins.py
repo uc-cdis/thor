@@ -2,6 +2,9 @@ import os
 import logging
 import requests
 import json
+
+# import jenkins
+
 from thor.maestro.baton import JobManager
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -9,14 +12,16 @@ log = logging.getLogger(__name__)
 
 
 class JenkinsJobManager(JobManager):
-    def __init__(self, base_jenkins_url="jenkins2.planx-pla.net", **kwargs):
+    def __init__(
+        self, base_jenkins_url="https://jenkins2.planx-pla.net/job/say-hello/", **kwargs
+    ):
         """
     Creates Jenkins Job Manager API client
     """
         # use parent default
         self.base_jenkins_url = base_jenkins_url
-        self.jenkins_api_token = os.environ["JENKINS_API_TOKEN"].strip()
-        self.jenkins_username = os.environ["JENKINS_USERNAME"].strip()
+        self.jenkins_api_token = "****"
+        self.jenkins_username = "***"
         if len(kwargs):
             # pass everything else to parent
             super().__init__(**kwargs)
@@ -24,13 +29,57 @@ class JenkinsJobManager(JobManager):
             # use parent default
             super().__init__()
 
-    def run_job(self, job_name, job_parameters):
+    def run_job(self, job_name, job_parameters, token):
+        """This function takens in a job_name and job parameters to remotely trigger a Jenkins job.
+            It further calls another function, assemble_url, that transforms the parameters dictionary 
+            into a buildWithParameters URL. To acheive this, the function concatenates an empty string with
+            the return value of assemble_url. An exception is raised if the concatenation fails."""
         print(f"running jenkins job {job_name}")
         print(f"parameters {job_parameters}")
-        # TODO: Capture parameters by reading the metadata of the job_name and see if it matches the keys of the dict
+        auth = (self.jenkins_username, self.jenkins_api_token)
+        try:
+            response = requests.post(self.base_jenkins_url, auth=auth)
+            print(f"reponse status code: {response.status_code}")
+            # Capture parameters by reading the metadata of the job_name and see if it matches the keys of the dict.
+            parameterized_url = ""
+            parameterized_url = parameterized_url + self.assemble_url(
+                job_name, job_parameters, token
+            )
+            # Checks whether or not the url was assembled correctly
+            if parameterized_url == "":
+                raise Exception(f"The parametreized URL could not be assembled.")
+            else:
+                print(f"The parameterized url is: {parameterized_url}.")
+        except Exception:
+            # TODO:
+            print("Failed to establish a connection.")
+            print(Exception)
+        if parameterized_url == "":
+            print(f"The parametreized URL could not be assembled.")
+
         # TODO: write python code to execute something like this
         # curl -L -s -o /dev/null -w "%{http_code}" -u user:$JENKINS_API_TOKEN "http://localhost:6579/job/this-is-a-test/buildWithParameters?token=<your_job_secret_token>&THE_NAME=William&RELEASE_VERSION=2021.09"
-        pass
+
+    def assemble_url(self, job_name, job_parameters, token):
+        """Takes in job_parameters to assemble a URL that transforms the parameters dictionary 
+        into a buildWithParameters URL containing the sequence of parameter key and value."""
+        url = ""
+        dictionary = job_parameters
+        keys_parameters = dictionary.keys()
+        values_parameters = dictionary.values()
+        keys_list = list(keys_parameters)
+        values_list = list(values_parameters)
+        # TODO: generalize for more keys and values
+        for k in job_parameters:
+            if k == "BRANCH_NAME":
+                url = f"https://jenkins2.planx-pla.net/job/{job_name}/buildWithParameters?token={token}&{keys_list[0]}={values_list[0]}"
+            elif k != "FORK_FROM":
+                url = f"https://jenkins2.planx-pla.net/job/{job_name}/buildWithParameters?token={token}&{keys_list[0]}={values_list[0]}&{keys_list[1]}={values_list[1]}"
+            else:
+                url = f"https://jenkins2.planx-pla.net/job/{job_name}/buildWithParameters?token={token}&{keys_list[0]}={values_list[0]}"
+        # print(f"assembled url is {url}")
+        # Return statement is for when this function will be called elsewhere.
+        return url
 
     def check_result_of_job(self, job_name, expected_release_version):
         release_version = "UNKNOWN"
@@ -66,11 +115,12 @@ class JenkinsJobManager(JobManager):
     # TODO: store the task result to database
 
 
+"""#1 is to check for fork main"""
 if __name__ == "__main__":
     jjm = JenkinsJobManager()
     paramsDict = {
         "RELEASE_VERSION": "2021.10",
         "FORK_FROM": "main",
     }
-    jjm.run_job("say-hello", paramsDict)
-    jjm.check_result_of_job("say-hello", "2020.12")
+
+    jjm.run_job("say-hello", paramsDict, "***")
