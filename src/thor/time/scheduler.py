@@ -70,15 +70,12 @@ class Scheduler:
         for step_name, step_info in futures_dict_verbose.items():
 
             log.debug("time:", dt.datetime.now())
-            print("now is ", dt.datetime.now())
             loop.run_until_complete(step_info["future_reference"])
 
             log.debug(f"job step {step_name} is complete. ")
-            print("step bla is complete")
             job_name = step_info["step_info"]["job_name"]
             expected_version = "2021.09"  # Temporary for testing purposes
 
-            print("infinite loop suspicion")
             # while True:
             #     time.sleep(5)
             #     result = JenkinsJobManager().check_result_of_job(
@@ -94,12 +91,14 @@ class Scheduler:
         job_reference = JenkinsJobManager().run_job
         job_name = step_info_dict["job_name"]
         job_params = step_info_dict["job_params"]
+        print("job_params", job_params)
         schedule = step_info_dict["schedule"]
         # assemble job_name for logging purposes
 
+        job_args = (job_name, job_params)
         # snippet of code from
         # https://python.hotexamples.com/examples/aiocron/-/crontab/python-crontab-function-examples.html
-        t = crontab(schedule, func=job_reference, args=job_params, loop=loop)
+        t = crontab(schedule, func=job_reference, args=job_args, loop=loop)
         log.info(f"successfully scheduled job {job_name}.")
 
         future = asyncio.ensure_future(t.next(), loop=loop)

@@ -11,7 +11,6 @@ from thor.dao.release_dao import release_id_lookup_class
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
-
 class JenkinsJobManager(JobManager):
     def __init__(self, base_jenkins_url="https://jenkins2.planx-pla.net/job", **kwargs):
         """
@@ -21,6 +20,7 @@ class JenkinsJobManager(JobManager):
         self.base_jenkins_url = base_jenkins_url
         self.jenkins_api_token = os.environ["JENKINS_API_TOKEN"].strip()
         self.jenkins_username = os.environ["JENKINS_USERNAME"].strip()
+        self.jenkins_job_token = os.environ["JENKINS_JOB_TOKEN"].strip()
         if len(kwargs):
             # pass everything else to parent
             super().__init__(**kwargs)
@@ -28,7 +28,7 @@ class JenkinsJobManager(JobManager):
             # use parent default
             super().__init__()
 
-    def run_job(self, job_name, job_parameters, job_token):
+    def run_job(self, job_name, job_parameters):
         """This function takens in a job_name and job parameters to remotely trigger a Jenkins job.
             It further calls another function, assemble_url, that transforms the parameters dictionary 
             into a buildWithParameters URL. To achieve this, the function concatenates an empty string with
@@ -38,7 +38,7 @@ class JenkinsJobManager(JobManager):
         auth = (self.jenkins_username, self.jenkins_api_token)
         try:
             # TODO: improve url assembly validation
-            full_url = self.assemble_url(job_name, job_parameters, job_token)
+            full_url = self.assemble_url(job_name, job_parameters)
             response = requests.post(full_url, auth=auth)
             # this request should operate like the curl command below
             # curl -L -s -o /dev/null -w "%{http_code}" -u user:$JENKINS_API_TOKEN "http://localhost:6579/job/this-is-a-test/buildWithParameters?token=<your_job_secret_token>&THE_NAME=William&RELEASE_VERSION=2021.09"
@@ -50,11 +50,11 @@ class JenkinsJobManager(JobManager):
                 f"request to {self.base_jenkins_url}/{job_name} failed due to the following error: {e}"
             )
 
-    def assemble_url(self, job_name, job_parameters, job_token):
+    def assemble_url(self, job_name, job_parameters):
         """Takes in job_parameters to assemble a URL that transforms the parameters dictionary 
         into a buildWithParameters URL containing the sequence of parameter key and value."""
         url = (
-            f"{self.base_jenkins_url}/{job_name}/buildWithParameters?token={job_token}"
+            f"{self.base_jenkins_url}/{job_name}/buildWithParameters?token={self.jenkins_job_token}"
         )
         for k, v in job_parameters.items():
             url += f"&{k}={v}"
