@@ -34,8 +34,9 @@ def test_scheduler_triggers_jenkins_job_on_2nd_friday_of_the_month(
     del sch.jobs_and_schedules["step2"]
     del sch.jobs_and_schedules["step3"]
 
+    print("scheduler not yet initialized")
     sch.initialize_scheduler()
-
+    print("scheduler initialized")
     # assertion with expected job_name and empty parameters
     mock_jenkins_run_job.assert_called_once_with(
         "thor-test-step1", {"release_version": "2021.09"}

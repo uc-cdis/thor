@@ -107,7 +107,6 @@ class JenkinsJobManager(JobManager):
                 f"The release version of latest job is {release_version} while the expected version is {expected_release_version}"
             )
 
-    # TODO: store the task result to database
     def write_task_result(self, job_name, expected_release_version):
         """ Uses check_result_of_job to ... check the result of the job. 
         Uses parameters given above (self, str job_name, str expected_r_v. 
