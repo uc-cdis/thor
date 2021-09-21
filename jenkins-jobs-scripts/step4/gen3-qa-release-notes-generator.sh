@@ -27,8 +27,6 @@ echo " Iterating through repos in repos_list.txt and fetch release notes"
 echo "------------------------------------------------------------------------------"
 
 # Utilize gen3git (aka: release-helper) to fetch bullet points from PR descriptions
-# this CLI utility is installed through poetry
-poetry install
 
 startDate="$START_DATE"
 echo "### startDate is ${startDate} ###"
