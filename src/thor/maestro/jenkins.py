@@ -2,8 +2,7 @@ import os
 import logging
 import requests
 import json
-
-# import jenkins
+import datetime
 
 from thor.maestro.baton import JobManager
 from thor.dao.task_dao import create_task, lookup_task_key, update_task
