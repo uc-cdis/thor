@@ -14,3 +14,6 @@ src/thor/time/__pycache__/__init__.cpython-38.pyc
 src/thor/time/__pycache__/proto_executor.cpython-38.pyc
 src/thor/time/__pycache__/say_hello_test.cpython-38-pytest-6.2.5.pyc
 src/thor/time/__pycache__/scheduler.cpython-38.pyc
+src/thor/time/__pycache__/__init__.cpython-39.pyc
+src/thor/time/__pycache__/say_hello_test.cpython-38.pyc
+src/thor/time/__pycache__/say_hello_test.cpython-39.pyc
