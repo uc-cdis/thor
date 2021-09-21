@@ -48,7 +48,7 @@ echo >> gen3_release_notes.md
 repo_list="repo_list.txt"
 while IFS= read -r repo; do
   echo "### Getting the release notes for repo ${repo} ###"
-  result=$(poetry run gen3git --repo "${repo}" --github-access-token "${githubAccessToken}" --from-date "${startDate}" gen --to-date "${endDate}" --markdown)
+  result=$(gen3git --repo "${repo}" --github-access-token "${githubAccessToken}" --from-date "${startDate}" gen --to-date "${endDate}" --markdown)
   echo "$result"
   RC=$?
   if [ $RC -ne 0 ]; then
