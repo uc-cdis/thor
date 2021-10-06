@@ -85,6 +85,25 @@
     },   
 
     "step9": {  
+        "job_name":  "check-quay-image",  
+        "job_params": {
+            "RELEASE_TAG": "integration202008"
+        },  
+        "schedule": null,  
+        "run_next":  "step10"
+    },
+    
+    "step10": {  
+        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
+        "job_params": {
+            "SERVICE_NAME":"fence",
+            "QUAY_VERSION":"4.23.5",
+        },  
+        "schedule": null,  
+        "run_next":  "step11"
+    }, 
+
+    "step11": {  
         "job_name":  "mark-gen3-release-as-released",  
         "job_params": {
             "RELEASE_NAME":"2020.01", 
