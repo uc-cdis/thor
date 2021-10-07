@@ -31,8 +31,7 @@
     "step4": {  
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
         "job_params": {
-            "SERVICE_NAME":"fence",
-            "QUAY_VERSION":"4.23.5"
+            "RELEASE_VERSION": "integration202008"
         },  
         "schedule": null,  
         "run_next":  "step5"
@@ -71,7 +70,7 @@
             "SQS_URL":"https://sqs.us-east-1.amazonaws.com/707767160287/qaplanetv2--qa-niaid--audit-sqs"
         },  
         "schedule": null,  
-        "run_next":  null
+        "run_next":  "step8"
     },   
 
     "step8": {  
@@ -86,7 +85,7 @@
     "step9": {  
         "job_name":  "check-quay-image",  
         "job_params": {
-            "RELEASE_TAG": "integration202008"
+            "RELEASE_TAG": "2021.01"
         },  
         "schedule": null,  
         "run_next":  "step10"
@@ -95,8 +94,7 @@
     "step10": {  
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
         "job_params": {
-            "SERVICE_NAME":"fence",
-            "QUAY_VERSION":"4.23.5"
+            "RELEASE_VERSION": "2020.07"
         },  
         "schedule": null,  
         "run_next":  "step11"
