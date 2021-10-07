@@ -32,7 +32,7 @@
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
         "job_params": {
             "SERVICE_NAME":"fence",
-            "QUAY_VERSION":"4.23.5",
+            "QUAY_VERSION":"4.23.5"
         },  
         "schedule": null,  
         "run_next":  "step5"
@@ -75,10 +75,9 @@
     },   
 
     "step8": {  
-        "job_name":  "merge-integration-branch-into-stable-and-tag",  
+        "job_name":  "apply-new-monthly-release-tags-to-all-imgs",  
         "job_params": {
-            "RELEASE_VERSION":"2020.01", 
-            "BRANCH_NAME":"main"
+            "RELEASE_VERSION":"2020.01"
         },  
         "schedule": "0 21 22-29 * 5",  
         "run_next":  "step9"
@@ -97,7 +96,7 @@
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
         "job_params": {
             "SERVICE_NAME":"fence",
-            "QUAY_VERSION":"4.23.5",
+            "QUAY_VERSION":"4.23.5"
         },  
         "schedule": null,  
         "run_next":  "step11"
