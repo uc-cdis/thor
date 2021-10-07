@@ -20,6 +20,7 @@ def get_parameters(jobname):
         f"https://jenkins2.planx-pla.net/view/thor-jobs/job/{jobname}/api/json"
     )
     print(jenkins_url)
+    # getting the metadata from the job_name url and creating a parameter_list from it
     req = requests.get(jenkins_url, auth=(jenkins_user, jenkins_pass))
     try:
         metadata = json.loads(req.text)
@@ -28,9 +29,13 @@ def get_parameters(jobname):
                 for parameter in action["parameterDefinitions"]:
                     parameter_list.append(parameter["name"])
                 print("Parameters : ", parameter_list)
+        # adding the jobname and the parameter list to the job_dict
         job_dict[jobname] = parameter_list
     except KeyError as e:
         print(e)
+
+
+# def validate_params(metadata_file):
 
 
 job_list = []
@@ -39,13 +44,18 @@ jobs = requests.get(
     auth=(jenkins_user, jenkins_pass),
 )
 joblist = json.loads(jobs.text)
+# this is iterating through the joblist and deriving the name of the jobs
+# and appending just the names to job_list
 for job_name in joblist["jobs"]:
-    # print(jobname['name'])
     job_list.append(job_name["name"])
 
+# here, we are iterating through the job_list
+# and calling get_parameter() on the name of the job
 for name in job_list:
     print("--------")
     print(name)
     get_parameters(name)
-print("####")
-print("Jobs with Paramters:", job_dict)
+print("#### Jobs with Paramters:", job_dict)
+fp = open("metadata.json", "w")
+json.dump(job_dict, fp, indent=4)
+fp.close()
