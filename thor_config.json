@@ -20,6 +20,24 @@
     },   
 
     "step3": {  
+        "job_name":  "check-quay-image",  
+        "job_params": {
+            "RELEASE_TAG": "integration202008"
+        },  
+        "schedule": null,  
+        "run_next":  "step4"
+    },
+    
+    "step4": {  
+        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
+        "job_params": {
+            "RELEASE_VERSION": "integration202008"
+        },  
+        "schedule": null,  
+        "run_next":  "step5"
+    }, 
+
+    "step5": {  
         "job_name":  "update-ci-env-with-latest-integration-branch",  
         "job_params": {
             "REPO_NAME":"gitops-qa-v2",
@@ -28,22 +46,22 @@
             "TARGET_ENVIRONMENT":"ci-env-1.planx-pla.net"
         },  
         "schedule": null,  
-        "run_next":  "step4"
+        "run_next":  "step6"
     },   
 
-    "step4": {  
+    "step6": {  
         "job_name":  "gen3-qa-release-notes-generator",  
         "job_params": {},  
         "schedule": null,  
-        "run_next":  "step5"
+        "run_next":  "step7"
     },   
 
-    "step5": {  
+    "step7": {  
         "job_name":  "gen3-run-load-tests",  
         "job_params": {
             "TARGET_ENVIRONMENT":"ci-env-1",
             "LOAD_TEST_DESCRIPTOR":"str", 
-            "PRESIGNED_URL_ACL_FILTER":"QA",
+            "PRESIGNED_URL_ACL_FILTER":"QA", 
             "SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT":100,
             "DESIRED_NUMBER_OF_FENCE_PODS":10,
             "RELEASE_VERSION":"2020.01",
@@ -52,20 +70,37 @@
             "SQS_URL":"https://sqs.us-east-1.amazonaws.com/707767160287/qaplanetv2--qa-niaid--audit-sqs"
         },  
         "schedule": null,  
-        "run_next":  null
+        "run_next":  "step8"
     },   
 
-    "step6": {  
-        "job_name":  "merge-integration-branch-into-stable-and-tag",  
+    "step8": {  
+        "job_name":  "apply-new-monthly-release-tags-to-all-imgs",  
         "job_params": {
-            "RELEASE_VERSION":"2020.01", 
-            "BRANCH_NAME":"main"
+            "RELEASE_VERSION":"2020.01"
         },  
         "schedule": "0 21 22-29 * 5",  
-        "run_next":  "step7"
+        "run_next":  "step9"
     },   
 
-    "step7": {  
+    "step9": {  
+        "job_name":  "check-quay-image",  
+        "job_params": {
+            "RELEASE_TAG": "2021.01"
+        },  
+        "schedule": null,  
+        "run_next":  "step10"
+    },
+    
+    "step10": {  
+        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
+        "job_params": {
+            "RELEASE_VERSION": "2020.07"
+        },  
+        "schedule": null,  
+        "run_next":  "step11"
+    }, 
+
+    "step11": {  
         "job_name":  "mark-gen3-release-as-released",  
         "job_params": {
             "RELEASE_NAME":"2020.01", 
