@@ -11,15 +11,12 @@ from fastapi.responses import JSONResponse
 from thor.dao.release_dao import read_release, read_all_releases, get_release_keys
 from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys
 
+from thor.time.scheduler import Scheduler
+
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
 app = FastAPI(title="Thor Gen3 Release Orchestrator",)
-
-
-@app.on_event("startup")
-async def startup_event():
-    print("scheduler should be initialized here...")
 
 
 @app.get("/releases")
