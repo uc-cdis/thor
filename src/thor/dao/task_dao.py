@@ -46,7 +46,7 @@ def manual_create_task(key, name, status, release_id):
         try:
             if key in get_task_keys():
                 raise Exception(
-                    "That keyvalue (" + str(key) + ") is already in the database. "
+                    f"That keyvalue {str(key)} is already in the database. "
                 )
             current_task = Task(
                 task_id=key, task_name=name, status=status, release_id=release_id
@@ -54,30 +54,33 @@ def manual_create_task(key, name, status, release_id):
         except Exception as e:
             print(e)
             return None
-        log.info(f"Manually adding entry {key} to Tasks table.")
-        session.add(current_task)
+        else:
+            log.info(f"Manually adding entry {key} to Tasks table.")
+            session.add(current_task)
 
 
 def create_task(name, status, release_id):
-    """ Given string version, and string result, 
+    """ Given string name (version name), string status, and int release_id, 
     creates a Task object, and inserts it into the database controlled
     by the currently active session (TaskDB). 
     Autonatically generates an ID that will work based on the IDs already in the table. 
     Uses the minimum unused integer (min 0). 
-    Depends on getkeys. """
+    Depends on getkeys. 
+    NOTE: release_id is expected to correspond with an existing release
+    in the database. If not, probably nothing should break, but we may 
+    see some unexpected behavior. Best to avoid if possible. """
 
     with session_scope() as session:
         curr_keys = get_task_keys()
         curr_keys.sort()
-        min_key = curr_keys[0]
-        for key in curr_keys[1:]:
-            if key != min_key + 1:
-                min_key += 1
-                break
-            else:
-                min_key += 1
-        if min_key == curr_keys[-1]:
-            min_key += 1
+
+        # The following code generates the minimum working ID in the database.
+        minimal_task_ids = set(range(len(curr_keys)))
+        unused_ids = minimal_task_ids - set(curr_keys)
+        if unused_ids:
+            min_key = list(unused_ids)[0]
+        else:
+            min_key = curr_keys[-1] + 1
 
         currentTask = Task(
             task_id=min_key, task_name=name, status=status, release_id=release_id
@@ -91,7 +94,7 @@ def read_task(key):
     """ Given the (int) key of the Task to be read, returns a Task Object in the format:
     'Key: %key, Name: %name, Version: %version, Result: %result', where 
     each %value is the value corresponding to the given key. 
-    Assumes that the given key is present in the database. """
+    Throws an Exception if the key value is not in the database.  """
 
     with session_scope() as session:
 
@@ -102,11 +105,32 @@ def read_task(key):
             log.info(
                 f"Attempted to retrieve key {key} from Tasks, but could not locate. "
             )
+        else:
+            # Note: check how many errors this throws if release breaks.
+            log.info(f"Retrieved task {task} from the database.")
+            session.expunge_all()
+            return task
 
-        # Note: check how many errors this throws if release breaks.
-        log.info(f"Retrieved task {task} from the database.")
+
+def read_all_tasks():
+    """ Returns a list of all Task objects in the Tasks table of te database. 
+    Primarily to be used by main:app/tasks, as it must call get_all_tasks
+    in a somewhat inefficient manner otherwise. """
+
+    with session_scope() as session:
+
+        # There's something seriously screwed up here.
+        # Returning the list directly causes the test to fail,
+        # and the encoder outputs empty dicts instead of proper
+        # formatted objects. But if we go through a "temp" variable,
+        # everything works for some reason.
+        #
+        # The expunge is also necessary, but I *don't know how it works.*
+        # It has to be in this location, or the same error occurs.
+
+        temp = [task for task in session.query(Task)]
         session.expunge_all()
-        return task
+        return temp
 
 
 def update_task(key, property, new_value):
@@ -138,10 +162,10 @@ def del_task(key):
 
         try:
             session.delete(session.query(Task).get(key))
+            log.info(f"Entry {key} was deleted from Tasks table. ")
         except Exception as e:
-            print("Cannot delete: " + str(key) + " is not in the database")
+            print(f"Cannot delete: {str(key)} is not in the database")
             log.info(f"Failed to find entry with key {key} to delete. ")
-        log.info(f"Entry {key} was deleted from Tasks table. ")
 
 
 def delete_task(input):
@@ -182,3 +206,37 @@ def get_task_keys():
         for release in session.query(Task):
             key_list.append(release.task_id)
         return key_list
+
+
+def lookup_task_key(desired_task_name, desired_release_id):
+    """ Given string task_name and int release_id, 
+    searches the Tasks database for matching Tasks, 
+    and returns an int corresponding to the matching Task. 
+    If there is no corresponding Task, returns None. 
+    
+    NOTE: The combination of task_name and release_id 
+    should be unique for each Task. TODO: Make this throw
+    loud errors if it discovers more than one Task
+    with corresponding task_name and release_id. """
+
+    with session_scope() as session:
+        key_list = get_task_keys()
+
+        for key in key_list:
+            current_task = read_task(key)
+            if (
+                current_task.task_name == desired_task_name
+                and current_task.release_id == desired_release_id
+            ):
+
+                return key
+        return None
+
+
+if __name__ == "__main__":
+    print(read_all_tasks())
+
+    wanted_string = "Update CI env with the latest integration branch"
+    wanted_id = 3
+
+    # print(lookup_key(wanted_string, wanted_id))
