@@ -77,7 +77,7 @@ def test_scheduler_triggers_jenkins_job_on_4th_friday_of_the_month(
     sch.initialize_scheduler("jenkins2")
 
     # assertion with expected job_name and empty parameters
-    mock_jenkins_run_job.assert_called_once_with("thor-test-step5", {})
+    mock_jenkins_run_job.assert_called_once_with("thor-test-step5", {'release_version': '2021.09'})
 
     # TODO: assert on database entry related to successfully executed task
     # assert task_dao result == success
