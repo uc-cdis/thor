@@ -11,6 +11,7 @@ jenkins_user = os.environ["JENKINS_USERNAME"].strip()
 jenkins_pass = os.environ["JENKINS_API_TOKEN"].strip()
 
 job_dict = {}
+config_dict = {}
 
 
 def get_parameters(jobname):
@@ -19,7 +20,7 @@ def get_parameters(jobname):
     jenkins_url = (
         f"https://jenkins2.planx-pla.net/view/thor-jobs/job/{jobname}/api/json"
     )
-    print(jenkins_url)
+    # print(jenkins_url)
     # getting the metadata from the job_name url and creating a parameter_list from it
     req = requests.get(jenkins_url, auth=(jenkins_user, jenkins_pass))
     try:
@@ -28,14 +29,38 @@ def get_parameters(jobname):
             if "parameterDefinitions" in action:
                 for parameter in action["parameterDefinitions"]:
                     parameter_list.append(parameter["name"])
-                print("Parameters : ", parameter_list)
+                # print("Parameters : ", parameter_list)
         # adding the jobname and the parameter list to the job_dict
         job_dict[jobname] = parameter_list
     except KeyError as e:
         print(e)
 
 
-# def validate_params(metadata_file):
+# get config_dict from the thor_config file
+def get_thor_config_dict():
+    with open("thor_config.json", "r") as f:
+        data = json.load(f)
+        # print(json.dumps(data, indent=4))
+        for step in data:
+            params_list = []
+            name = data[step]["job_name"]
+            # print("###", name)
+            for params in data[step]["job_params"]:
+                params_list.append(params)
+            # print(params_list)
+            config_dict[data[step]["job_name"]] = params_list
+    # print(config_dict)
+
+
+def validate_config(a, b):
+    print("hello")
+    print("A:", a)
+    print("###")
+    print("B:", b)
+    sharedKeys = set(a.keys()).intersection()(b.keys())
+    for key in sharedKeys:
+        if a[key] != b[key]:
+            print("Key: {}, Value 1: {}, Value 2: {}".format(key, a[key], b[key]))
 
 
 job_list = []
@@ -52,10 +77,9 @@ for job_name in joblist["jobs"]:
 # here, we are iterating through the job_list
 # and calling get_parameter() on the name of the job
 for name in job_list:
-    print("--------")
-    print(name)
+    # print("--------")
+    # print(name)
     get_parameters(name)
-print("#### Jobs with Paramters:", job_dict)
-fp = open("metadata.json", "w")
-json.dump(job_dict, fp, indent=4)
-fp.close()
+# print("#### Jobs with Paramters:", job_dict)
+get_thor_config_dict()
+validate_config(config_dict, job_dict)
