@@ -86,15 +86,19 @@ class Scheduler:
 
             print("### ### HERE!!! THE JOB WAS EXECUTED!!!")
             if "run_next" in futures_dict_info["step_info"]:
-                # example, after executing step 1
-                # we retrieve the run_next string from its step_info dictionary
-                # which will be step2, and then we use that as a lookup key
-                # to fetch the step_info of step2
-                print(f"### ## self.jobs_and_schedules: {self.jobs_and_schedules}")
-                jjm.recursive_run_job(
-                    self.jobs_and_schedules[futures_dict_info["step_info"]["run_next"]],
-                    self.jobs_and_schedules,
-                )
+                next_step_key = futures_dict_info["step_info"]["run_next"]
+
+                # only execute the next step if it actually exist in the jobs_and_schedules dict
+                if next_step_key in self.jobs_and_schedules:
+                    # example, after executing step 1
+                    # we retrieve the run_next string from its step_info dictionary
+                    # which will be step2, and then we use that as a lookup key
+                    # to fetch the step_info of step2
+                    print(f"### ## self.jobs_and_schedules: {self.jobs_and_schedules}")
+                    jjm.recursive_run_job(
+                        self.jobs_and_schedules[futures_dict_info["step_info"]["run_next"]],
+                        self.jobs_and_schedules,
+                    )
 
             log.debug(f"job step {step_name} is complete. ")
             job_name = futures_dict_info["step_info"]["job_name"]
