@@ -1,5 +1,4 @@
 # Thor
-
 The Gen3 Release Orchestrator
 
 <img src="/images/logo.png" alt="drawing" width="250"/>
