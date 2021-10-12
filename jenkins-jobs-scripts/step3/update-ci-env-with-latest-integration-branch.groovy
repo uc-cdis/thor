@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node 'master'
-    }
+    } 
     stages {
         stage('Clean up') {
             steps {
