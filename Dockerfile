@@ -16,5 +16,4 @@ COPY --from=builder /root/.poetry /root/.poetry
 COPY --from=builder /env /env
 COPY --from=builder /src /src
 ENV PATH="/env/bin/:${PATH}"
-WORKDIR /src/src/thor
 CMD ["sh", "startup_script.sh"]
