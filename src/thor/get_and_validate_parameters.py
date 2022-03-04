@@ -13,7 +13,7 @@ jenkins_pass = os.environ["JENKINS_API_TOKEN"].strip()
 job_dict = {}
 config_dict = {}
 
-
+# getting parameters from the the jenkins job list
 def get_parameters(jobname):
     logging.info(f"for job {jobname}")
     parameter_list = []
@@ -36,31 +36,28 @@ def get_parameters(jobname):
         print(e)
 
 
+# source of truth for comparision
 # get config_dict from the thor_config file
 def get_thor_config_dict():
     with open("thor_config.json", "r") as f:
         data = json.load(f)
-        # print(json.dumps(data, indent=4))
         for step in data:
             params_list = []
             name = data[step]["job_name"]
-            # print("###", name)
             for params in data[step]["job_params"]:
                 params_list.append(params)
-            # print(params_list)
             config_dict[data[step]["job_name"]] = params_list
-    # print(config_dict)
 
 
+# validating if the two dicts have same key-value pair
+# if not
 def validate_config(a, b):
-    print("hello")
-    print("A:", a)
-    print("###")
-    print("B:", b)
-    sharedKeys = set(a.keys()).intersection()(b.keys())
-    for key in sharedKeys:
-        if a[key] != b[key]:
-            print("Key: {}, Value 1: {}, Value 2: {}".format(key, a[key], b[key]))
+    uncommon_key = {}
+    for key in a:
+        if (key in b) and (a[key] != b[key]):
+            uncommon_key[key] = b[key]
+    print("Uncommon:", uncommon_key)
+    print("Length of uncommon key dict : ", len(uncommon_key))
 
 
 job_list = []
@@ -77,8 +74,6 @@ for job_name in joblist["jobs"]:
 # here, we are iterating through the job_list
 # and calling get_parameter() on the name of the job
 for name in job_list:
-    # print("--------")
-    # print(name)
     get_parameters(name)
 # print("#### Jobs with Paramters:", job_dict)
 get_thor_config_dict()
