@@ -16,5 +16,5 @@ COPY --from=builder /root/.poetry /root/.poetry
 COPY --from=builder /env /env
 COPY --from=builder /src /src
 ENV PATH="/env/bin/:${PATH}"
-WORKDIR /src/src/thor
-CMD ["/env/bin/gunicorn", "main:app", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker"]
+WORKDIR /src
+CMD ["sh", "startup_script.sh"]

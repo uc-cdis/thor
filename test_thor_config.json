@@ -10,13 +10,36 @@
 
     "step2": {  
         "job_name":  "thor-test-step2",  
-        "job_params": {},  
+        "job_params": {
+            "release_version":"2021.09"
+        },  
         "schedule": null,  
         "run_next":  "step3"
     },   
 
-    "step3": {  
-        "job_name":  "thor-test-step3",  
-        "job_params": {},  
+
+    "step3": {
+        "job_name":  "thor-test-step3",
+        "job_params": {
+            "release_version":"2021.09"
+        },
+        "schedule": null,
+        "run_next":  "step4"
+    },
+
+
+    "step4": {
+        "job_name":  "thor-test-step4",
+        "job_params": {
+            "release_version":"2021.09"
+        },
+        "schedule": null
+    },
+
+    "step5": {  
+        "job_name":  "thor-test-step5",  
+        "job_params": {
+            "release_version":"2021.09"
+        },
         "schedule":  "0 22 22-28 * 5" }
 }

@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node 'master'
-    }
+    } 
     stages {
         stage('Clean up') {
             steps {
@@ -17,7 +17,7 @@ pipeline {
                   doGenerateSubmoduleConfigurations: false, 
                   extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${REPO_NAME}"]], 
                   submoduleCfg: [], 
-                  userRemoteConfigs: [[credentialsId: 'themarcelor-github-token', url: "https://github.com/uc-cdis/${REPO_NAME}"]]
+                  userRemoteConfigs: [[credentialsId: 'PlanXCyborgUserJenkins', url: "https://github.com/uc-cdis/${REPO_NAME}"]]
                 ])
                 // gen3-release-utils
                 checkout([  
@@ -26,13 +26,13 @@ pipeline {
                   doGenerateSubmoduleConfigurations: false, 
                   extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'gen3-release-utils']], 
                   submoduleCfg: [], 
-                  userRemoteConfigs: [[credentialsId: 'themarcelor-github-token', url: 'https://github.com/uc-cdis/gen3-release-utils']]
+                  userRemoteConfigs: [[credentialsId: 'PlanXCyborgUserJenkins', url: 'https://github.com/uc-cdis/gen3-release-utils']]
                 ])
             }
         }
         stage('Update CI environment') {
             steps {
-              withCredentials([usernamePassword(credentialsId: 'themarcelor-github-token', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
+              withCredentials([usernamePassword(credentialsId: 'PlanXCyborgUserJenkins', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
                 dir("gen3-release-utils") {
                     sh '''
                       cd gen3release-sdk

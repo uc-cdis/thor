@@ -11,13 +11,14 @@ from thor.dao.release_dao import release_id_lookup_class
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
+
 class JenkinsJobManager(JobManager):
-    def __init__(self, base_jenkins_url="https://jenkins2.planx-pla.net/job", **kwargs):
+    def __init__(self, jenkins_instance, **kwargs):
         """
     Creates Jenkins Job Manager API client
     """
         # use parent default
-        self.base_jenkins_url = base_jenkins_url
+        self.base_jenkins_url = f"https://{jenkins_instance}.planx-pla.net/job"
         self.jenkins_api_token = os.environ["JENKINS_API_TOKEN"].strip()
         self.jenkins_username = os.environ["JENKINS_USERNAME"].strip()
         self.jenkins_job_token = os.environ["JENKINS_JOB_TOKEN"].strip()
@@ -27,6 +28,17 @@ class JenkinsJobManager(JobManager):
         else:
             # use parent default
             super().__init__()
+
+    def recursive_run_job(self, step_deets, jobs_and_schedules):
+        result = self.run_job(step_deets["job_name"], step_deets["job_params"])
+        if "run_next" in step_deets:
+            self.recursive_run_job(
+                jobs_and_schedules[step_deets["run_next"]], jobs_and_schedules
+            )
+        else:
+            log.warn(
+                "this step does not have a 'run_next' property. So there is nothing left to do."
+            )
 
     def run_job(self, job_name, job_parameters):
         """This function takens in a job_name and job parameters to remotely trigger a Jenkins job.
@@ -53,9 +65,7 @@ class JenkinsJobManager(JobManager):
     def assemble_url(self, job_name, job_parameters):
         """Takes in job_parameters to assemble a URL that transforms the parameters dictionary 
         into a buildWithParameters URL containing the sequence of parameter key and value."""
-        url = (
-            f"{self.base_jenkins_url}/{job_name}/buildWithParameters?token={self.jenkins_job_token}"
-        )
+        url = f"{self.base_jenkins_url}/{job_name}/buildWithParameters?token={self.jenkins_job_token}"
         for k, v in job_parameters.items():
             url += f"&{k}={v}"
         # omitting the token from the url
@@ -64,7 +74,7 @@ class JenkinsJobManager(JobManager):
         )
         log.debug(f"the url has been assembled: {sanitized_url}")
         return url
-    
+
     def check_result_of_job(self, job_name, expected_release_version):
         release_version = "UNKNOWN"
         print(f"checking the results of the jenkins job {job_name}")

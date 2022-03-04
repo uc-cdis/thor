@@ -33,9 +33,11 @@ def test_scheduler_triggers_jenkins_job_on_2nd_friday_of_the_month(
     # We just need step1 for this test, deleting the others from the dict
     del sch.jobs_and_schedules["step2"]
     del sch.jobs_and_schedules["step3"]
+    del sch.jobs_and_schedules["step4"]
+    del sch.jobs_and_schedules["step5"]
 
     print("scheduler not yet initialized")
-    sch.initialize_scheduler()
+    sch.initialize_scheduler("jenkins2")
     print("scheduler initialized")
     # assertion with expected job_name and empty parameters
     mock_jenkins_run_job.assert_called_once_with(
@@ -66,14 +68,16 @@ def test_scheduler_triggers_jenkins_job_on_4th_friday_of_the_month(
 
     sch = Scheduler("test_thor_config.json")
 
-    # We just need step3 for this test, deleting the others from the dict
+    # We just need step5 for this test, deleting the others from the dict
     del sch.jobs_and_schedules["step1"]
     del sch.jobs_and_schedules["step2"]
+    del sch.jobs_and_schedules["step3"]
+    del sch.jobs_and_schedules["step4"]
 
-    sch.initialize_scheduler()
+    sch.initialize_scheduler("jenkins2")
 
     # assertion with expected job_name and empty parameters
-    mock_jenkins_run_job.assert_called_once_with("thor-test-step3", {})
+    mock_jenkins_run_job.assert_called_once_with("thor-test-step5", {'release_version': '2021.09'})
 
     # TODO: assert on database entry related to successfully executed task
     # assert task_dao result == success

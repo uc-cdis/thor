@@ -41,7 +41,7 @@ def test_write_no_prior(prepare_db_testing):
     be the task we want. We compare this task to the known task, and 
     assert that they are the same. """
 
-    test_jjm = JenkinsJobManager()
+    test_jjm = JenkinsJobManager("jenkins2")
 
     test_task_id = 0
     test_task_name = "test_job_42"
@@ -88,7 +88,7 @@ def test_write_while_prior(prepare_db_testing):
     test_task_name = "Update CI env with the latest integration branch"
     test_task_version = "2021.09"
 
-    test_jjm = JenkinsJobManager()
+    test_jjm = JenkinsJobManager("jenkins2")
     test_jjm.write_task_result(test_task_name, test_task_version)
 
     # checking to make sure we've altered instead of inserting
