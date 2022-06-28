@@ -1,4 +1,5 @@
 .secrets.baseline
+*.pyc
 __init__.py
 src/__init__.py
 src/thor/__init__.py
@@ -17,3 +18,18 @@ src/thor/time/__pycache__/scheduler.cpython-38.pyc
 src/thor/time/__pycache__/__init__.cpython-39.pyc
 src/thor/time/__pycache__/say_hello_test.cpython-38.pyc
 src/thor/time/__pycache__/say_hello_test.cpython-39.pyc
+
+#SSL ( THe *.crt is optional ) 
+*.key 
+*.crt 
+ 
+#GDC related files 
+gdc-user-token.* 
+ 
+#OpenStack 
+admin_auth 
+.novarc 
+ 
+#s3 creds 
+.s3cfg 
+.aws/

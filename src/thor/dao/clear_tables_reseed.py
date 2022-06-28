@@ -1,12 +1,12 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 
-from thor.dao import config
-from thor.dao import release_dao
-from thor.dao import task_dao
+from dao import config
+from dao import release_dao
+from dao import task_dao
 
-from thor.dao.release_dao import get_release_keys, delete_release
-from thor.dao.task_dao import get_task_keys, delete_task
+from dao.release_dao import get_release_keys, delete_release
+from dao.task_dao import get_task_keys, delete_task
 
 engine = sa.create_engine(config.DATABASE_URL)
 
