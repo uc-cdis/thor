@@ -9,3 +9,5 @@ Add __init__.py file to make it a package?
 Edit thor.env to use appropriate username - no postgres default user exists, so I use my own
 Run create_all_tables from top-level /thor - manually edit PYTHONPATH (PYTHONPATH=$PYTHONPATH:./src/ poetry run python src/thor/create_all_tables.py)
 Manually editing PYTHONPATH as before, standup FastAPI with Gunicorn (PYTHONPATH=$PYTHONPATH:./src/ poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload)
+
+Instead of using PYTHONPATH, can instead use PYTHONPATH=./src/

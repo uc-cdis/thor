@@ -7,11 +7,16 @@ import datetime
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 from thor.dao.release_dao import read_release, read_all_releases, get_release_keys
-from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys
+from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys, create_task
 
 from thor.time.scheduler import Scheduler
+
+class new_task(BaseModel):
+    task_name: str
+    release_id: int
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -83,6 +88,14 @@ async def get_all_tasks():
 
     return JSONResponse(content={"tasks": tasks_to_return})
 
+@app.post("/tasks")
+async def create_new_task(new_task: new_task):
+    """ This endpoint is used to create a new task. """
+    # return {"current_time": datetime.datetime.now()}
+    task_id = create_task(name=new_task.task_name, status="PENDING", release_id=new_task.release_id)
+    log.info(f"Successfully created task with id {task_id}.")
+    return JSONResponse(content={"task_id": task_id})
+
 
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):
@@ -96,3 +109,15 @@ async def get_single_task(task_id):
 async def what_time_is_it():
     """ auxiliary api endpoint to return the current timestamp in which Thor is operating. """
     return {"current_time": datetime.datetime.now()}
+
+
+class GenItem(BaseModel):
+    main: str
+
+
+@app.post("/simple_post")
+async def simple_post(input: GenItem):
+    """ echoes a message back to the user. """
+    return {"message": input}
+
+

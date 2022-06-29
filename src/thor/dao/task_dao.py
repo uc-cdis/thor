@@ -62,7 +62,7 @@ def manual_create_task(key, name, status, release_id):
 def create_task(name, status, release_id):
     """ Given string name (version name), string status, and int release_id, 
     creates a Task object, and inserts it into the database controlled
-    by the currently active session (TaskDB). 
+    by the currently active session (TaskDB). Returns the new task ID. 
     Autonatically generates an ID that will work based on the IDs already in the table. 
     Uses the minimum unused integer (min 0). 
     Depends on getkeys. 
@@ -88,6 +88,7 @@ def create_task(name, status, release_id):
         log.info(f"Added task {min_key} to Tasks table")
 
         session.add(currentTask)
+        return min_key
 
 
 def read_task(key):
