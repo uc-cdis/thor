@@ -3,18 +3,27 @@
 import os
 import logging
 import datetime
+import json
 
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from thor.dao.release_dao import read_release, read_all_releases, get_release_keys
+from thor.dao.release_dao import read_release, read_all_releases, get_release_keys, create_release
 from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys, create_task
 
 from thor.time.scheduler import Scheduler
 
-class new_task(BaseModel):
+# class Release(BaseModel):
+#     : str
+#     release_id: int
+
+# Sample POST request with curl:
+# curl -X POST --header "Content-Type: application/json" --data @json_objs/sample_task_0.json 0.0.0.0:6565/tasks
+
+
+class Task(BaseModel):
     task_name: str
     release_id: int
 
@@ -41,6 +50,19 @@ async def get_single_release(release_id: int):
     log.info(f"Successfully obtained release info for {release_id}. ")
     return JSONResponse(content={"release": release})
 
+@app.post("/releases/{release_name}")
+async def create_new_release(release_name: str):
+    """ This endpoint is used to create a new release and all associated tasks with status PENDING. """
+    release_id = create_release(version = release_name, result = "PENDING")
+    log.info(f"Successfully created release with id {release_id}.")
+    with open("thor_config.json") as f:
+        steps_dict = json.load(f)
+
+    for step in steps_dict:
+        task_id = create_task(steps_dict[step]["job_name"], "PENDING", release_id)
+        log.info(f"Successfully created task with id {task_id} for release with id {release_id}.")
+    log.info(f"Successfully created all tasks for release with id {release_id}.")
+    return JSONResponse(content={"release_id": release_id})
 
 @app.get("/releases/{release_id}/tasks")
 async def get_all_release_tasks(release_id: int):
@@ -89,10 +111,9 @@ async def get_all_tasks():
     return JSONResponse(content={"tasks": tasks_to_return})
 
 @app.post("/tasks")
-async def create_new_task(new_task: new_task):
+async def create_new_task(new_task: Task):
     """ This endpoint is used to create a new task. """
-    # return {"current_time": datetime.datetime.now()}
-    task_id = create_task(name=new_task.task_name, status="PENDING", release_id=new_task.release_id)
+    task_id = create_task(name = new_task.task_name, status = "PENDING", release_id = new_task.release_id)
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
 

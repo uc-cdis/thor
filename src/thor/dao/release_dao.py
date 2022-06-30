@@ -118,6 +118,7 @@ def create_release(version, result):
             )
 
             session.add(current_release)
+        return min_key
 
 
 def read_release(release_id):
