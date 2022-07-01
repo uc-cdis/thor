@@ -21,18 +21,13 @@ with open(test_data_absolute_path, "r") as post_task_test:
 
 
 def test_post_task():
-    post_response = client.post("/tasks", \
-        # headers={"Content-Type": "application/json"}, \
-        json = dummy_post_test)
-    # print(dummy_post_test,type(dummy_post_test))
+    post_response = client.post("/tasks", json = dummy_post_test)
     assert post_response.status_code == 200
-    print(post_response.json().keys())
     assert list(post_response.json().keys()) == ["task_id"]
     task_id = post_response.json()["task_id"]
 
     get_response = client.get(f"/tasks/{task_id}")
     assert get_response.status_code == 200
-    print(get_response.json().keys())
     assert list(get_response.json().keys()) == ["task"]
     response_body = get_response.json()["task"]
     assert set(response_body.keys()) == {"task_id", "task_name", "release_id", "status"}
@@ -41,4 +36,4 @@ def test_post_task():
     assert response_body["release_id"] == dummy_post_test["release_id"]
     assert response_body["status"] == "PENDING"
     
-
+    reseed()

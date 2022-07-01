@@ -1,3 +1,4 @@
+from platform import release
 import pytest
 import json
 import os
@@ -12,27 +13,47 @@ client = TestClient(app)
 
 reseed()
 
-test_data_file_name = "tests/test_files/sample_task_0.json"
-test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
-
-with open(test_data_absolute_path, "r") as post_task_test:
-    dummy_post_test = json.load(post_task_test)
-
-
-def test_post_task():
-    post_response = client.post("/tasks", \
-        headers={"Content-Type": "application/json"}, \
-        data = dummy_post_test)
+def test_post_release():
+    test_version_name = "5"
+    post_response = client.post("/releases/" + test_version_name)
     assert post_response.status_code == 200
-    assert post_response.json().keys() == ["task_id"]
-    task_id = post_response.json()["task_id"]
+    assert list(post_response.json().keys()) == ["release_id"]
+    release_id = post_response.json()["release_id"]
 
-    get_response = client.get(f"/tasks/{task_id}")
-    assert get_response.status_code == 200
-    assert get_response.json().keys() == ["task_id", "task_name", "release_id", "status"]
-    assert get_response.json()["task_id"] == task_id
-    assert get_response.json()["task_name"] == dummy_post_test["task_name"]
-    assert get_response.json()["release_id"] == dummy_post_test["release_id"]
-    assert get_response.json()["status"] == "PENDING"
+    release_get_response = client.get(f"/releases/{release_id}")
+    assert release_get_response.status_code == 200
+    assert list(release_get_response.json().keys()) == ["release"]
+    release_response_body = release_get_response.json()["release"]
+    assert set(release_response_body.keys()) == {"release_id", "version", "result"}
+    assert release_response_body["release_id"] == release_id
+    assert release_response_body["version"] == test_version_name
+    assert release_response_body["result"] == "PENDING"
+
+    tasks_get_response = client.get(f"/releases/{release_id}/tasks")
+    assert tasks_get_response.status_code == 200
+    assert list(tasks_get_response.json().keys()) == ["release_tasks"]
+    response_body = tasks_get_response.json()["release_tasks"]
+
+    test_data_file_name = "thor_config.json"
+    test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
+
+    with open(test_data_absolute_path, "r") as test_release_tasks:
+        release_tasks_dict = json.load(test_release_tasks)
+
+    expected_jobname_list = []
+
+    for step in release_tasks_dict:
+        jobname = release_tasks_dict[step]["job_name"]
+        expected_jobname_list.append(jobname)
+
+    for task in response_body:
+        assert task["status"] == "PENDING"
+        jobname = task["task_name"]
+        assert jobname in expected_jobname_list
+        expected_jobname_list.remove(jobname)
+    
+    assert expected_jobname_list == []
+    
+    reseed()
     
 
