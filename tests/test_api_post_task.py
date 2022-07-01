@@ -37,3 +37,64 @@ def test_post_task():
     assert response_body["status"] == "PENDING"
     
     reseed()
+
+def test_post_task_bad():
+    # Zeroth, we test posting a task in a not-JSON format. 
+    post_response = client.post("/tasks", headers={"Content-Type": "application/json"}, \
+        data = "not-a-json")
+    assert post_response.status_code == 422
+    assert list(post_response.json().keys()) == ["detail"]
+    error_message = post_response.json()["detail"][0]
+    error_message["type"] == "value_error.jsondecode"
+    reseed()
+    # May want to make this case a little more thorough, 
+    # but I'm not sure if this test actually corresponds to a bad request.
+
+    # First, we test posting a task without a release ID
+    post_response = client.post("/tasks", json = {"task_name": "no_release_id"})
+    assert post_response.status_code == 422
+    assert list(post_response.json().keys()) == ["detail"]
+    error_message = post_response.json()["detail"][0]
+    assert error_message["loc"] == ["body", "release_id"]
+    assert error_message["msg"] == "field required"
+    assert error_message["type"] == "value_error.missing"
+    reseed()
+
+    # Next, we test posting a task without a task name
+    post_response = client.post("/tasks", json = {"release_id": 3})
+    assert post_response.status_code == 422
+    assert list(post_response.json().keys()) == ["detail"]
+    error_message = post_response.json()["detail"][0]
+    assert error_message["loc"] == ["body", "task_name"]
+    assert error_message["msg"] == "field required"
+    assert error_message["type"] == "value_error.missing"
+    reseed()
+
+    # Note for maintenance: There are no bad task names (so far), 
+    # as the task name is a string and passed via JSON. 
+    # Task names as bad datatypes (e.g. int) are JSONed away
+    # and are indistinguishble from good task names.
+
+    # Next, we test posting a task with a release ID with a bad type
+    post_response = client.post("/tasks", json = {"release_id": "bad_type", \
+        "task_name": "release_ID_bad_type_task_test"})
+    assert post_response.status_code == 422
+    assert list(post_response.json().keys()) == ["detail"]
+    error_message = post_response.json()["detail"][0]
+    assert error_message["loc"] == ["body", "release_id"]
+    assert error_message["msg"] == "value is not a valid integer"
+    assert error_message["type"] == "type_error.integer"
+    reseed()
+
+    # Above are all the errors we can expect Pydantic to catch. 
+    # The rest should be handled by logic in main, and should be done gracefully.
+
+    # Next, we test posting a task with a release ID not corresponding to a release
+    post_response = client.post("/tasks", json = {"release_id": -1, \
+        "task_name": "release_ID_not_corresponding_to_release_test"})
+    assert post_response.status_code == 422
+    assert list(post_response.json().keys()) == ["detail"]
+    error_message = post_response.json()["detail"][0]
+    assert error_message["loc"] == ["body", "release_id"]
+    assert error_message["msg"] == "No such release_id exists."
+    reseed()

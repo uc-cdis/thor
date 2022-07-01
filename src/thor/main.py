@@ -4,8 +4,9 @@ import os
 import logging
 import datetime
 import json
+from platform import release
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -14,10 +15,6 @@ from thor.dao.release_dao import read_release, read_all_releases, get_release_ke
 from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys, create_task
 
 from thor.time.scheduler import Scheduler
-
-# class Release(BaseModel):
-#     : str
-#     release_id: int
 
 # Sample POST request with curl:
 # curl -X POST --header "Content-Type: application/json" --data @json_objs/sample_task_0.json 0.0.0.0:6565/tasks
@@ -113,6 +110,12 @@ async def get_all_tasks():
 @app.post("/tasks")
 async def create_new_task(new_task: Task):
     """ This endpoint is used to create a new task. """
+    # First, must check that the release_id is valid.
+    release_keys = get_release_keys()
+    if new_task.release_id not in release_keys:
+        log.error(f"Attempt to create task with invalid release_id {new_task.release_id}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
     task_id = create_task(name = new_task.task_name, status = "PENDING", release_id = new_task.release_id)
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
