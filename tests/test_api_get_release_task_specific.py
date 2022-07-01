@@ -9,7 +9,7 @@ from thor.main import app
 
 client = TestClient(app)
 
-test_data_file_name = "tests/task_test_data.json"
+test_data_file_name = "tests/test_files/task_test_data.json"
 test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
 
 with open(test_data_absolute_path, "r") as read_task_test:

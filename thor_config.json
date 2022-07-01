@@ -6,6 +6,7 @@
             "JIRA_PROJECT": "QAT"
         },  
         "schedule":  "0 21 8-15 * 5",  
+        "script": "dummy1.sh",
         "run_next":  "step2" 
     },   
 
