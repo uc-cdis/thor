@@ -40,13 +40,13 @@ def test_post_task():
 
 def test_post_task_bad():
     # Zeroth, we test posting a task in a not-JSON format. 
+    reseed()
     post_response = client.post("/tasks", headers={"Content-Type": "application/json"}, \
         data = "not-a-json")
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
     error_message["type"] == "value_error.jsondecode"
-    reseed()
     # May want to make this case a little more thorough, 
     # but I'm not sure if this test actually corresponds to a bad request.
 

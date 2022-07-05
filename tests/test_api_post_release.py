@@ -56,4 +56,9 @@ def test_post_release():
     
     reseed()
     
+# def test_post_release_bad():
+    # There aren't many ways to screw up a release, 
+    # so we'll just check to ensure that Pydantic does its checking. 
+    # reseed()
 
+    # If we pass any kind of JSON, we get a "Method Not Allowed". 
