@@ -36,16 +36,16 @@ class Task(Base):
     task_name = Column(String)  # Name of task (e.g. "cut_integration_branch")
     status = Column(String)  # expected to be "success", "failed", or "in progress"
     release_id = Column(Integer, ForeignKey("releases.release_id"), nullable=False)
-    task_num = Column(Integer)
+    step_num = Column(Integer)
 
-    UniqueConstraint("task_num", "release_id")
+    UniqueConstraint("step_num", "release_id")
     # This should enforce uniqueness when trying to write a
-    # task_num and release_id pair that are already in the DB.
+    # step_num and release_id pair that are already in the DB.
 
     def get_release_id(self):
         return self.release_id
 
     def __repr__(self):
         return "ID: '{}', Name: '{}', Status: '{}', Release ID: '{}', Task Num: '{}'".format(
-            self.task_id, self.task_name, self.status, self.release_id, self.task_num
+            self.task_id, self.task_name, self.status, self.release_id, self.step_num
         )

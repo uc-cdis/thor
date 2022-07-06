@@ -117,7 +117,7 @@ class JenkinsJobManager(JobManager):
                 f"The release version of latest job is {release_version} while the expected version is {expected_release_version}"
             )
 
-    def write_task_result(self, job_name, expected_release_version, task_num):
+    def write_task_result(self, job_name, expected_release_version, step_num):
         """ Uses check_result_of_job to ... check the result of the job. 
         Uses parameters given above (self, str job_name, str expected_r_v. 
         Once result is gotten, uses task_dao's create_task and 
@@ -140,7 +140,7 @@ class JenkinsJobManager(JobManager):
         if expected_key:
             update_task(expected_key, "status", result)
         else:
-            create_task(job_name, result, corresponding_release_id, task_num=task_num)
+            create_task(job_name, result, corresponding_release_id, step_num=step_num)
 
 
 if __name__ == "__main__":

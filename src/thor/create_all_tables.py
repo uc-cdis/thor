@@ -34,7 +34,7 @@ def setup_db_and_create_test_data():
         Column("task_name", String),
         Column("status", String),
         Column("release_id", Integer, ForeignKey("releases.release_id")),
-        Column("task_num", Integer),
+        Column("step_num", Integer),
     )
 
     meta.create_all(engine)

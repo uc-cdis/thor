@@ -23,7 +23,7 @@ from thor.time.scheduler import Scheduler
 class Task(BaseModel):
     task_name: str
     release_id: int
-    task_num: int
+    step_num: int
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ async def create_new_task(new_task: Task):
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
     task_id = create_task(name = new_task.task_name, status = "PENDING", \
-        release_id = new_task.release_id, task_num = new_task.task_num)
+        release_id = new_task.release_id, step_num = new_task.step_num)
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
 

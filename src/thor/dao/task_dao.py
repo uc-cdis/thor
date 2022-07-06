@@ -35,8 +35,8 @@ def session_scope():
 
 
 # TODO: Investigate possibility of merging this functionality with release_dao.
-def manual_create_task(key, name, status, release_id, task_num):
-    """ Given int ID, string name, string status, int release_id, and int task_num,
+def manual_create_task(key, name, status, release_id, step_num):
+    """ Given int ID, string name, string status, int release_id, and int step_num,
     creates a Task object, and inserts it into the database controlled
     by the currently active session (tasks DB). 
     Note that release_id is a foreign key corresponding to Release DB. 
@@ -49,7 +49,7 @@ def manual_create_task(key, name, status, release_id, task_num):
                     f"That keyvalue {str(key)} is already in the database. "
                 )
             current_task = Task(
-                task_id=key, task_name=name, status=status, release_id=release_id, task_num=task_num
+                task_id=key, task_name=name, status=status, release_id=release_id, step_num=step_num
             )
         except Exception as e:
             print(e)
@@ -59,8 +59,8 @@ def manual_create_task(key, name, status, release_id, task_num):
             session.add(current_task)
 
 
-def create_task(name, status, release_id, task_num):
-    """ Given string name (version name), string status, int release_id, and int task_num
+def create_task(name, status, release_id, step_num):
+    """ Given string name (version name), string status, int release_id, and int step_num
     creates a Task object, and inserts it into the database controlled
     by the currently active session (TaskDB). Returns the new task ID. 
     Autonatically generates an ID that will work based on the IDs already in the table. 
@@ -83,7 +83,7 @@ def create_task(name, status, release_id, task_num):
             min_key = curr_keys[-1] + 1
 
         currentTask = Task(
-            task_id=min_key, task_name=name, status=status, release_id=release_id, task_num=task_num
+            task_id=min_key, task_name=name, status=status, release_id=release_id, step_num=step_num
         )
         log.info(f"Added task {min_key} to Tasks table")
 
@@ -93,7 +93,7 @@ def create_task(name, status, release_id, task_num):
 
 def read_task(key):
     """ Given the (int) key of the Task to be read, returns a Task Object in the format:
-    'Key: %key, Name: %name, Version: %version, Result: %result, Task Num: %task_num', where 
+    'Key: %key, Name: %name, Version: %version, Result: %result, Task Num: %step_num', where 
     each %value is the value corresponding to the given key. 
     Throws an Exception if the key value is not in the database.  """
 
@@ -187,7 +187,7 @@ def delete_task(input):
         log.info(f"All entries in list {input} were deleted. ")
 
 
-def get_task_num():
+def get_num_tasks():
     """ Gets the number of entries in the current database table. 
     Returns this number as an integer. """
 

@@ -52,7 +52,7 @@ def test_post_task_bad():
 
     # First, we test posting a task without a release ID
     post_response = client.post("/tasks", json = \
-        {"task_name": "no_release_id", "task_num": 0})
+        {"task_name": "no_release_id", "step_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
@@ -63,7 +63,7 @@ def test_post_task_bad():
 
     # Next, we test posting a task without a task name
     post_response = client.post("/tasks", json = \
-        {"release_id": 3, "task_num": 0})
+        {"release_id": 3, "step_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
@@ -74,11 +74,11 @@ def test_post_task_bad():
 
     # Next, we test posting a task without a task num
     post_response = client.post("/tasks", json = \
-        {"task_name": "no_task_num", "release_id": 3})
+        {"task_name": "no_step_num", "release_id": 3})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
-    assert error_message["loc"] == ["body", "task_num"]
+    assert error_message["loc"] == ["body", "step_num"]
     assert error_message["msg"] == "field required"
     assert error_message["type"] == "value_error.missing"
     reseed()
@@ -92,7 +92,7 @@ def test_post_task_bad():
     post_response = client.post("/tasks", json = \
         {"release_id": "bad_type", \
         "task_name": "release_ID_bad_type_task_test",
-        "task_num": 0})
+        "step_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
@@ -105,11 +105,11 @@ def test_post_task_bad():
     post_response = client.post("/tasks", json = \
         {"release_id": 3, \
         "task_name": "release_ID_bad_type_task_test",
-        "task_num": "bad_type"})
+        "step_num": "bad_type"})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
-    assert error_message["loc"] == ["body", "task_num"]
+    assert error_message["loc"] == ["body", "step_num"]
     assert error_message["msg"] == "value is not a valid integer"
     assert error_message["type"] == "type_error.integer"
     reseed()
@@ -121,7 +121,7 @@ def test_post_task_bad():
     post_response = client.post("/tasks", json = \
         {"release_id": -1, \
         "task_name": "release_ID_not_corresponding_to_release_test",\
-        "task_num": 0})
+        "step_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
