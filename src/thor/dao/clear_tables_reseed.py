@@ -45,24 +45,24 @@ def create_test_data():
     release_dao.manual_create_release(3, "2021.09", "In Progress")
     release_dao.manual_create_release(4, "2021.07", "Completed")
 
-    task_dao.manual_create_task(1, "Create Release in JIRA", "success", 4)
-    task_dao.manual_create_task(2, "Cut integration branch", "success", 4)
+    task_dao.manual_create_task(1, "Create Release in JIRA", "success", 4, 1)
+    task_dao.manual_create_task(2, "Cut integration branch", "success", 4, 2)
     task_dao.manual_create_task(
-        3, "Update CI env with the latest integration branch", "success", 4
+        3, "Update CI env with the latest integration branch", "success", 4, 3
     )
-    task_dao.manual_create_task(4, "Generate release notes", "success", 4)
-    task_dao.manual_create_task(5, "Run Load Tests", "success", 4)
+    task_dao.manual_create_task(4, "Generate release notes", "success", 4, 4)
+    task_dao.manual_create_task(5, "Run Load Tests", "success", 4, 5)
     task_dao.manual_create_task(
-        6, "Merge integration branch into stable and tag release", "success", 4
+        6, "Merge integration branch into stable and tag release", "success", 4, 6
     )
     task_dao.manual_create_task(
-        7, "Mark gen3 release as released in JIRA", "success", 4
+        7, "Mark gen3 release as released in JIRA", "success", 4, 7
     )
 
-    task_dao.manual_create_task(8, "Create Release in JIRA", "success", 3)
-    task_dao.manual_create_task(9, "Cut integration branch", "success", 3)
+    task_dao.manual_create_task(8, "Create Release in JIRA", "success", 3, 1)
+    task_dao.manual_create_task(9, "Cut integration branch", "success", 3, 2)
     task_dao.manual_create_task(
-        10, "Update CI env with the latest integration branch", "in progress", 3
+        10, "Update CI env with the latest integration branch", "in progress", 3, 3
     )
 
 

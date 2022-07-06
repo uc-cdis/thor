@@ -23,6 +23,7 @@ from thor.time.scheduler import Scheduler
 class Task(BaseModel):
     task_name: str
     release_id: int
+    task_num: int
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ async def create_new_release(release_name: str):
         steps_dict = json.load(f)
 
     for step in steps_dict:
-        task_id = create_task(steps_dict[step]["job_name"], "PENDING", release_id)
+        task_id = create_task(steps_dict[step]["job_name"], "PENDING", release_id, steps_dict[step]["step_num"])
         log.info(f"Successfully created task with id {task_id} for release with id {release_id}.")
     log.info(f"Successfully created all tasks for release with id {release_id}.")
     return JSONResponse(content={"release_id": release_id})
@@ -116,7 +117,8 @@ async def create_new_task(new_task: Task):
         log.error(f"Attempt to create task with invalid release_id {new_task.release_id}.")
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
-    task_id = create_task(name = new_task.task_name, status = "PENDING", release_id = new_task.release_id)
+    task_id = create_task(name = new_task.task_name, status = "PENDING", \
+        release_id = new_task.release_id, task_num = new_task.task_num)
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
 

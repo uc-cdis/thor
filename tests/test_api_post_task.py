@@ -28,14 +28,14 @@ def test_post_task():
 
     get_response = client.get(f"/tasks/{task_id}")
     assert get_response.status_code == 200
-    assert list(get_response.json().keys()) == ["task"]
-    response_body = get_response.json()["task"]
-    assert set(response_body.keys()) == {"task_id", "task_name", "release_id", "status"}
-    assert response_body["task_id"] == task_id
-    assert response_body["task_name"] == dummy_post_test["task_name"]
-    assert response_body["release_id"] == dummy_post_test["release_id"]
-    assert response_body["status"] == "PENDING"
-    
+
+    post_task_good_file = "tests/test_files/post_task_good_test_data.json"
+    post_task_good_test_data_absolute_path = os.path.join(os.getcwd(), post_task_good_file)
+
+    with open(post_task_good_test_data_absolute_path, "r") as post_task_good_test_data:
+        expected_post_test_result = json.load(post_task_good_test_data)
+
+    assert get_response.json() == expected_post_test_result
     reseed()
 
 def test_post_task_bad():
@@ -51,7 +51,8 @@ def test_post_task_bad():
     # but I'm not sure if this test actually corresponds to a bad request.
 
     # First, we test posting a task without a release ID
-    post_response = client.post("/tasks", json = {"task_name": "no_release_id"})
+    post_response = client.post("/tasks", json = \
+        {"task_name": "no_release_id", "task_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
@@ -61,11 +62,23 @@ def test_post_task_bad():
     reseed()
 
     # Next, we test posting a task without a task name
-    post_response = client.post("/tasks", json = {"release_id": 3})
+    post_response = client.post("/tasks", json = \
+        {"release_id": 3, "task_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
     assert error_message["loc"] == ["body", "task_name"]
+    assert error_message["msg"] == "field required"
+    assert error_message["type"] == "value_error.missing"
+    reseed()
+
+    # Next, we test posting a task without a task num
+    post_response = client.post("/tasks", json = \
+        {"task_name": "no_task_num", "release_id": 3})
+    assert post_response.status_code == 422
+    assert list(post_response.json().keys()) == ["detail"]
+    error_message = post_response.json()["detail"][0]
+    assert error_message["loc"] == ["body", "task_num"]
     assert error_message["msg"] == "field required"
     assert error_message["type"] == "value_error.missing"
     reseed()
@@ -76,8 +89,10 @@ def test_post_task_bad():
     # and are indistinguishble from good task names.
 
     # Next, we test posting a task with a release ID with a bad type
-    post_response = client.post("/tasks", json = {"release_id": "bad_type", \
-        "task_name": "release_ID_bad_type_task_test"})
+    post_response = client.post("/tasks", json = \
+        {"release_id": "bad_type", \
+        "task_name": "release_ID_bad_type_task_test",
+        "task_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]
@@ -86,12 +101,27 @@ def test_post_task_bad():
     assert error_message["type"] == "type_error.integer"
     reseed()
 
+    # We also test posting a task with a task number with a bad type
+    post_response = client.post("/tasks", json = \
+        {"release_id": 3, \
+        "task_name": "release_ID_bad_type_task_test",
+        "task_num": "bad_type"})
+    assert post_response.status_code == 422
+    assert list(post_response.json().keys()) == ["detail"]
+    error_message = post_response.json()["detail"][0]
+    assert error_message["loc"] == ["body", "task_num"]
+    assert error_message["msg"] == "value is not a valid integer"
+    assert error_message["type"] == "type_error.integer"
+    reseed()
+
     # Above are all the errors we can expect Pydantic to catch. 
     # The rest should be handled by logic in main, and should be done gracefully.
 
     # Next, we test posting a task with a release ID not corresponding to a release
-    post_response = client.post("/tasks", json = {"release_id": -1, \
-        "task_name": "release_ID_not_corresponding_to_release_test"})
+    post_response = client.post("/tasks", json = \
+        {"release_id": -1, \
+        "task_name": "release_ID_not_corresponding_to_release_test",\
+        "task_num": 0})
     assert post_response.status_code == 422
     assert list(post_response.json().keys()) == ["detail"]
     error_message = post_response.json()["detail"][0]

@@ -48,8 +48,9 @@ def test_write_no_prior(prepare_db_testing):
     test_task_status = "success"
     test_release_id = 3
     test_task_version = "2002.09"
+    test_task_num = 12
 
-    test_jjm.write_task_result(test_task_name, test_task_version)
+    test_jjm.write_task_result(test_task_name, test_task_version, test_task_num)
 
     written_task = read_task(0)
 
@@ -57,6 +58,7 @@ def test_write_no_prior(prepare_db_testing):
     assert written_task.task_name == test_task_name
     assert written_task.status == test_task_status
     assert written_task.release_id == test_release_id
+    assert written_task.task_num == test_task_num
     assert type(written_task) == Task
 
     reseed()
@@ -87,9 +89,10 @@ def test_write_while_prior(prepare_db_testing):
 
     test_task_name = "Update CI env with the latest integration branch"
     test_task_version = "2021.09"
+    test_task_task_num = 1
 
     test_jjm = JenkinsJobManager("jenkins2")
-    test_jjm.write_task_result(test_task_name, test_task_version)
+    test_jjm.write_task_result(test_task_name, test_task_version, test_task_task_num)
 
     # checking to make sure we've altered instead of inserting
     assert get_task_num() == 10

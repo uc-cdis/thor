@@ -11,6 +11,13 @@ from thor.dao.clear_tables_reseed import reseed
 
 client = TestClient(app)
 
+test_data_file_name = "tests/test_files/post_release_test_data.json"
+test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
+
+with open(test_data_absolute_path, "r") as post_release_test:
+    expected_output_for_post_release = json.load(post_release_test)
+
+
 reseed()
 
 def test_post_release():
@@ -22,12 +29,7 @@ def test_post_release():
 
     release_get_response = client.get(f"/releases/{release_id}")
     assert release_get_response.status_code == 200
-    assert list(release_get_response.json().keys()) == ["release"]
-    release_response_body = release_get_response.json()["release"]
-    assert set(release_response_body.keys()) == {"release_id", "version", "result"}
-    assert release_response_body["release_id"] == release_id
-    assert release_response_body["version"] == test_version_name
-    assert release_response_body["result"] == "PENDING"
+    assert release_get_response.json() == expected_output_for_post_release
 
     tasks_get_response = client.get(f"/releases/{release_id}/tasks")
     assert tasks_get_response.status_code == 200
