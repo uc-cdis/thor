@@ -47,14 +47,14 @@
         },  
         "schedule": null,  
         "run_next":  "step6"
-    },   
+    },    
 
     "step6": {  
-        "job_name":  "gen3-qa-release-notes-generator",  
-        "job_params": {},  
+        "job_name":  "Release testing round qa envs (NOTE: not a jenkins job)",  
+        "job_params": null,
         "schedule": null,  
         "run_next":  "step7"
-    },   
+    },
 
     "step7": {  
         "job_name":  "gen3-run-load-tests",  
@@ -74,7 +74,7 @@
     },   
 
     "step8": {  
-        "job_name":  "apply-new-monthly-release-tags-to-all-imgs",  
+        "job_name":  "merge-integration-branch-into-stable-and-tag",  
         "job_params": {
             "RELEASE_VERSION":"2020.01"
         },  
@@ -101,6 +101,29 @@
     }, 
 
     "step11": {  
+        "job_name":  "gen3-qa-release-notes-generator",  
+        "job_params": {},  
+        "schedule": null,  
+        "run_next":  "step12"
+    },
+
+    "step12": {  
+        "job_name":  "Send_slack_message_to_pulish_release_to_PMs (NOTES: not a jenkins job)",  
+        "job_params": null,
+        "schedule":  null,
+        "run_next": "step13"
+    },
+
+    "step13": {  
+        "job_name":  "delete-integration-branch-from-ecr",  
+        "job_params": {
+            "INTEGRATION_BRANCH":"integration202112"
+        },  
+        "schedule":  null,
+        "run_next": "step14"
+    },
+
+    "step14": {  
         "job_name":  "mark-gen3-release-as-released",  
         "job_params": {
             "RELEASE_NAME":"2020.01", 
