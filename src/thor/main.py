@@ -5,15 +5,16 @@ import logging
 import datetime
 import json
 from platform import release
+from turtle import update
 
 from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from thor.dao.release_dao import read_release, read_all_releases, get_release_keys, create_release
-from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys, create_task
-
+from thor.dao.release_dao import read_release, read_all_releases, get_release_keys, create_release, update_release
+from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys, create_task, update_task
+from thor.maestro.run_bash_script import attempt_to_run
 from thor.time.scheduler import Scheduler
 
 # Sample POST request with curl:
@@ -137,13 +138,25 @@ async def what_time_is_it():
     return {"current_time": datetime.datetime.now()}
 
 
-class GenItem(BaseModel):
-    main: str
+@app.put("/run_task/{task_id}")
+async def run_task(task_id: int):
+    """ This endpoint is used to run a task. """
+    task = read_task(task_id)
 
-
-@app.post("/simple_post")
-async def simple_post(input: GenItem):
-    """ echoes a message back to the user. """
-    return {"message": input}
+    if task.status != "PENDING":
+        log.error(f"Attempt to run task with status {task.status}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","status"],"msg":"Task status is not PENDING."}])
+    
+    update_task(task_id, "status", "RUNNING")
+    log.info(f"Successfully set task with id {task_id} to status RUNNING.")
+    status_code = attempt_to_run(task.step_num)
+    if status_code == 0:
+        update_task(task_id, "status", "SUCCESS")
+        log.info(f"Task with id {task_id} SUCCESS.")
+    else:
+        update_task(task_id, "status", "FAILED")
+        log.info(f"Task with id {task_id} FAILED with code {status_code}.")
+    return JSONResponse(content={"task_id": task_id})
 
 

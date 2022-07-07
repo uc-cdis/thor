@@ -62,7 +62,7 @@ def create_test_data():
     task_dao.manual_create_task(8, "Create Release in JIRA", "success", 3, 1)
     task_dao.manual_create_task(9, "Cut integration branch", "success", 3, 2)
     task_dao.manual_create_task(
-        10, "Update CI env with the latest integration branch", "in progress", 3, 3
+        10, "Update CI env with the latest integration branch", "PENDING", 3, 3
     )
 
 

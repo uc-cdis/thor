@@ -93,7 +93,7 @@ def create_task(name, status, release_id, step_num):
 
 def read_task(key):
     """ Given the (int) key of the Task to be read, returns a Task Object in the format:
-    'Key: %key, Name: %name, Version: %version, Result: %result, Task Num: %step_num', where 
+    'Key: %key, Name: %name, Version: %version, Status: %status, Task Num: %step_num', where 
     each %value is the value corresponding to the given key. 
     Throws an Exception if the key value is not in the database.  """
 
