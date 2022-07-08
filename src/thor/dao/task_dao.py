@@ -112,6 +112,17 @@ def read_task(key):
             session.expunge_all()
             return task
 
+def get_release_tasks(release_id):
+    """
+    Gets all tasks associated with a specific release
+    (as specified by input release_id, and returns them as a list. 
+    """
+    
+    with session_scope() as session:
+        tasks = [task for task in session.query(Task).filter_by(release_id=release_id)]
+        session.expunge_all()
+        return tasks
+
 
 def read_all_tasks():
     """ Returns a list of all Task objects in the Tasks table of te database. 
@@ -204,8 +215,8 @@ def get_task_keys():
 
     with session_scope() as session:
 
-        for release in session.query(Task):
-            key_list.append(release.task_id)
+        for task in session.query(Task):
+            key_list.append(task.task_id)
         return key_list
 
 
@@ -235,9 +246,10 @@ def lookup_task_key(desired_task_name, desired_release_id):
 
 
 if __name__ == "__main__":
-    print(read_all_tasks())
-
-    wanted_string = "Update CI env with the latest integration branch"
-    wanted_id = 3
+    # print(read_all_tasks())
+    tasklist = get_release_tasks(6)
+    print(tasklist)
+    # wanted_string = "Update CI env with the latest integration branch"
+    # wanted_id = 3
 
     # print(lookup_key(wanted_string, wanted_id))

@@ -13,7 +13,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from thor.dao.release_dao import read_release, read_all_releases, get_release_keys, create_release, update_release
-from thor.dao.task_dao import read_task, read_all_tasks, get_task_keys, create_task, update_task
+from thor.dao.task_dao import \
+    read_task, read_all_tasks, get_task_keys, create_task, update_task, get_release_tasks
 from thor.maestro.run_bash_script import attempt_to_run
 from thor.time.scheduler import Scheduler
 
@@ -65,15 +66,11 @@ async def create_new_release(release_name: str):
 
 @app.get("/releases/{release_id}/tasks")
 async def get_all_release_tasks(release_id: int):
-    """ This returns all tasks with release_id corresponding to the given input. 
-    Currently, it fails without support if release_id is not an int, so this should
-    be addressed when appropriate. """
-    tasks_to_return = []
-    tKeyList = get_task_keys()
-
-    for id in tKeyList:
-        if read_task(id).get_release_id() == release_id:
-            tasks_to_return.append(read_task(id))
+    """ 
+    This returns JSON of all tasks with release_id corresponding to the given input. 
+    If there are no such tasks, returns an empty list. 
+    """
+    tasks_to_return = get_release_tasks(release_id)
     log.info(f"Successfully obtained all tasks info for {release_id}. ")
 
     all_tasks = [jsonable_encoder(task) for task in tasks_to_return]
@@ -136,6 +133,51 @@ async def get_single_task(task_id):
 async def what_time_is_it():
     """ auxiliary api endpoint to return the current timestamp in which Thor is operating. """
     return {"current_time": datetime.datetime.now()}
+
+@app.put("/start")
+async def start_release(release_id: int):
+    """
+    This endpoint starts a release from the very beginning. 
+    Assumes that all tasks thus far have status 'PENDING', 
+    and that the release_id is valid. 
+    """
+    if release_id not in get_release_keys():
+        log.error(f"Attempt to start release with invalid release_id {release_id}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
+    update_release(release_id, "result", "In Progress")
+    log.info(f"Successfully started release with id {release_id}.")
+
+    # First, we have to find all tasks for this release. 
+    release_tasks = get_release_tasks(release_id)
+    # Sorting so we can index by step_num. 
+    # Assuming that step_num is unique and consecutive. 
+    release_tasks.sort(key=lambda x: x.step_num)
+    # TODO: Should we insert checking to make sure steps are actually like this?
+
+    # Now, we can execute the tasks in order. 
+    # Success logging for return: 
+    task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
+
+    for task in release_tasks:
+        update_task(task.task_id, "status", "RUNNING")
+        log.info(f"Successfully started task with id {task.task_id}.")
+        status_code = attempt_to_run(task.step_num)
+        if status_code == 0:
+            update_task(task.task_id, "status", "SUCCESS")
+            log.info(f"Task #{task.step_num} of release {release_id} SUCCESS.")
+            task_results[task.step_num] = "SUCCESS"
+        else:
+            update_task(task.task_id, "status", "FAILED")
+            log.info(f"Task #{task.step_num} of release {release_id} FAILED with code {status_code}.")
+            task_results[task.step_num] = "FAILED"
+            break
+
+
+    return JSONResponse(content={"release_id": release_id, "task_results": task_results})
+
+
+
 
 
 @app.put("/run_task/{task_id}")

@@ -1,1 +1,1 @@
-echo "dummy step 7"
+echod "dummy step 7"
