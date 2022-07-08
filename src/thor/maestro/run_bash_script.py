@@ -16,6 +16,7 @@ def identify_script_to_run(step_num):
     """
     Given the step number of a step, reads thor_config.json to figure out
     which shell script to run. Returns a full filepath to the script. 
+    NOTE: Currently opening dummy_thor_config.json instead. 
     """
     with open("dummy_thor_config.json") as f:
         steps_dict = json.load(f)

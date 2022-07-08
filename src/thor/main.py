@@ -159,25 +159,78 @@ async def start_release(release_id: int):
     # Success logging for return: 
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
-    for task in release_tasks:
-        update_task(task.task_id, "status", "RUNNING")
-        log.info(f"Successfully started task with id {task.task_id}.")
-        status_code = attempt_to_run(task.step_num)
+    for step in release_tasks:
+        update_task(step.task_id, "status", "RUNNING")
+        log.info(f"Successfully started task #{step.step_num} with id {step.task_id}.")
+        status_code = attempt_to_run(step.step_num)
         if status_code == 0:
-            update_task(task.task_id, "status", "SUCCESS")
-            log.info(f"Task #{task.step_num} of release {release_id} SUCCESS.")
-            task_results[task.step_num] = "SUCCESS"
+            update_task(step.task_id, "status", "SUCCESS")
+            log.info(f"Task #{step.step_num} of release {release_id} SUCCESS.")
+            task_results[step.step_num] = "SUCCESS"
         else:
-            update_task(task.task_id, "status", "FAILED")
-            log.info(f"Task #{task.step_num} of release {release_id} FAILED with code {status_code}.")
-            task_results[task.step_num] = "FAILED"
+            update_task(step.task_id, "status", "FAILED")
+            log.info(f"Task #{step.step_num} of release {release_id} FAILED with code {status_code}.")
+            task_results[step.step_num] = "FAILED"
             break
-
+    # Now, we can update the release status.
+    if all(task_results.values()) == "SUCCESS":
+        update_release(release_id, "result", "Success.")
+        log.info(f"Successfully completed release {release_id}.")
+    else:
+        update_release(release_id, "result", "Failed.")
+        fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
+        log.info(f"Failed to complete release {release_id} on task #{fail_index}.")
 
     return JSONResponse(content={"release_id": release_id, "task_results": task_results})
 
 
+@app.put("/restart")
+async def restart_release(release_id: int):
+    """
+    Restarts a release from the first unsuccessful step. 
+    Will then run through the steps in order until complete or unsuccessful. 
+    """
+    if release_id not in get_release_keys():
+        log.error(f"Attempt to restart release with invalid release_id {release_id}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
+    update_release(release_id, "result", "In Progress")
+    log.info(f"Restarted release with id {release_id}.")
 
+    # NOTE: The same caveats as above apply here. 
+    release_tasks = get_release_tasks(release_id)
+    release_tasks.sort(key=lambda x: x.step_num)  
+
+    task_results = {}
+    for step in release_tasks:
+        if step.status == "SUCCESS":
+            task_results[step.step_num] = "SUCCESS"
+        else:
+            update_task(step.task_id, "status", "RUNNING")
+            log.info(f"Successfully started task with id {step.task_id}.")
+            status_code = attempt_to_run(step.step_num)
+            if status_code == 0:
+                update_task(step.task_id, "status", "SUCCESS")
+                log.info(f"Task #{step.step_num} of release {release_id} SUCCESS.")
+                task_results[step.step_num] = "SUCCESS"
+            else:
+                update_task(step.task_id, "status", "FAILED")
+                log.info(f"Task #{step.step_num} of release {release_id} FAILED with code {status_code}.")
+                task_results[step.step_num] = "FAILED"
+                break
+    
+    print(task_results, set(task_results.values()) == {"SUCCESS"})
+
+    if set(task_results.values()) == {"SUCCESS"}:
+        update_release(release_id, "result", "Success.")
+        log.info(f"Successfully completed release {release_id}.")
+    else:
+        update_release(release_id, "result", "Failed.")
+        fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
+        log.info(f"Failed to complete release {release_id} on task #{fail_index}.")
+    
+    return JSONResponse(content={\
+        "release_id": release_id, "status":set(task_results.values()) == {"SUCCESS"}, "task_results": task_results})
 
 
 @app.put("/run_task/{task_id}")
