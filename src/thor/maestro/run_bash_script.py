@@ -28,6 +28,19 @@ def identify_script_to_run(step_num):
         "step" + str(step_num), script_name)
     return script_path
 
+def pull_job_params(step_num):
+    """
+    Given the step number, looks in thor_config.json to figure out
+    which job parameters should be passed to the command. 
+    Returns the job_params dict. 
+    NOTE: As above, using dummy-thor-config.json instead. 
+    """
+    with open("dummy_thor_config.json") as f:
+        steps_dict = json.load(f)
+    selected_step = [v for v in steps_dict.values() if v["step_num"] == int(step_num)][0]
+    job_params = selected_step["job_params"]
+    return job_params
+
 
 def attempt_to_run(step_num):
     """
