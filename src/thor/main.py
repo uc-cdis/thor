@@ -12,11 +12,15 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from thor.dao.release_dao import read_release, read_all_releases, get_release_keys, create_release, update_release
+from thor.dao.release_dao import \
+    create_release, read_release, read_all_releases, get_release_keys, \
+        update_release, delete_releases
 from thor.dao.task_dao import \
-    read_task, read_all_tasks, get_task_keys, create_task, update_task, get_release_tasks
+    create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, \
+        update_task, delete_task
 from thor.maestro.run_bash_script import attempt_to_run
 from thor.time.scheduler import Scheduler
+import thor.dao.clear_tables_reseed as ctrs
 
 # Sample POST request with curl:
 # curl -X POST --header "Content-Type: application/json" --data @json_objs/sample_task_0.json 0.0.0.0:6565/tasks
@@ -255,3 +259,24 @@ async def run_task(task_id: int):
     return JSONResponse(content={"task_id": task_id})
 
 
+@app.put("/clear")
+async def clear_all():
+    """ This endpoint is used to clear all data. """
+    # Tasks first: 
+    task_list = get_task_keys()
+    delete_task(task_list)
+
+    # Releases next:
+    release_list = get_release_keys()
+    delete_releases(release_list)
+    # Yeah, the inconsistency here is annoying. 
+
+    log.info("Successfully cleared all data.")
+    return JSONResponse(content={"status": "Success."})
+
+@app.put("/reseed")
+async def reseed():
+    """ Reseeds data using the native reseed() and test data. """
+    ctrs.reseed()
+    log.info("Successfully reseeded data.")
+    return JSONResponse(content={"status": "Success."})

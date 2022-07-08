@@ -192,10 +192,11 @@ def delete_task(input):
 
     if type(input) is int:
         del_task(input)
+        log.info(f"Deleted task {input} from the database.")
     elif type(input) is list:
         for i in input:
             del_task(i)
-        log.info(f"All entries in list {input} were deleted. ")
+        log.info(f"All tasks in list {input} were deleted. ")
 
 
 def get_num_tasks():
