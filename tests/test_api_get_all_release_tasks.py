@@ -19,6 +19,9 @@ with open(test_data_absolute_path, "r") as read_task_test:
 
 @pytest.mark.parametrize("release_id", [3, 4])
 def test_get_all_release_tasks(release_id):
+    # Note: release_id instead of release name does not conform
+    # to the pattern established elsewhere, 
+    # but that's the state of the code so far. 
     response = client.get(f"/releases/{release_id}/tasks")
     assert response.status_code == 200
 

@@ -56,7 +56,7 @@
 	}, {
 		"task_id": 10,
 		"task_name": "Update CI env with the latest integration branch",
-		"status": "in progress",
+		"status": "PENDING",
 		"release_id": 3,
 		"step_num": 3
 	}]

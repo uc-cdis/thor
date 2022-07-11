@@ -27,7 +27,7 @@ def test_post_release():
     assert list(post_response.json().keys()) == ["release_id"]
     release_id = post_response.json()["release_id"]
 
-    release_get_response = client.get(f"/releases/{release_id}")
+    release_get_response = client.get(f"/releases/{test_version_name}")
     assert release_get_response.status_code == 200
     assert release_get_response.json() == expected_output_for_post_release
 

@@ -46,9 +46,9 @@ async def get_all_releases():
     return JSONResponse(content={"releases": all_releases})
 
 
-@app.get("/releases/{release_id}")
-async def get_single_release(release_id: int):
-    """ Reads out the release associated with a particular release_id. """
+@app.get("/releases/{release_name}")
+async def get_single_release(release_name: str):
+    """ Reads out the release associated with a particular release name. """
 
     release = jsonable_encoder(read_release(release_id))
     log.info(f"Successfully obtained release info for {release_id}. ")

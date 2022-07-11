@@ -11,8 +11,6 @@ from thor.dao.clear_tables_reseed import reseed
 
 client = TestClient(app)
 
-reseed()
-
 test_data_file_name = "tests/test_files/sample_task_0.json"
 test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
 
@@ -21,6 +19,7 @@ with open(test_data_absolute_path, "r") as post_task_test:
 
 
 def test_post_task():
+    reseed()
     post_response = client.post("/tasks", json = dummy_post_test)
     assert post_response.status_code == 200
     assert list(post_response.json().keys()) == ["task_id"]
