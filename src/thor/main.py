@@ -31,6 +31,9 @@ class Task(BaseModel):
     release_id: int
     step_num: int
 
+class TaskStatus(BaseModel):
+    status: str
+
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
@@ -125,6 +128,15 @@ async def create_new_task(new_task: Task):
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
 
+@app.put("/tasks/{task_id}")
+async def update_task_status(task_id: int, status_obj: TaskStatus):
+    """
+    This endpoint is used to update the status of a task.
+    """
+    new_status = status_obj.status
+    update_task(task_id, "status", new_status)
+    log.info(f"Successfully updated task with id {task_id}.")
+    return JSONResponse(content={"task_id": task_id, "status": new_status})
 
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):
