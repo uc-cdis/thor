@@ -14,7 +14,7 @@ from pydantic import BaseModel
 
 from thor.dao.release_dao import \
     create_release, read_release, read_all_releases, get_release_keys, \
-        update_release, delete_releases
+        update_release, delete_releases, release_id_lookup_class
 from thor.dao.task_dao import \
     create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, \
         update_task, delete_task
@@ -49,7 +49,8 @@ async def get_all_releases():
 @app.get("/releases/{release_name}")
 async def get_single_release(release_name: str):
     """ Reads out the release associated with a particular release name. """
-
+    rid_lookupper = release_id_lookup_class()
+    release_id = rid_lookupper.release_id_lookup(release_name)
     release = jsonable_encoder(read_release(release_id))
     log.info(f"Successfully obtained release info for {release_id}. ")
     return JSONResponse(content={"release": release})
