@@ -64,6 +64,6 @@ def attempt_to_run(step_num):
 
 if __name__ == "__main__":
     # print(identify_script_to_run(sys.argv[1]))
-    # run_shell(sys.argv[1])
-    attempt_to_run(sys.argv[1])
+    run_shell(sys.argv[1])
+    # attempt_to_run(sys.argv[1])
     

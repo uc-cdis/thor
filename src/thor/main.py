@@ -182,7 +182,8 @@ async def start_release(release_id: int):
         log.info(f"Successfully completed release {release_id}.")
     else:
         update_release(release_id, "result", "Failed.")
-        fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
+        # fail_index = [task.step_num for task in release_tasks if task.status == "FAILED"][0]
+        fail_index = 1
         log.info(f"Failed to complete release {release_id} on task #{fail_index}.")
 
     return JSONResponse(content={"release_id": release_id, "task_results": task_results})
