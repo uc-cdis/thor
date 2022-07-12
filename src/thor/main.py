@@ -34,6 +34,7 @@ class Task(BaseModel):
 class TaskStatus(BaseModel):
     status: str
 
+
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ async def what_time_is_it():
     """ auxiliary api endpoint to return the current timestamp in which Thor is operating. """
     return {"current_time": datetime.datetime.now()}
 
-@app.put("/start")
+@app.post("/releases/{release_id}/start")
 async def start_release(release_id: int):
     """
     This endpoint starts a release from the very beginning. 
