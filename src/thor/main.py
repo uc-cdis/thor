@@ -204,7 +204,7 @@ async def start_release(release_id: int):
     return JSONResponse(content={"release_id": release_id, "task_results": task_results})
 
 
-@app.put("/restart")
+@app.post("/releases/{release_id}/restart")
 async def restart_release(release_id: int):
     """
     Restarts a release from the first unsuccessful step. 
