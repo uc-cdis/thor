@@ -191,7 +191,8 @@ async def start_release(release_id: int):
             task_results[step.step_num] = "FAILED"
             break
     # Now, we can update the release status.
-    if all(task_results.values()) == "SUCCESS":
+    log.info(all(task_results.values()))
+    if set(task_results.values()) == {"SUCCESS"}:
         update_release(release_id, "result", "Success.")
         log.info(f"Successfully completed release {release_id}.")
     else:
