@@ -10,18 +10,11 @@ from thor.dao.clear_tables_reseed import reseed
 
 client = TestClient(app)
 
-test_data_file_name = "tests/test_files/release_test_data.json"
-test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
-
-with open(test_data_absolute_path, "r") as read_task_test:
-    expected_output_for_get_releases = json.load(read_task_test)
-
 def clear_shell_script_target():
     script_target_file_name = "shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
     with open(target_absolute_path, "w") as target_file:
         target_file.write("Shell Script Target\n\n")
-
 
 
 @pytest.mark.parametrize("release_name", ["test_release_1"])
