@@ -93,29 +93,38 @@ async def get_release_task_specific(release_name: str, step_num: int):
     """ This returns the task with release_name corresponding to the given input, and 
     step_num corresponding to the given input. There should only be one such task. 
     If there are no such tasks, returns a JSON with task:None. """
+
     rid_lookupper = release_id_lookup_class()
     release_id = rid_lookupper.release_id_lookup(release_name)
-    
-    tasks_to_return = get_release_tasks(release_id)
+    task_to_return = get_release_task_specific(release_id, step_num)
 
-    for task in tasks_to_return:
-        if task.step_num == step_num:
-            task_to_return = jsonable_encoder(task)
-            log.info(f"Successfully obtained task info for {task.task_id}. ")
-            return JSONResponse(content={"task": task_to_return})
-
-    log.info(f"No task found for release with id {release_id} and step_num {step_num}.")
-    return JSONResponse(content={"task": None})
-
+    if task_to_return is None:
+        log.info(f"No task found for release with id {release_id} and step_num {step_num}.")
+        return JSONResponse(content={"task": None})
+    else:
+        task = jsonable_encoder(task_to_return)
+        log.info(f"Successfully obtained task info for {release_id} and step_num {step_num}.")
+        return JSONResponse(content={"task": task})
 
 @app.get("/tasks")
-async def get_all_tasks():
-    """ Returns all the tasks in the Tasks table. """
+async def get_all_tasks(release_name: str = None, step_num: int = None):
+    # Due to change in spec, we also support passing release_name and step_num
+    # as query parameters to select a single task.
+    """ 
+    Takes in a release_name and step_num as query parameters, 
+    and returns the corresponding task with the given release_name and step_num.
+    If no query parameters passed, returns all the tasks in the Tasks table. 
+    """
 
-    tasks_to_return = [jsonable_encoder(task) for task in read_all_tasks()]
-    log.info("Successfully retrieved all tasks from Tasks. ")
+    if release_name and step_num:
+        release_task = get_release_task_specific(release_name, step_num)
+        log.info(f"Successfully retrieved task info for step #{step_num} of {release_name}. ")
+        return JSONResponse(content = {"task": release_task})
+    else:
+        tasks_to_return = [jsonable_encoder(task) for task in read_all_tasks()]
+        log.info("Successfully retrieved all tasks from Tasks. ")
+        return JSONResponse(content={"tasks": tasks_to_return})
 
-    return JSONResponse(content={"tasks": tasks_to_return})
 
 @app.post("/tasks")
 async def create_new_task(new_task: Task):
@@ -247,8 +256,8 @@ async def restart_release(release_name: str):
                 task_results[step.step_num] = "FAILED"
                 break
     
-    # print(task_results, set(task_results.values()) == {"SUCCESS"})
 
+    # Now, we can update the release status.
     if set(task_results.values()) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_name}.")
