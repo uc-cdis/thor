@@ -20,18 +20,18 @@ with open(test_data_absolute_path, "r") as post_release_test:
 
 reseed()
 
-def test_post_release():
-    test_version_name = "5"
-    post_response = client.post("/releases/" + test_version_name)
+@pytest.mark.parametrize("release_name", ["test_release_5"])
+def test_post_release(release_name: str):
+    post_response = client.post("/releases/" + release_name)
     assert post_response.status_code == 200
     assert list(post_response.json().keys()) == ["release_id"]
     release_id = post_response.json()["release_id"]
 
-    release_get_response = client.get(f"/releases/{test_version_name}")
+    release_get_response = client.get(f"/releases/{release_name}")
     assert release_get_response.status_code == 200
     assert release_get_response.json() == expected_output_for_post_release
 
-    tasks_get_response = client.get(f"/releases/{release_id}/tasks")
+    tasks_get_response = client.get(f"/releases/{release_name}/tasks")
     assert tasks_get_response.status_code == 200
     assert list(tasks_get_response.json().keys()) == ["release_tasks"]
     response_body = tasks_get_response.json()["release_tasks"]

@@ -33,7 +33,7 @@ def test_successful_release_cycle(release_name):
     release_id = post_response.json()["release_id"]
 
     # Starts the release, causing the associated shell scripts to be run
-    start_results = client.post(f"/releases/{release_id}/start")
+    start_results = client.post(f"/releases/{release_name}/start")
     # print(start_results.json())
 
     # Checks contents of the "shell_script_target.txt" file to ensure that
@@ -65,7 +65,7 @@ def test_successful_release_cycle(release_name):
         for r in release_get_response.json()["releases"]}[release_id] == "RELEASED"
 
     # Tasks:
-    tasks_get_response = client.get(f"/releases/{release_id}/tasks")
+    tasks_get_response = client.get(f"/releases/{release_name}/tasks")
     assert tasks_get_response.status_code == 200
     assert list(tasks_get_response.json().keys()) == ["release_tasks"]
     response_body = tasks_get_response.json()["release_tasks"]
@@ -97,7 +97,7 @@ def test_failing_release_cycle(release_name):
         shell_script_fail_file.write("INVALID COMMAND")
 
     # Starts the release, causing the associated shell scripts to be run
-    start_results = client.post(f"/releases/{release_id}/start")
+    start_results = client.post(f"/releases/{release_name}/start")
     print(start_results.json())
 
     # REWRITES SHELL SCRIPT 7 TO BE CORRECT AGAIN (IMPORTANT)
@@ -133,7 +133,7 @@ def test_failing_release_cycle(release_name):
         for r in release_get_response.json()["releases"]}[release_id] == "PAUSED"
 
     # Tasks:
-    tasks_get_response = client.get(f"/releases/{release_id}/tasks")
+    tasks_get_response = client.get(f"/releases/{release_name}/tasks")
     assert tasks_get_response.status_code == 200
     assert list(tasks_get_response.json().keys()) == ["release_tasks"]
     task_results = {int(t["step_num"]):t["status"] for t in tasks_get_response.json()["release_tasks"]}

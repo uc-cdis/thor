@@ -73,12 +73,14 @@ async def create_new_release(release_name: str):
     log.info(f"Successfully created all tasks for release with id {release_id}.")
     return JSONResponse(content={"release_id": release_id})
 
-@app.get("/releases/{release_id}/tasks")
-async def get_all_release_tasks(release_id: int):
+@app.get("/releases/{release_name}/tasks")
+async def get_all_release_tasks(release_name: str):
     """ 
-    This returns JSON of all tasks with release_id corresponding to the given input. 
+    This returns JSON of all tasks with release_name corresponding to the given name. 
     If there are no such tasks, returns an empty list. 
     """
+    rid_lookupper = release_id_lookup_class()
+    release_id = rid_lookupper.release_id_lookup(release_name)
     tasks_to_return = get_release_tasks(release_id)
     log.info(f"Successfully obtained all tasks info for {release_id}. ")
 
@@ -86,24 +88,24 @@ async def get_all_release_tasks(release_id: int):
     return JSONResponse(content={"release_tasks": all_tasks})
 
 
-@app.get("/releases/{release_id}/tasks/{task_id}")
-async def get_release_task_specific(release_id: int, task_id: int):
-    """ This returns all tasks with release_id corresponding to the given input, and 
-    task_id corresponding to the given input. Task_id is theoretically unique for each
-    task, so this method is somewhat superfluous, but it's here if needed.  
-    Currently, it fails without support if either release_id or task_id are not ints, 
-    so this should be addressed when appropriate. """
-    tasks_to_return = []
-    task_key_list = get_task_keys()
+@app.get("/releases/{release_name}/tasks/{step_num}")
+async def get_release_task_specific(release_name: str, step_num: int):
+    """ This returns the task with release_name corresponding to the given input, and 
+    step_num corresponding to the given input. There should only be one such task. 
+    If there are no such tasks, returns a JSON with task:None. """
+    rid_lookupper = release_id_lookup_class()
+    release_id = rid_lookupper.release_id_lookup(release_name)
+    
+    tasks_to_return = get_release_tasks(release_id)
 
-    for key in task_key_list:
-        if read_task(key).get_release_id() == release_id:
-            if key == task_id:
-                tasks_to_return.append(read_task(key))
-    log.info(f"Successfully obtained task info for {release_id}, {task_id}. ")
+    for task in tasks_to_return:
+        if task.step_num == step_num:
+            task_to_return = jsonable_encoder(task)
+            log.info(f"Successfully obtained task info for {task.task_id}. ")
+            return JSONResponse(content={"task": task_to_return})
 
-    all_tasks = [jsonable_encoder(task) for task in tasks_to_return]
-    return JSONResponse(content={"release_task": all_tasks})
+    log.info(f"No task found for release with id {release_id} and step_num {step_num}.")
+    return JSONResponse(content={"task": None})
 
 
 @app.get("/tasks")
@@ -152,19 +154,22 @@ async def what_time_is_it():
     """ auxiliary api endpoint to return the current timestamp in which Thor is operating. """
     return {"current_time": datetime.datetime.now()}
 
-@app.post("/releases/{release_id}/start")
-async def start_release(release_id: int):
+@app.post("/releases/{release_name}/start")
+async def start_release(release_name: str):
     """
     This endpoint starts a release from the very beginning. 
     Assumes that all tasks thus far have status 'PENDING', 
-    and that the release_id is valid. 
+    and that the release_name is valid. 
     """
+    rid_lookupper = release_id_lookup_class()
+    release_id = rid_lookupper.release_id_lookup(release_name)
+
     if release_id not in get_release_keys():
         log.error(f"Attempt to start release with invalid release_id {release_id}.")
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
     update_release(release_id, "result", "RUNNING")
-    log.info(f"Successfully started release with id {release_id}.")
+    log.info(f"Successfully started release with name {release_name}.")
 
     # First, we have to find all tasks for this release. 
     release_tasks = get_release_tasks(release_id)
@@ -183,39 +188,42 @@ async def start_release(release_id: int):
         status_code = attempt_to_run(step.step_num)
         if status_code == 0:
             update_task(step.task_id, "status", "SUCCESS")
-            log.info(f"Task #{step.step_num} of release {release_id} SUCCESS.")
+            log.info(f"Task #{step.step_num} of release {release_name} SUCCESS.")
             task_results[step.step_num] = "SUCCESS"
         else:
             update_task(step.task_id, "status", "FAILED")
-            log.info(f"Task #{step.step_num} of release {release_id} FAILED with code {status_code}.")
+            log.info(f"Task #{step.step_num} of release {release_name} FAILED with code {status_code}.")
             task_results[step.step_num] = "FAILED"
             break
     # Now, we can update the release status.
     log.info(all(task_results.values()))
     if set(task_results.values()) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
-        log.info(f"Successfully completed release {release_id}.")
+        log.info(f"Successfully completed release {release_name}.")
     else:
         update_release(release_id, "result", "PAUSED")
         # fail_index = [task.step_num for task in release_tasks if task.status == "FAILED"][0]
         fail_index = 1
-        log.info(f"Failed to complete release {release_id} on task #{fail_index}.")
+        log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
 
-    return JSONResponse(content={"release_id": release_id, "task_results": task_results})
+    return JSONResponse(content={"release_name": release_name, "task_results": task_results})
 
 
-@app.post("/releases/{release_id}/restart")
-async def restart_release(release_id: int):
+@app.post("/releases/{release_name}/restart")
+async def restart_release(release_name: str):
     """
     Restarts a release from the first unsuccessful step. 
     Will then run through the steps in order until complete or unsuccessful. 
     """
+    rid_lookupper = release_id_lookup_class()
+    release_id = rid_lookupper.release_id_lookup(release_name)
+
     if release_id not in get_release_keys():
-        log.error(f"Attempt to restart release with invalid release_id {release_id}.")
+        log.error(f"Attempt to restart release with invalid name {release_name}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
+            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
     update_release(release_id, "result", "RUNNING")
-    log.info(f"Restarted release with id {release_id}.")
+    log.info(f"Restarted release with name {release_name}.")
 
     # NOTE: The same caveats as above apply here. 
     release_tasks = get_release_tasks(release_id)
@@ -231,11 +239,11 @@ async def restart_release(release_id: int):
             status_code = attempt_to_run(step.step_num)
             if status_code == 0:
                 update_task(step.task_id, "status", "SUCCESS")
-                log.info(f"Task #{step.step_num} of release {release_id} SUCCESS.")
+                log.info(f"Task #{step.step_num} of release {release_name} SUCCESS.")
                 task_results[step.step_num] = "SUCCESS"
             else:
                 update_task(step.task_id, "status", "FAILED")
-                log.info(f"Task #{step.step_num} of release {release_id} FAILED with code {status_code}.")
+                log.info(f"Task #{step.step_num} of release {release_name} FAILED with code {status_code}.")
                 task_results[step.step_num] = "FAILED"
                 break
     
@@ -243,14 +251,14 @@ async def restart_release(release_id: int):
 
     if set(task_results.values()) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
-        log.info(f"Successfully completed release {release_id}.")
+        log.info(f"Successfully completed release {release_name}.")
     else:
         update_release(release_id, "result", "PAUSED")
         fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
-        log.info(f"Failed to complete release {release_id} on task #{fail_index}.")
+        log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
     
     return JSONResponse(content={\
-        "release_id": release_id, "status":set(task_results.values()) == {"SUCCESS"}, "task_results": task_results})
+        "release_name": release_name, "status":set(task_results.values()) == {"SUCCESS"}, "task_results": task_results})
 
 
 @app.put("/run_task/{task_id}")
