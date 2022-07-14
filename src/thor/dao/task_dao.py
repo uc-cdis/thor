@@ -4,6 +4,7 @@ import logging
 
 from thor.dao import config
 from thor.dao.models import Task
+from thor.dao.release_dao import release_id_lookup_class
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
@@ -123,9 +124,20 @@ def get_release_tasks(release_id):
         session.expunge_all()
         return tasks
 
+def get_release_task_step(release_name, step_num):
+    """ Given a release name and step number, returns the task
+    associated with that step. """
+
+    with session_scope() as session:
+        release_id = release_id_lookup_class.release_id_lookup(None, release_name)
+        task = session.query(Task).filter_by(release_id=release_id, step_num=step_num).first()
+        # Note that this combination should be unique, 
+        # so we can pull the first task without worry. 
+        session.expunge_all()
+        return task
 
 def read_all_tasks():
-    """ Returns a list of all Task objects in the Tasks table of te database. 
+    """ Returns a list of all Task objects in the Tasks table of the database. 
     Primarily to be used by main:app/tasks, as it must call get_all_tasks
     in a somewhat inefficient manner otherwise. """
 

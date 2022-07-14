@@ -16,7 +16,7 @@ from thor.dao.release_dao import \
     create_release, read_release, read_all_releases, get_release_keys, \
         update_release, delete_releases, release_id_lookup_class
 from thor.dao.task_dao import \
-    create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, \
+    create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, get_release_task_step,\
         update_task, delete_task
 from thor.maestro.run_bash_script import attempt_to_run
 from thor.time.scheduler import Scheduler
@@ -94,16 +94,14 @@ async def get_release_task_specific(release_name: str, step_num: int):
     step_num corresponding to the given input. There should only be one such task. 
     If there are no such tasks, returns a JSON with task:None. """
 
-    rid_lookupper = release_id_lookup_class()
-    release_id = rid_lookupper.release_id_lookup(release_name)
-    task_to_return = get_release_task_specific(release_id, step_num)
+    task_to_return = get_release_task_step(release_name, step_num)
 
     if task_to_return is None:
-        log.info(f"No task found for release with id {release_id} and step_num {step_num}.")
+        log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
         return JSONResponse(content={"task": None})
     else:
         task = jsonable_encoder(task_to_return)
-        log.info(f"Successfully obtained task info for {release_id} and step_num {step_num}.")
+        log.info(f"Successfully obtained task info for release with name {release_name} and step_num {step_num}.")
         return JSONResponse(content={"task": task})
 
 @app.get("/tasks")
@@ -117,14 +115,22 @@ async def get_all_tasks(release_name: str = None, step_num: int = None):
     """
 
     if release_name and step_num:
-        release_task = get_release_task_specific(release_name, step_num)
+        task_to_return = get_release_task_step(release_name, step_num)
+        # print(task_to_return)
+        if task_to_return is None:
+            log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
+            raise HTTPException(status_code=404, detail="No task found for release with name {release_name} and step_num {step_num}.")
         log.info(f"Successfully retrieved task info for step #{step_num} of {release_name}. ")
-        return JSONResponse(content = {"task": release_task})
-    else:
+        return JSONResponse(content = {"task": task_to_return})
+    elif release_name == None and step_num == None:
         tasks_to_return = [jsonable_encoder(task) for task in read_all_tasks()]
         log.info("Successfully retrieved all tasks from Tasks. ")
         return JSONResponse(content={"tasks": tasks_to_return})
-
+    else:
+        if release_name:
+            raise HTTPException(status_code=400, detail="Please provide step_num in addition to release_name.")
+        if step_num:
+            raise HTTPException(status_code=400, detail="Please provide release_name in addition to step_num.")
 
 @app.post("/tasks")
 async def create_new_task(new_task: Task):
