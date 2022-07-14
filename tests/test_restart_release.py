@@ -26,6 +26,8 @@ def test_restart_release(release_name):
     reseed()
     clear_shell_script_target()
 
+    print("bananas good")
+
     # Creates a release (and associated tasks)
     post_response = client.post("/releases/" + release_name)
     assert post_response.status_code == 200
@@ -35,7 +37,7 @@ def test_restart_release(release_name):
     shell_script_fail_file_name = "jenkins-jobs-scripts/step8/dummy8.sh"
     shell_script_fail_absolute_path = os.path.join(os.getcwd(), shell_script_fail_file_name)
     with open(shell_script_fail_absolute_path, "w") as shell_script_fail_file:
-        shell_script_fail_file.write("definitely not a command")
+        shell_script_fail_file.write("INVALID COMMAND")
 
     # Starts the release, causing the associated shell scripts to be run
     start_results = client.post(f"/releases/{release_id}/start")
@@ -81,7 +83,7 @@ def test_restart_release(release_name):
     
     # print(start_results.json())
     assert {r["release_id"]:r["result"] \
-        for r in release_get_response.json()["releases"]}[release_id] == "Success."
+        for r in release_get_response.json()["releases"]}[release_id] == "RELEASED"
 
     # Tasks:
     tasks_get_response = client.get(f"/releases/{release_id}/tasks")

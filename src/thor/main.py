@@ -163,7 +163,7 @@ async def start_release(release_id: int):
         log.error(f"Attempt to start release with invalid release_id {release_id}.")
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
-    update_release(release_id, "result", "In Progress")
+    update_release(release_id, "result", "RUNNING")
     log.info(f"Successfully started release with id {release_id}.")
 
     # First, we have to find all tasks for this release. 
@@ -193,10 +193,10 @@ async def start_release(release_id: int):
     # Now, we can update the release status.
     log.info(all(task_results.values()))
     if set(task_results.values()) == {"SUCCESS"}:
-        update_release(release_id, "result", "Success.")
+        update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_id}.")
     else:
-        update_release(release_id, "result", "Failed.")
+        update_release(release_id, "result", "PAUSED")
         # fail_index = [task.step_num for task in release_tasks if task.status == "FAILED"][0]
         fail_index = 1
         log.info(f"Failed to complete release {release_id} on task #{fail_index}.")
@@ -214,7 +214,7 @@ async def restart_release(release_id: int):
         log.error(f"Attempt to restart release with invalid release_id {release_id}.")
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
-    update_release(release_id, "result", "In Progress")
+    update_release(release_id, "result", "RUNNING")
     log.info(f"Restarted release with id {release_id}.")
 
     # NOTE: The same caveats as above apply here. 
@@ -239,13 +239,13 @@ async def restart_release(release_id: int):
                 task_results[step.step_num] = "FAILED"
                 break
     
-    print(task_results, set(task_results.values()) == {"SUCCESS"})
+    # print(task_results, set(task_results.values()) == {"SUCCESS"})
 
     if set(task_results.values()) == {"SUCCESS"}:
-        update_release(release_id, "result", "Success.")
+        update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_id}.")
     else:
-        update_release(release_id, "result", "Failed.")
+        update_release(release_id, "result", "PAUSED")
         fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
         log.info(f"Failed to complete release {release_id} on task #{fail_index}.")
     
@@ -258,10 +258,10 @@ async def run_task(task_id: int):
     """ This endpoint is used to run a task. """
     task = read_task(task_id)
 
-    if task.status != "PENDING":
+    if task.status != "PENDING" or task.status != "FAILED":
         log.error(f"Attempt to run task with status {task.status}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","status"],"msg":"Task status is not PENDING."}])
+            [{"loc":["body","status"],"msg":"Task status is not PENDING or FAILED."}])
     
     update_task(task_id, "status", "RUNNING")
     log.info(f"Successfully set task with id {task_id} to status RUNNING.")

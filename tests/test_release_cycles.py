@@ -62,7 +62,7 @@ def test_successful_release_cycle(release_name):
     
     # print(start_results.json())
     assert {r["release_id"]:r["result"] \
-        for r in release_get_response.json()["releases"]}[release_id] == "Success."
+        for r in release_get_response.json()["releases"]}[release_id] == "RELEASED"
 
     # Tasks:
     tasks_get_response = client.get(f"/releases/{release_id}/tasks")
@@ -94,7 +94,7 @@ def test_failing_release_cycle(release_name):
     shell_script_fail_file_name = "jenkins-jobs-scripts/step7/dummy7.sh"
     shell_script_fail_absolute_path = os.path.join(os.getcwd(), shell_script_fail_file_name)
     with open(shell_script_fail_absolute_path, "w") as shell_script_fail_file:
-        shell_script_fail_file.write("dqwfecho bad stuff")
+        shell_script_fail_file.write("INVALID COMMAND")
 
     # Starts the release, causing the associated shell scripts to be run
     start_results = client.post(f"/releases/{release_id}/start")
@@ -130,16 +130,16 @@ def test_failing_release_cycle(release_name):
     
     # print(start_results.json())
     assert {r["release_id"]:r["result"] \
-        for r in release_get_response.json()["releases"]}[release_id] == "Failed."
+        for r in release_get_response.json()["releases"]}[release_id] == "PAUSED"
 
     # Tasks:
     tasks_get_response = client.get(f"/releases/{release_id}/tasks")
     assert tasks_get_response.status_code == 200
     assert list(tasks_get_response.json().keys()) == ["release_tasks"]
     task_results = {int(t["step_num"]):t["status"] for t in tasks_get_response.json()["release_tasks"]}
-    print(task_results)
+    # print(task_results)
     for i in range(1,12):
-        print(i, task_results[i], i < 7)
+        # print(i, task_results[i], i < 7)
         if i < 7:
             assert task_results[i] == "SUCCESS" 
         elif i == 7:
