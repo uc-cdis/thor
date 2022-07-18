@@ -10,7 +10,8 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_USER=postgres
-  db:
+    command: /env/bin/uvicorn --host 0.0.0.0 --port 80 mds.asgi:app --reload
+  postgres:
     image: postgres
     hostname: postgres
     environment:
