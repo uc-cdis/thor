@@ -43,7 +43,7 @@ def setup_db_and_create_test_data():
     s.close()
 
     # Add dummy release entries for testing purposes
-    print("Creating entires in Releases and Tasks tables...")
+    print("Creating entries in Releases and Tasks tables...")
 
     create_test_data()
 
