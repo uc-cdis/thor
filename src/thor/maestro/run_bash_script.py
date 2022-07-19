@@ -4,6 +4,9 @@ import json
 import pathlib
 import shutil
 
+# Change this to swap between the two config files.
+DEVELOPMENT = True
+
 def run_shell(cmd):
     """
     Takes in the name of a shell script (string) and runs it. 
@@ -16,12 +19,17 @@ def identify_script_to_run(step_num):
     """
     Given the step number of a step, reads thor_config.json to figure out
     which shell script to run. Returns a full filepath to the script. 
-    NOTE: Currently opening dummy_thor_config.json instead. 
+    NOTE: Looks at DEVELOPMENT to determine which config file to use.
     """
-    with open("dummy_thor_config.json") as f:
-        steps_dict = json.load(f)
+    if DEVELOPMENT:
+        with open("dummy_thor_config.json") as f:
+            steps_dict = json.load(f)
+    else:
+        with open("thor_config.json") as f:
+            steps_dict = json.load(f)
+
     selected_step = [v for v in steps_dict.values() if v["step_num"] == int(step_num)][0]
-    # print(selected_step)
+
     script_name = selected_step["script"]
     top_level_dir = os.getcwd() # Assumes this is being run from top-level /thor. 
     script_path = os.path.join(top_level_dir, "jenkins-jobs-scripts", \
@@ -33,10 +41,14 @@ def pull_job_params(step_num):
     Given the step number, looks in thor_config.json to figure out
     which job parameters should be passed to the command. 
     Returns the job_params dict. 
-    NOTE: As above, using dummy-thor-config.json instead. 
+    NOTE: Looks at DEVELOPMENT to determine which config file to use.
     """
-    with open("dummy_thor_config.json") as f:
-        steps_dict = json.load(f)
+    if DEVELOPMENT:
+        with open("dummy_thor_config.json") as f:
+            steps_dict = json.load(f)
+    else:
+        with open("thor_config.json") as f:
+            steps_dict = json.load(f)
     selected_step = [v for v in steps_dict.values() if v["step_num"] == int(step_num)][0]
     job_params = selected_step["job_params"]
     return job_params
