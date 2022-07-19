@@ -2,21 +2,21 @@ version: '3'
 services:
   app:
     image: thor
+    container_name: thor
     build: ./
     ports:
-      - "80:80"
+      - "8001:80"
     volumes:
       - .:/src
     environment:
-      - DB_HOST=postgres
+      - DB_HOST=db
       - DB_USER=postgres
-    command: /env/bin/uvicorn --host 0.0.0.0 --port 80 mds.asgi:app --reload
-  postgres:
+    command: /env/bin/uvicorn --host 0.0.0.0 --port 80 thor.main:app --reload
+  db:
     image: postgres
-    hostname: postgres
+    container_name: postgres
+    ports: 
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-      - ./postgres-init:/docker-entrypoint-initdb.d:ro
