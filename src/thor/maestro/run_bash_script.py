@@ -84,6 +84,9 @@ def attempt_to_run(step_num):
     os.mkdir(top_level_dir + "/workspace")
 
     script_to_run = identify_script_to_run(step_num)
+    job_params = pull_job_params(step_num)
+    expose_env_vars(os.environ["RELEASE_VERSION"], job_params)
+    
     os.chdir(top_level_dir + "/workspace")
     status_code = run_shell(script_to_run)
     os.chdir(top_level_dir)
