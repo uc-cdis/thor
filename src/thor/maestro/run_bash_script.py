@@ -41,6 +41,23 @@ def pull_job_params(step_num):
     job_params = selected_step["job_params"]
     return job_params
 
+def expose_env_vars(release_version, env_dict):
+    """
+    Given a dictionary of environment variables, sets the environment variables
+    in the current shell. If passed something in JINJA form, will create 
+    the relevant variable from the current release version. 
+    """
+    for k, v in env_dict.items():
+        if v.startswith("{{"):
+            param_keyword = v.strip("{ }")
+            if param_keyword == "release_name":
+                os.environ[k] = release_version
+            elif param_keyword == "integration_branch":
+                os.environ[k] = "integration" + release_version[:4] + release_version[-2:]
+        else:
+            os.environ[k] = v
+    return
+
 
 def attempt_to_run(step_num):
     """
@@ -64,6 +81,13 @@ def attempt_to_run(step_num):
 
 if __name__ == "__main__":
     # print(identify_script_to_run(sys.argv[1]))
-    run_shell(sys.argv[1])
+    # run_shell(sys.argv[1])
     # attempt_to_run(sys.argv[1])
-    
+    temp_dict = {
+        "release_name": "{{ release_name }}",
+        "integration_branch": "{{ integration_branch }}",
+        "arbitrary_string": "words words words"
+    }
+    temp_release = "2020.15"
+    expose_env_vars(temp_release, temp_dict)
+    run_shell("env_printer.sh")
