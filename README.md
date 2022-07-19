@@ -1,7 +1,7 @@
 # Thor
 The Gen3 Release Orchestrator
 
-<img src="/images/logo.png" alt="drawing" width="250"/>
+<img src="./images/logo.png" alt="drawing" width="250"/>
 
 _Image by [cromaconceptovisual](https://pixabay.com/users/cromaconceptovisual-4595909) from [Pixabay](https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4898879)_
 
@@ -86,3 +86,25 @@ or
 ```
 LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="@2020-12-24 20:30:00" poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
 ```
+
+# Local development with Docker
+
+## ## Launch the containers
+
+```
+docker compose up -d
+```
+
+## Create the database
+
+```
+docker exec -it postgres psql -U postgres -c "create database thor_test_tmp"
+```
+
+## Create tables and test data
+
+```
+docker exec -it thor /env/bin/python src/thor/create_all_tables.py
+```
+
+Thor API is then available at http://localhost:8001
