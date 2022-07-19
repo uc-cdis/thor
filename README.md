@@ -25,7 +25,7 @@ This new tool (THOR) has the following features:
 
 # Architectural diagrams
 
-<img src="./images/diagram.png" alt="drawing" width="500"/>
+<img src="./images/diagram.png" alt="drawing" width="1200"/>
 
 Image by Colin Yao
 
