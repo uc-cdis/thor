@@ -19,5 +19,3 @@ ENV PATH="/env/bin/:${PATH}"
 WORKDIR /src
 
 CMD ["/env/bin/gunicorn", "thor.main:app", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker"]
-CMD psql -U postgres -c "create database thor_test_tmp"
-CMD python thor/create_all_tables.py
