@@ -4,7 +4,7 @@
         "job_name":  "create-gen3-release-in-jira",  
         "job_description": "Create gen3 release in jira",
         "job_params": {
-            "RELEASE_VERSION":"{{ release_name }}", 
+            "RELEASE_VERSION":"{{ release_version }}", 
             "JIRA_PROJECT": "QAT"
         },  
         "schedule":  "0 21 8-15 * 5",  
@@ -17,7 +17,7 @@
         "job_name":  "create-gen3-release-candidate-branch",  
         "job_description": "Cut the integration branch integration",
         "job_params": {
-            "RELEASE_VERSION":"{{ release_name }}", 
+            "RELEASE_VERSION":"{{ release_version }}", 
             "FORK_FROM":"main"
         },  
         "schedule": null,  
@@ -29,7 +29,7 @@
         "job_name":  "check-quay-image",  
         "job_description": "Check if integration branch quay images are successfully created", 
         "job_params": {
-            "RELEASE_TAG": "{{ integration_branch }}"
+            "INTEGRATION_BRANCH": "{{ integration_branch }}"
         },  
         "schedule": null,  
         "run_next":  "step4"
@@ -93,7 +93,7 @@
         "job_name":  "merge-integration-branch-into-stable-and-tag",  
         "job_description": "Merge the integration branch into stable and tag the release", 
         "job_params": {
-            "RELEASE_VERSION":"{{ release_name }}"
+            "RELEASE_VERSION":"{{ release_version }}"
         },  
         "run_next":  "step9"
     },   
@@ -103,7 +103,7 @@
         "job_name":  "check-quay-image",  
         "job_description": "Check if monthly release quay images are successfully created", 
         "job_params": {
-            "RELEASE_TAG": "{{ release_name }}"
+            "RELEASE_TAG": "{{ release_version }}"
         },  
         "schedule": null,  
         "run_next":  "step10"
@@ -114,7 +114,7 @@
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
         "job_description": "Pushing monthly release quay images to AWS ECR (as a backup)",
         "job_params": {
-            "RELEASE_VERSION": "{{ release_name }}"
+            "RELEASE_VERSION": "{{ release_version }}"
         },  
         "schedule": null,  
         "run_next":  "step11"
@@ -126,7 +126,7 @@
         "job_description": "Sanity Check the release",  
         "job_params": {
             "REPO_NAME":"gitops-qa",
-            "INTEGRATION_BRANCH":"{{ release_name }}",
+            "INTEGRATION_BRANCH":"{{ release_version }}",
             "PR_TITLE":"Updating CI env with",
             "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
         },  
@@ -144,7 +144,7 @@
 
     "step13": {  
         "job_name":  null, 
-        "job_description": "Send slack message to pulish release",
+        "job_description": "Send slack message to publish release",
         "job_params": null,
         "schedule":  null,
         "run_next": "step14"
@@ -164,7 +164,7 @@
         "job_name":  "mark-gen3-release-as-released",  
         "job_description": "Mark the release as released",
         "job_params": {
-            "RELEASE_NAME":"{{ release_name }}", 
+            "RELEASE_NAME":"{{ release_version }}", 
             "JIRA_PROJECT":"QAT" 
         },  
         "schedule":  null,
