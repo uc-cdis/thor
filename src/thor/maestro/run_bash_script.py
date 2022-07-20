@@ -62,10 +62,10 @@ def expose_env_vars(release_version, env_dict):
     for k, v in env_dict.items():
         if v.startswith("{{"):
             param_keyword = v.strip("{ }")
-            if param_keyword == "release_name":
+            if param_keyword == "release_version":
                 os.environ[k] = release_version
             elif param_keyword == "integration_branch":
-                os.environ[k] = "integration" + release_version[:4] + release_version[-2:]
+                os.environ[k] = "integration" + "".join(release_version.split("."))
         else:
             os.environ[k] = v
     return
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     # run_shell(sys.argv[1])
     # attempt_to_run(sys.argv[1])
     temp_dict = {
-        "release_name": "{{ release_name }}",
+        "release_version": "{{ release_version }}",
         "integration_branch": "{{ integration_branch }}",
         "arbitrary_string": "words words words"
     }
