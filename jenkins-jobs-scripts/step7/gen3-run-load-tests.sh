@@ -1,6 +1,11 @@
 #################################################
 # Standing issues: 
 # No credentials for Github and running tests
+#   Specifically: 
+#       Github
+#       Fence-Google-App
+#       CI-Env-1
+#       QA-NIAID
 # Inability to archive test artifacts
 # Many variables exported - where do they go?
 # Anything related to functionality of sh commands. 

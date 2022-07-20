@@ -2,7 +2,7 @@
 # Standing issues: 
 # No Git authentication for checkouts
 # Unsure which repo to use for "manifest repo"
-# General credentials issue
+# General credentials issue (Github UN and Token)
 # What to use for $WORKSPACE?
 #################################################
 
