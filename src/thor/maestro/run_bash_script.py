@@ -31,6 +31,8 @@ def identify_script_to_run(step_num):
     selected_step = [v for v in steps_dict.values() if v["step_num"] == int(step_num)][0]
 
     script_name = selected_step["script"]
+    if script_name == None:
+        return None
     top_level_dir = os.getcwd() # Assumes this is being run from top-level /thor. 
     script_path = os.path.join(top_level_dir, "jenkins-jobs-scripts", \
         "step" + str(step_num), script_name)
@@ -59,6 +61,8 @@ def expose_env_vars(release_version, env_dict):
     in the current shell. If passed something in JINJA form, will create 
     the relevant variable from the current release version. 
     """
+    if env_dict == None:
+        return
     for k, v in env_dict.items():
         if v.startswith("{{"):
             param_keyword = v.strip("{ }")
@@ -88,7 +92,10 @@ def attempt_to_run(step_num):
     expose_env_vars(os.environ["RELEASE_VERSION"], job_params)
     
     os.chdir(top_level_dir + "/workspace")
-    status_code = run_shell(script_to_run)
+    if script_to_run == None:
+        return 0
+    else:
+        status_code = run_shell(script_to_run)
     os.chdir(top_level_dir)
 
     return status_code
