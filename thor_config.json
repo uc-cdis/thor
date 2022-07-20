@@ -1,5 +1,6 @@
 {
     "step1": {
+        "step_num": 1,
         "job_name":  "create-gen3-release-in-jira",  
         "job_description": "Create gen3 release in jira",
         "job_params": {
@@ -7,10 +8,12 @@
             "JIRA_PROJECT": "QAT"
         },  
         "schedule":  "0 21 8-15 * 5",  
-        "run_next":  "step2" 
+        "script": "dummy1.sh",
+        "run_next":  "step2"
     },   
 
     "step2": {  
+        "step_num": 2,
         "job_name":  "create-gen3-release-candidate-branch",  
         "job_description": "Cut the integration branch integration",
         "job_params": {
@@ -22,6 +25,7 @@
     },   
 
     "step3": {  
+        "step_num": 3,
         "job_name":  "check-quay-image",  
         "job_description": "Check if integration branch quay images are successfully created", 
         "job_params": {
@@ -31,9 +35,10 @@
         "run_next":  "step4"
     },
     
-    "step4": {  
-        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",
-        "job_description": "Pushing integration branch quay images to AWS ECR",   
+    "step4": {   
+        "step_num": 4,
+        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
+        "job_description": "Pushing integration branch quay images to AWS ECR",
         "job_params": {
             "RELEASE_VERSION": "{{ integration_branch }}"
         },  
@@ -42,6 +47,7 @@
     }, 
 
     "step5": {  
+        "step_num": 5,
         "job_name":  "update-ci-env-with-latest-integration-branch",  
         "job_description": " Create gitops-qa PRs to deploy the integration branch to QA environments",  
         "job_params": {
@@ -55,14 +61,16 @@
     },    
 
     "step6": {  
-        "job_name":  null,
-        "job_description": "Release testing round qa envs",  
-        "job_params": null,
+        "step_num": 6,
+        "job_name":  null, 
+        "job_description": "Release testing round qa envs", 
+        "job_params": null,  
         "schedule": null,  
         "run_next":  "step7"
     },
 
     "step7": {  
+        "step_num": 7,
         "job_name":  "gen3-run-load-tests",  
         "job_description": "Run load tests on qa-dcp", 
         "job_params": {
@@ -81,6 +89,7 @@
     },   
 
     "step8": {  
+        "step_num": 8,
         "job_name":  "merge-integration-branch-into-stable-and-tag",  
         "job_description": "Merge the integration branch into stable and tag the release", 
         "job_params": {
@@ -90,6 +99,7 @@
     },   
 
     "step9": {  
+        "step_num": 9,
         "job_name":  "check-quay-image",  
         "job_description": "Check if monthly release quay images are successfully created", 
         "job_params": {
@@ -100,6 +110,7 @@
     },
     
     "step10": {  
+        "step_num": 10,
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
         "job_description": "Pushing monthly release quay images to AWS ECR (as a backup)",
         "job_params": {
@@ -110,6 +121,7 @@
     }, 
 
     "step11": {  
+        "step_num": 11,
         "job_name":  "update-ci-env-with-latest-integration-branch",  
         "job_description": "Sanity Check the release",  
         "job_params": {
@@ -123,6 +135,7 @@
     },
 
     "step12": {  
+        "step_num": 12,
         "job_name":  "gen3-qa-release-notes-generator",  
         "job_description": "Generate release notes and publish release manifest",
         "job_params": {},  
@@ -130,7 +143,8 @@
         "run_next":  "step13"
     },
 
-    "step13": {  
+    "step13": {
+        "step_num": 13,
         "job_name":  null, 
         "job_description": "Send slack message to pulish release",
         "job_params": null,
@@ -139,6 +153,7 @@
     },
 
     "step14": {  
+        "step_num": 14,
         "job_name":  "delete-integration-branch-from-ecr",  
         "job_description": "Deleting the integration-branch will help lower the cost on the AWS",
         "job_params": {
@@ -149,6 +164,7 @@
     },
 
     "step15": {  
+        "step_num": 15,
         "job_name":  "mark-gen3-release-as-released",  
         "job_description": "Mark the release as released",
         "job_params": {

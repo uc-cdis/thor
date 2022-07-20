@@ -118,6 +118,7 @@ def create_release(version, result):
             )
 
             session.add(current_release)
+        return min_key
 
 
 def read_release(release_id):
@@ -254,9 +255,7 @@ class release_id_lookup_class:
     def release_id_lookup(self, given_version):
         """ Given a string version of a specific release, 
         return as int the corresponding release_id of the release. 
-        Currently behaves badly if 'version' does not correspond exactly
-        to a version string already in the database. 
-        Should fix to be more resilient. 
+        Returns None if the version is not in the database. 
         Also assumes that 'version' is unique to each Release object. 
             This is a design decision that may cause problems in the 
             future, but having a 1-to-1 mapping from 'version' to id
@@ -269,8 +268,12 @@ class release_id_lookup_class:
 
 
 if __name__ == "__main__":
-    print(read_all_releases())
+    # print(read_all_releases())
     # Deliberately introduced failing command:
+
+    release_name = "bananas"
+    rid = release_id_lookup_class()
+    print(rid.release_id_lookup(release_name))
 
     # new_version = "2021.09"
     # new_result = "success"
