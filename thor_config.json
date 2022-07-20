@@ -40,7 +40,7 @@
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",
         "job_description": "Pushing integration branch quay images to AWS ECR",   
         "job_params": {
-            "RELEASE_VERSION": "{{ integration_branch }}"
+            "RELEASE_VERSION": "{{ release_version }}"
         },  
         "schedule": null,  
         "run_next":  "step5"
@@ -79,7 +79,7 @@
             "PRESIGNED_URL_ACL_FILTER":"QA", 
             "SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT":100,
             "DESIRED_NUMBER_OF_FENCE_PODS":10,
-            "RELEASE_VERSION":"2020.01",
+            "RELEASE_VERSION":"{{ release_version }}",
             "INDEXD_NUM_OF_RECORDS_TO_CREATE":100,
             "SIGNED_URL_PROTOCOL":"s3",
             "SQS_URL":"https://sqs.us-east-1.amazonaws.com/707767160287/qaplanetv2--qa-niaid--audit-sqs"
@@ -103,7 +103,7 @@
         "job_name":  "check-quay-image",  
         "job_description": "Check if monthly release quay images are successfully created", 
         "job_params": {
-            "RELEASE_TAG": "{{ release_version }}"
+            "RELEASE_VERSION": "{{ release_version }}"
         },  
         "schedule": null,  
         "run_next":  "step10"
@@ -164,7 +164,7 @@
         "job_name":  "mark-gen3-release-as-released",  
         "job_description": "Mark the release as released",
         "job_params": {
-            "RELEASE_NAME":"{{ release_version }}", 
+            "RELEASE_VERSION":"{{ release_version }}", 
             "JIRA_PROJECT":"QAT" 
         },  
         "schedule":  null,
