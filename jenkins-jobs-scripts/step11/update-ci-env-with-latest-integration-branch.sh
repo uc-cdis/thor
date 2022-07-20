@@ -1,3 +1,4 @@
+#!/bin/bash +x
 #################################################
 # Standing issues: 
 # No Git authentication for checkouts

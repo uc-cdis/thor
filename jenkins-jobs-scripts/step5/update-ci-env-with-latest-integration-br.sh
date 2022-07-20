@@ -1,4 +1,4 @@
-# update-ci-env-with-latest-integration-branch.sh
+# #!/bin/bash -x  
 #################################################
 # Standing Issues:
 # No credentials for Github

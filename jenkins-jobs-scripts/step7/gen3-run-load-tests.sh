@@ -1,3 +1,4 @@
+# #!/bin/bash -x  
 #################################################
 # Standing issues: 
 # No credentials for Github and running tests
