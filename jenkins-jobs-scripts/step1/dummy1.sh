@@ -1,0 +1,1 @@
+echo "dummy step 1" >> ../shell_script_target.txt

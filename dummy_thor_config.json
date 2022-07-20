@@ -19,6 +19,7 @@
             "FORK_FROM":"main"
         },  
         "schedule": null,  
+        "script": "dummy2.sh",
         "run_next":  "step3"
     },   
 
@@ -29,6 +30,7 @@
             "RELEASE_TAG": "integration202008"
         },  
         "schedule": null,  
+        "script": "dummy3.sh",
         "run_next":  "step4"
     },
     
@@ -39,6 +41,7 @@
             "RELEASE_VERSION": "integration202008"
         },  
         "schedule": null,  
+        "script": "dummy4.sh",
         "run_next":  "step5"
     }, 
 
@@ -52,6 +55,7 @@
             "TARGET_ENVIRONMENT":"ci-env-1.planx-pla.net"
         },  
         "schedule": null,  
+        "script": "dummy5.sh",
         "run_next":  "step6"
     },   
 
@@ -60,6 +64,7 @@
         "job_name":  "gen3-qa-release-notes-generator",  
         "job_params": {},  
         "schedule": null,  
+        "script": "dummy6.sh",
         "run_next":  "step7"
     },   
 
@@ -78,6 +83,7 @@
             "SQS_URL":"https://sqs.us-east-1.amazonaws.com/707767160287/qaplanetv2--qa-niaid--audit-sqs"
         },  
         "schedule": null,  
+        "script": "dummy7.sh",
         "run_next":  "step8"
     },   
 
@@ -88,6 +94,7 @@
             "RELEASE_VERSION":"2020.01"
         },  
         "schedule": "0 21 22-29 * 5",  
+        "script": "dummy8.sh", 
         "run_next":  "step9"
     },   
 
@@ -98,6 +105,7 @@
             "RELEASE_TAG": "2021.01"
         },  
         "schedule": null,  
+        "script": "dummy9.sh",
         "run_next":  "step10"
     },
     
@@ -108,6 +116,7 @@
             "RELEASE_VERSION": "2020.07"
         },  
         "schedule": null,  
+        "script": "dummy10.sh",
         "run_next":  "step11"
     }, 
 
@@ -119,6 +128,7 @@
             "JIRA_PROJECT":"QAT" 
         },  
         "schedule":  null,
+        "script": "dummy11.sh",
         "run_next": null
     }
 }
