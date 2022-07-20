@@ -4,6 +4,7 @@ import logging
 
 from thor.dao import config
 from thor.dao.models import Task
+from thor.dao.release_dao import release_id_lookup_class
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
@@ -35,8 +36,8 @@ def session_scope():
 
 
 # TODO: Investigate possibility of merging this functionality with release_dao.
-def manual_create_task(key, name, status, release_id):
-    """ Given int ID, string name, string status, and int release_id, 
+def manual_create_task(key, name, status, release_id, step_num):
+    """ Given int ID, string name, string status, int release_id, and int step_num,
     creates a Task object, and inserts it into the database controlled
     by the currently active session (tasks DB). 
     Note that release_id is a foreign key corresponding to Release DB. 
@@ -49,7 +50,7 @@ def manual_create_task(key, name, status, release_id):
                     f"That keyvalue {str(key)} is already in the database. "
                 )
             current_task = Task(
-                task_id=key, task_name=name, status=status, release_id=release_id
+                task_id=key, task_name=name, status=status, release_id=release_id, step_num=step_num
             )
         except Exception as e:
             print(e)
@@ -59,10 +60,10 @@ def manual_create_task(key, name, status, release_id):
             session.add(current_task)
 
 
-def create_task(name, status, release_id):
-    """ Given string name (version name), string status, and int release_id, 
+def create_task(name, status, release_id, step_num):
+    """ Given string name (version name), string status, int release_id, and int step_num
     creates a Task object, and inserts it into the database controlled
-    by the currently active session (TaskDB). 
+    by the currently active session (TaskDB). Returns the new task ID. 
     Autonatically generates an ID that will work based on the IDs already in the table. 
     Uses the minimum unused integer (min 0). 
     Depends on getkeys. 
@@ -83,16 +84,17 @@ def create_task(name, status, release_id):
             min_key = curr_keys[-1] + 1
 
         currentTask = Task(
-            task_id=min_key, task_name=name, status=status, release_id=release_id
+            task_id=min_key, task_name=name, status=status, release_id=release_id, step_num=step_num
         )
         log.info(f"Added task {min_key} to Tasks table")
 
         session.add(currentTask)
+        return min_key
 
 
 def read_task(key):
     """ Given the (int) key of the Task to be read, returns a Task Object in the format:
-    'Key: %key, Name: %name, Version: %version, Result: %result', where 
+    'Key: %key, Name: %name, Version: %version, Status: %status, Task Num: %step_num', where 
     each %value is the value corresponding to the given key. 
     Throws an Exception if the key value is not in the database.  """
 
@@ -111,9 +113,31 @@ def read_task(key):
             session.expunge_all()
             return task
 
+def get_release_tasks(release_id):
+    """
+    Gets all tasks associated with a specific release
+    (as specified by input release_id, and returns them as a list. 
+    """
+    
+    with session_scope() as session:
+        tasks = [task for task in session.query(Task).filter_by(release_id=release_id)]
+        session.expunge_all()
+        return tasks
+
+def get_release_task_step(release_name, step_num):
+    """ Given a release name and step number, returns the task
+    associated with that step. """
+
+    with session_scope() as session:
+        release_id = release_id_lookup_class.release_id_lookup(None, release_name)
+        task = session.query(Task).filter_by(release_id=release_id, step_num=step_num).first()
+        # Note that this combination should be unique, 
+        # so we can pull the first task without worry. 
+        session.expunge_all()
+        return task
 
 def read_all_tasks():
-    """ Returns a list of all Task objects in the Tasks table of te database. 
+    """ Returns a list of all Task objects in the Tasks table of the database. 
     Primarily to be used by main:app/tasks, as it must call get_all_tasks
     in a somewhat inefficient manner otherwise. """
 
@@ -180,13 +204,14 @@ def delete_task(input):
 
     if type(input) is int:
         del_task(input)
+        log.info(f"Deleted task {input} from the database.")
     elif type(input) is list:
         for i in input:
             del_task(i)
-        log.info(f"All entries in list {input} were deleted. ")
+        log.info(f"All tasks in list {input} were deleted. ")
 
 
-def get_task_num():
+def get_num_tasks():
     """ Gets the number of entries in the current database table. 
     Returns this number as an integer. """
 
@@ -203,8 +228,8 @@ def get_task_keys():
 
     with session_scope() as session:
 
-        for release in session.query(Task):
-            key_list.append(release.task_id)
+        for task in session.query(Task):
+            key_list.append(task.task_id)
         return key_list
 
 
@@ -234,9 +259,10 @@ def lookup_task_key(desired_task_name, desired_release_id):
 
 
 if __name__ == "__main__":
-    print(read_all_tasks())
-
-    wanted_string = "Update CI env with the latest integration branch"
-    wanted_id = 3
+    # print(read_all_tasks())
+    tasklist = get_release_tasks(6)
+    print(tasklist)
+    # wanted_string = "Update CI env with the latest integration branch"
+    # wanted_id = 3
 
     # print(lookup_key(wanted_string, wanted_id))
