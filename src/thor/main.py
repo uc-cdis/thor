@@ -295,7 +295,7 @@ async def run_task(task_id: int):
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task with id {task_id} FAILED with code {status_code}.")
-    return JSONResponse(content={"task_id": task_id})
+    return JSONResponse(content={"task_id": task_id, "status": "SUCCESS" if status_code == 0 else "FAILED"})
 
 
 @app.put("/clear")
