@@ -198,17 +198,14 @@ async def start_release(release_name: str):
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
     for step in release_tasks:
-        update_task(step.task_id, "status", "RUNNING")
-        log.info(f"Successfully started task #{step.step_num} with id {step.task_id}.")
-        status_code = attempt_to_run(step.step_num)
-        if status_code == 0:
-            update_task(step.task_id, "status", "SUCCESS")
-            log.info(f"Task #{step.step_num} of release {release_name} SUCCESS.")
-            task_results[step.step_num] = "SUCCESS"
-        else:
-            update_task(step.task_id, "status", "FAILED")
-            log.info(f"Task #{step.step_num} of release {release_name} FAILED with code {status_code}.")
-            task_results[step.step_num] = "FAILED"
+        step_results = await run_task(step.task_id)
+        step_status = json.loads(step_results.body.decode("utf-8"))["status"]
+        task_results[step.step_num] = step_status
+        
+        print(step.step_num, step_status)
+        if step_status != "SUCCESS": 
+            # This is expected to only be "FAILED", but if we expand in the future,
+            # some logic will have to be reworked below. 
             break
     # Now, we can update the release status.
     log.info(all(task_results.values()))
@@ -217,8 +214,8 @@ async def start_release(release_name: str):
         log.info(f"Successfully completed release {release_name}.")
     else:
         update_release(release_id, "result", "PAUSED")
-        # fail_index = [task.step_num for task in release_tasks if task.status == "FAILED"][0]
-        fail_index = 1
+        print([(task == "FAILED") for task in task_results.values()])
+        fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
         log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
 
     return JSONResponse(content={"release_name": release_name, "task_results": task_results})
@@ -249,19 +246,17 @@ async def restart_release(release_name: str):
         if step.status == "SUCCESS":
             task_results[step.step_num] = "SUCCESS"
         else:
-            update_task(step.task_id, "status", "RUNNING")
-            log.info(f"Successfully started task with id {step.task_id}.")
-            status_code = attempt_to_run(step.step_num)
-            if status_code == 0:
+            step_results = await run_task(step.task_id)
+            step_status = json.loads(step_results.body.decode("utf-8"))["status"]
+            if step_status == "SUCCESS":
                 update_task(step.task_id, "status", "SUCCESS")
-                log.info(f"Task #{step.step_num} of release {release_name} SUCCESS.")
                 task_results[step.step_num] = "SUCCESS"
+            # Some more support for different statuses might be nice, 
+            # but that depends on how smart we want thor to be at restarting tasks.
             else:
                 update_task(step.task_id, "status", "FAILED")
-                log.info(f"Task #{step.step_num} of release {release_name} FAILED with code {status_code}.")
                 task_results[step.step_num] = "FAILED"
                 break
-    
 
     # Now, we can update the release status.
     if set(task_results.values()) == {"SUCCESS"}:
@@ -273,7 +268,8 @@ async def restart_release(release_name: str):
         log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
     
     return JSONResponse(content={\
-        "release_name": release_name, "status":set(task_results.values()) == {"SUCCESS"}, "task_results": task_results})
+        "release_name": release_name, "task_results": task_results, \
+            "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
 
 
 @app.put("/run_task/{task_id}")
