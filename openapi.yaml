@@ -313,6 +313,36 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
+  "/releases/{release_name}/run_step/{step_num}":
+    put:
+      summary: Run Step
+      description: 'This endpoint is used to run a specific step in a release. '
+      operationId: run_step_releases__release_name__run_step__step_num__put
+      parameters:
+      - required: true
+        schema:
+          title: Release Name
+          type: string
+        name: release_name
+        in: path
+      - required: true
+        schema:
+          title: Step Num
+          type: integer
+        name: step_num
+        in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
   "/clear":
     put:
       summary: Clear All
