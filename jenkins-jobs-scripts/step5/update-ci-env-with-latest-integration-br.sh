@@ -1,12 +1,12 @@
 # #!/bin/bash -x  
 #################################################
 # Standing Issues:
-# No credentials for Github
+# No credentials for Github - pulling $GITHUB_USERNAME and $GITHUB_PASSWORD from env
 # General functionality of gen3release unknown - must test
 ##################################################
 
 
-git clone https://github.com/uc-cdis/gen3-release-utils.git
+git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/uc-cdis/gen3-release-utils.git
 # Checkout manifest?
 
 cd gen3-release-utils/gen3release-sdk

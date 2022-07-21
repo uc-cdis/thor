@@ -1,21 +1,21 @@
 #!/bin/bash +x
 #################################################
 # Standing issues: 
-# No Git authentication for checkouts
+# No Git authentication for checkouts - pulling $GITHUB_USERNAME and $GITHUB_PASSWORD from env
 # General credentials issue (Github UN and Token)
 #################################################
 
 # stage('Initial setup')
 
 # manifest repo
-git clone https://github.com/uc-cdis/${REPO_NAME}
+git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/uc-cdis/${REPO_NAME}
 # This is "gitops-qa" being loaded in
 
 # gen3-release-utils
 git clone https://github.com/uc-cdis/gen3-release-utils.git
 
 # stage('Update CI environment')
-withCredentials([usernamePassword(credentialsId: 'PlanXCyborgUserJenkins', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')])
+# withCredentials([usernamePassword(credentialsId: 'PlanXCyborgUserJenkins', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')])
 # This credentials issue needs to be fixed, as before. 
 cd gen3-release-utils
 
