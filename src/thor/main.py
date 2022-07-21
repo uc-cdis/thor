@@ -281,7 +281,7 @@ async def run_task(task_id: int):
     """ This endpoint is used to run a task. """
     task = read_task(task_id)
 
-    if task.status != "PENDING" or task.status != "FAILED":
+    if task.status != "PENDING" and task.status != "FAILED":
         log.error(f"Attempt to run task with status {task.status}.")
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","status"],"msg":"Task status is not PENDING or FAILED."}])
@@ -296,6 +296,28 @@ async def run_task(task_id: int):
         update_task(task_id, "status", "FAILED")
         log.info(f"Task with id {task_id} FAILED with code {status_code}.")
     return JSONResponse(content={"task_id": task_id, "status": "SUCCESS" if status_code == 0 else "FAILED"})
+
+@app.put("/releases/{release_name}/run_step/{step_num}")
+async def run_step(release_name: str, step_num: int):
+    """ This endpoint is used to run a specific step in a release. """
+    rid_lookupper = release_id_lookup_class()
+    release_id = rid_lookupper.release_id_lookup(release_name)
+
+    if release_id not in get_release_keys():
+        log.error(f"Attempt to run step with invalid name {release_name}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
+
+    release_tasks = get_release_tasks(release_id)
+
+    if step_num not in [task.step_num for task in release_tasks]:
+        log.error(f"Attempt to run step with invalid step number {step_num}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","step_num"],"msg":"No such step_num exists."}])
+    else:
+        task_id = [task.task_id for task in release_tasks if task.step_num == step_num][0]
+        # Note that as each release should only have one of each step_num, this should be unique. 
+        return await run_task(task_id)
 
 
 @app.put("/clear")
