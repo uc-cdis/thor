@@ -13,4 +13,4 @@ git clone https://github.com/uc-cdis/gen3-release-utils.git
 cd gen3-release-utils/gen3release-sdk
 poetry install
 poetry run gen3release apply -v $INTEGRATION_BRANCH -e ${WORKSPACE}/${REPO_NAME}/${TARGET_ENVIRONMENT} -pr "${PR_TITLE} ${INTEGRATION_BRANCH} ${TARGET_ENVIRONMENT} $(date +%s)"
-# What to specify for $WORKSPACE? $PR_TITLE?
+# What to specify for $WORKSPACE?

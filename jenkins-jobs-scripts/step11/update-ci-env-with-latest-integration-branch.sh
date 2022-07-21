@@ -11,7 +11,7 @@
 
 # manifest repo
 git clone https://github.com/uc-cdis/${REPO_NAME}
-# Which Repo?
+# This is "gitops-qa" being loaded in
 
 # gen3-release-utils
 git clone https://github.com/uc-cdis/gen3-release-utils.git
