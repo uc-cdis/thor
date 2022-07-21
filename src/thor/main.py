@@ -98,7 +98,7 @@ async def get_release_task_specific(release_name: str, step_num: int):
 
     if task_to_return is None:
         log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
-        return JSONResponse(content={"task": None})
+        raise HTTPException(status_code=404, detail="No task found for release with name {release_name} and step_num {step_num}.")
     else:
         task = jsonable_encoder(task_to_return)
         log.info(f"Successfully obtained task info for release with name {release_name} and step_num {step_num}.")
@@ -115,7 +115,7 @@ async def get_all_tasks(release_name: str = None, step_num: int = None):
     """
 
     if release_name and step_num:
-        task_to_return = get_release_task_step(release_name, step_num)
+        task_to_return = jsonable_encoder(get_release_task_step(release_name, step_num))
         # print(task_to_return)
         if task_to_return is None:
             log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
