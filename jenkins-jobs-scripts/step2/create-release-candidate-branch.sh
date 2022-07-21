@@ -3,7 +3,7 @@
 BRANCH_NAME=""
 YEAR_STR=""
 BRANCH_NAME=""
-if [[ $RELEASE_VERSION =~ ([0-9]{4})\.([0-9]{2}) ]]; then
+if [[ $RELEASE_NAME =~ ([0-9]{4})\.([0-9]{2}) ]]; then
   echo "match"
   YEAR_STR="${BASH_REMATCH[1]}"
   CONVERTED_MONHT_STR_TO_NUMBER=$(expr ${BASH_REMATCH[2]} + 0)
