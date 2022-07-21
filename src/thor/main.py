@@ -184,6 +184,7 @@ async def start_release(release_name: str):
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
     update_release(release_id, "result", "RUNNING")
+    os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Successfully started release with name {release_name}.")
 
     # First, we have to find all tasks for this release. 
@@ -238,6 +239,7 @@ async def restart_release(release_name: str):
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
     update_release(release_id, "result", "RUNNING")
+    os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Restarted release with name {release_name}.")
 
     # NOTE: The same caveats as above apply here. 
