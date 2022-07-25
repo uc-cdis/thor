@@ -74,6 +74,19 @@ def expose_env_vars(release_version, env_dict):
             os.environ[k] = str(v)
     return
 
+def make_clean_workspace(num_steps:int):
+    """
+    Checks to see if there's a valid 'workspace' dir in the cwd. 
+    If so, deletes and recreates it, otherwise, just creates it.
+    """
+    if os.path.exists(os.getcwd() + "/workspace"):
+        shutil.rmtree(os.getcwd() + "/workspace")
+    os.mkdir(os.getcwd() + "/workspace")
+    for i in range(1, num_steps+1):
+        os.mkdir(os.getcwd() + "/workspace/" + str(i))
+    return
+
+
 
 def attempt_to_run(step_num):
     """
@@ -83,15 +96,12 @@ def attempt_to_run(step_num):
     will chdir back to the original directory after running the script.
     """
     top_level_dir = os.getcwd() # Assumes this is being run from top-level /thor. 
-    if os.path.exists(top_level_dir + "/workspace"):
-        shutil.rmtree(top_level_dir + "/workspace")
-    os.mkdir(top_level_dir + "/workspace")
-
+    
     script_to_run = identify_script_to_run(step_num)
     job_params = pull_job_params(step_num)
     expose_env_vars(os.environ["RELEASE_VERSION"], job_params)
     
-    os.chdir(top_level_dir + "/workspace")
+    os.chdir(top_level_dir + "/workspace/" + str(step_num))
     if script_to_run == None:
         return 0
     else:
@@ -105,6 +115,7 @@ if __name__ == "__main__":
     # print(identify_script_to_run(sys.argv[1]))
     # run_shell(sys.argv[1])
     # attempt_to_run(sys.argv[1])
+    make_clean_workspace(int(sys.argv[1]))
     temp_dict = {
         "release_version": "{{ release_version }}",
         "integration_branch": "{{ integration_branch }}",
@@ -112,4 +123,4 @@ if __name__ == "__main__":
     }
     temp_release = "2020.15"
     expose_env_vars(temp_release, temp_dict)
-    run_shell("env_printer.sh")
+    # run_shell("env_printer.sh")
