@@ -25,7 +25,9 @@ This new tool (THOR) has the following features:
 
 # Architectural diagrams
 
-TBD
+<img src="./images/diagram.png" alt="drawing" width="1250"/>
+
+_Image by Colin Yao_
 
 # How to run Thor
 
