@@ -11,7 +11,7 @@ from thor.dao.clear_tables_reseed import reseed
 client = TestClient(app)
 
 def clear_shell_script_target():
-    script_target_file_name = "shell_script_target.txt"
+    script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
     with open(target_absolute_path, "w") as target_file:
         target_file.write("Shell Script Target\n\n")
@@ -58,7 +58,7 @@ def test_restart_release(release_name):
     # Checks contents of the "shell_script_target.txt" file to ensure that
     # 1-8 were run, then 8-11 as well. 
 
-    script_target_file_name = "shell_script_target.txt"
+    script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
     with open(target_absolute_path, "r") as read_target_file:
         target_file_contents = read_target_file.read()
