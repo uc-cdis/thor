@@ -86,6 +86,14 @@ def make_clean_workspace(num_steps:int):
         os.mkdir(os.getcwd() + "/workspace/" + str(i))
     return
 
+def populate_workspace(num_steps:int):
+    """ populates workspace - quick and dirty """
+    for i in range(1, num_steps+1):
+        filename = "workspace/" + str(i) + "/" + str(i) + ".txt"
+        g = open(filename, "x")
+        with open(filename, "w") as f:
+            f.write("step " + str(i))
+    return
 
 
 def attempt_to_run(step_num):
@@ -116,6 +124,7 @@ if __name__ == "__main__":
     # run_shell(sys.argv[1])
     # attempt_to_run(sys.argv[1])
     make_clean_workspace(int(sys.argv[1]))
+    populate_workspace(int(sys.argv[1]))
     temp_dict = {
         "release_version": "{{ release_version }}",
         "integration_branch": "{{ integration_branch }}",
