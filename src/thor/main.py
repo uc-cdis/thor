@@ -64,10 +64,13 @@ async def create_new_release(release_name: str):
     """ This endpoint is used to create a new release and all associated tasks with status PENDING. """
     release_id = create_release(version = release_name, result = "PENDING")
     log.info(f"Successfully created release with id {release_id}.")
-    with open("thor_config.json") as f:
+    with open("dummy_thor_config.json") as f:
         steps_dict = json.load(f)
 
+    # print(steps_dict)
+
     for step in steps_dict:
+        # print(steps_dict[step])
         task_id = create_task(steps_dict[step]["job_name"], "PENDING", release_id, steps_dict[step]["step_num"])
         log.info(f"Successfully created task with id {task_id} for release with id {release_id}.")
     log.info(f"Successfully created all tasks for release with id {release_id}.")
@@ -203,7 +206,7 @@ async def start_release(release_name: str):
         step_status = json.loads(step_results.body.decode("utf-8"))["status"]
         task_results[step.step_num] = step_status
         
-        print(step.step_num, step_status)
+        # print(step.step_num, step_status)
         if step_status != "SUCCESS": 
             # This is expected to only be "FAILED", but if we expand in the future,
             # some logic will have to be reworked below. 
@@ -215,7 +218,7 @@ async def start_release(release_name: str):
         log.info(f"Successfully completed release {release_name}.")
     else:
         update_release(release_id, "result", "PAUSED")
-        print([(task == "FAILED") for task in task_results.values()])
+        # print([(task == "FAILED") for task in task_results.values()])
         fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
         log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
 
@@ -283,9 +286,12 @@ async def run_task(task_id: int):
         log.error(f"Attempt to run task with status {task.status}.")
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","status"],"msg":"Task status is not PENDING or FAILED."}])
-    
+
     update_task(task_id, "status", "RUNNING")
     log.info(f"Successfully set task with id {task_id} to status RUNNING.")
+
+    release_name = read_release(task.release_id).version
+    os.environ["RELEASE_VERSION"] = release_name
     status_code = attempt_to_run(task.step_num)
     if status_code == 0:
         update_task(task_id, "status", "SUCCESS")

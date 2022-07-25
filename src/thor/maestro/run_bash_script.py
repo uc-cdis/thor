@@ -64,14 +64,14 @@ def expose_env_vars(release_version, env_dict):
     if env_dict == None:
         return
     for k, v in env_dict.items():
-        if v.startswith("{{"):
+        if str(v).startswith("{{"):
             param_keyword = v.strip("{ }")
             if param_keyword == "release_version":
                 os.environ[k] = release_version
             elif param_keyword == "integration_branch":
                 os.environ[k] = "integration" + "".join(release_version.split("."))
         else:
-            os.environ[k] = v
+            os.environ[k] = str(v)
     return
 
 
