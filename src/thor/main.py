@@ -98,7 +98,7 @@ async def get_release_task_specific(release_name: str, step_num: int):
 
     if task_to_return is None:
         log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
-        return JSONResponse(content={"task": None})
+        raise HTTPException(status_code=404, detail="No task found for release with name {release_name} and step_num {step_num}.")
     else:
         task = jsonable_encoder(task_to_return)
         log.info(f"Successfully obtained task info for release with name {release_name} and step_num {step_num}.")
@@ -115,7 +115,7 @@ async def get_all_tasks(release_name: str = None, step_num: int = None):
     """
 
     if release_name and step_num:
-        task_to_return = get_release_task_step(release_name, step_num)
+        task_to_return = jsonable_encoder(get_release_task_step(release_name, step_num))
         # print(task_to_return)
         if task_to_return is None:
             log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
@@ -199,17 +199,14 @@ async def start_release(release_name: str):
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
     for step in release_tasks:
-        update_task(step.task_id, "status", "RUNNING")
-        log.info(f"Successfully started task #{step.step_num} with id {step.task_id}.")
-        status_code = attempt_to_run(step.step_num)
-        if status_code == 0:
-            update_task(step.task_id, "status", "SUCCESS")
-            log.info(f"Task #{step.step_num} of release {release_name} SUCCESS.")
-            task_results[step.step_num] = "SUCCESS"
-        else:
-            update_task(step.task_id, "status", "FAILED")
-            log.info(f"Task #{step.step_num} of release {release_name} FAILED with code {status_code}.")
-            task_results[step.step_num] = "FAILED"
+        step_results = await run_task(step.task_id)
+        step_status = json.loads(step_results.body.decode("utf-8"))["status"]
+        task_results[step.step_num] = step_status
+        
+        print(step.step_num, step_status)
+        if step_status != "SUCCESS": 
+            # This is expected to only be "FAILED", but if we expand in the future,
+            # some logic will have to be reworked below. 
             break
     # Now, we can update the release status.
     log.info(all(task_results.values()))
@@ -218,8 +215,8 @@ async def start_release(release_name: str):
         log.info(f"Successfully completed release {release_name}.")
     else:
         update_release(release_id, "result", "PAUSED")
-        # fail_index = [task.step_num for task in release_tasks if task.status == "FAILED"][0]
-        fail_index = 1
+        print([(task == "FAILED") for task in task_results.values()])
+        fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
         log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
 
     return JSONResponse(content={"release_name": release_name, "task_results": task_results})
@@ -251,19 +248,17 @@ async def restart_release(release_name: str):
         if step.status == "SUCCESS":
             task_results[step.step_num] = "SUCCESS"
         else:
-            update_task(step.task_id, "status", "RUNNING")
-            log.info(f"Successfully started task with id {step.task_id}.")
-            status_code = attempt_to_run(step.step_num)
-            if status_code == 0:
+            step_results = await run_task(step.task_id)
+            step_status = json.loads(step_results.body.decode("utf-8"))["status"]
+            if step_status == "SUCCESS":
                 update_task(step.task_id, "status", "SUCCESS")
-                log.info(f"Task #{step.step_num} of release {release_name} SUCCESS.")
                 task_results[step.step_num] = "SUCCESS"
+            # Some more support for different statuses might be nice, 
+            # but that depends on how smart we want thor to be at restarting tasks.
             else:
                 update_task(step.task_id, "status", "FAILED")
-                log.info(f"Task #{step.step_num} of release {release_name} FAILED with code {status_code}.")
                 task_results[step.step_num] = "FAILED"
                 break
-    
 
     # Now, we can update the release status.
     if set(task_results.values()) == {"SUCCESS"}:
@@ -275,7 +270,8 @@ async def restart_release(release_name: str):
         log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
     
     return JSONResponse(content={\
-        "release_name": release_name, "status":set(task_results.values()) == {"SUCCESS"}, "task_results": task_results})
+        "release_name": release_name, "task_results": task_results, \
+            "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
 
 
 @app.put("/run_task/{task_id}")
@@ -283,7 +279,7 @@ async def run_task(task_id: int):
     """ This endpoint is used to run a task. """
     task = read_task(task_id)
 
-    if task.status != "PENDING" or task.status != "FAILED":
+    if task.status != "PENDING" and task.status != "FAILED":
         log.error(f"Attempt to run task with status {task.status}.")
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","status"],"msg":"Task status is not PENDING or FAILED."}])
@@ -297,7 +293,29 @@ async def run_task(task_id: int):
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task with id {task_id} FAILED with code {status_code}.")
-    return JSONResponse(content={"task_id": task_id})
+    return JSONResponse(content={"task_id": task_id, "status": "SUCCESS" if status_code == 0 else "FAILED"})
+
+@app.put("/releases/{release_name}/run_step/{step_num}")
+async def run_step(release_name: str, step_num: int):
+    """ This endpoint is used to run a specific step in a release. """
+    rid_lookupper = release_id_lookup_class()
+    release_id = rid_lookupper.release_id_lookup(release_name)
+
+    if release_id not in get_release_keys():
+        log.error(f"Attempt to run step with invalid name {release_name}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
+
+    release_tasks = get_release_tasks(release_id)
+
+    if step_num not in [task.step_num for task in release_tasks]:
+        log.error(f"Attempt to run step with invalid step number {step_num}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","step_num"],"msg":"No such step_num exists."}])
+    else:
+        task_id = [task.task_id for task in release_tasks if task.step_num == step_num][0]
+        # Note that as each release should only have one of each step_num, this should be unique. 
+        return await run_task(task_id)
 
 
 @app.put("/clear")
