@@ -18,10 +18,10 @@ with open(test_data_absolute_path, "r") as post_release_test:
     expected_output_for_post_release = json.load(post_release_test)
 
 
-reseed()
 
 @pytest.mark.parametrize("release_name", ["test_release_5"])
 def test_post_release(release_name: str):
+    reseed()
     post_response = client.post("/releases/" + release_name)
     assert post_response.status_code == 200
     assert list(post_response.json().keys()) == ["release_id"]
@@ -36,7 +36,7 @@ def test_post_release(release_name: str):
     assert list(tasks_get_response.json().keys()) == ["release_tasks"]
     response_body = tasks_get_response.json()["release_tasks"]
 
-    test_data_file_name = "thor_config.json"
+    test_data_file_name = "dummy_thor_config.json"
     test_data_absolute_path = os.path.join(os.getcwd(), test_data_file_name)
 
     with open(test_data_absolute_path, "r") as test_release_tasks:

@@ -11,7 +11,7 @@ from thor.dao.clear_tables_reseed import reseed
 client = TestClient(app)
 
 def clear_shell_script_target():
-    script_target_file_name = "shell_script_target.txt"
+    script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
     with open(target_absolute_path, "w") as target_file:
         target_file.write("Shell Script Target\n\n")
@@ -39,7 +39,7 @@ def test_successful_release_cycle(release_name):
     # Checks contents of the "shell_script_target.txt" file to ensure that
     # all the shell scripts were run correctly.
 
-    script_target_file_name = "shell_script_target.txt"
+    script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
     with open(target_absolute_path, "r") as read_target_file:
         target_file_contents = read_target_file.read()
@@ -107,7 +107,7 @@ def test_failing_release_cycle(release_name):
     # Checks contents of the "shell_script_target.txt" file to ensure that
     # only the first 7 shell scripts were run before stopping. 
 
-    script_target_file_name = "shell_script_target.txt"
+    script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
     with open(target_absolute_path, "r") as read_target_file:
         target_file_contents = read_target_file.read()
