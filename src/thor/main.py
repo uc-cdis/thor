@@ -4,8 +4,8 @@ import os
 import logging
 import datetime
 import json
-from platform import release
-from turtle import update
+# from platform import release
+# from turtle import update
 
 from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -18,8 +18,8 @@ from thor.dao.release_dao import \
 from thor.dao.task_dao import \
     create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, get_release_task_step,\
         update_task, delete_task
-from thor.maestro.run_bash_script import attempt_to_run
-from thor.time.scheduler import Scheduler
+# from thor.maestro.run_bash_script import attempt_to_run
+# from thor.time.scheduler import Scheduler
 import thor.dao.clear_tables_reseed as ctrs
 from thor.maestro.bash import BashJobManager
 
@@ -292,7 +292,6 @@ async def run_task(task_id: int):
     log.info(f"Successfully set task with id {task_id} to status RUNNING.")
 
     release_name = read_release(task.release_id).version
-
     curr_job_manager = BashJobManager(release_name)
 
     status_code = curr_job_manager.run_job(task.step_num)
