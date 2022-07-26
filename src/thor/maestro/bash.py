@@ -7,6 +7,7 @@ from pathlib import Path
 from thor.maestro.baton import JobManager
 from thor.dao.task_dao import create_task, lookup_task_key, update_task
 from thor.dao.release_dao import release_id_lookup_class
+from thor.maestro.run_bash_script import pull_job_params
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ class BashJobManager(JobManager):
 
         self.release_name = release_name
 
-    def run_job(self, step_num, param_dict):
+    def run_job(self, step_num):
         """
         Takes in the step_num of a step, and the list of parameters
         which need to be exposed as env variables. 
@@ -35,7 +36,8 @@ class BashJobManager(JobManager):
             log.info("No script found for step {}".format(step_num))
             return
         log.info("Script found for step {}".format(step_num))
-        job_params = param_dict
+        job_params = self.pull_job_params(step_num)
+
         if job_params == None:
             log.info("No job params found for step {}".format(step_num))
             return
@@ -81,6 +83,23 @@ class BashJobManager(JobManager):
         script_path = os.path.join(top_level_dir, "jenkins-jobs-scripts", \
             "step" + str(step_num), script_name)
         return script_path
+
+    def pull_job_params(self, step_num):
+        """
+        Given the step number, looks in thor_config.json to figure out
+        which job parameters should be passed to the command. 
+        Returns the job_params dict. 
+        NOTE: Looks at DEVELOPMENT to determine which config file to use.
+        """
+        if DEVELOPMENT:
+            with open("dummy_thor_config.json") as f:
+                steps_dict = json.load(f)
+        else:
+            with open("thor_config.json") as f:
+                steps_dict = json.load(f)
+        selected_step = [v for v in steps_dict.values() if v["step_num"] == int(step_num)][0]
+        job_params = selected_step["job_params"]
+        return job_params
 
     def expose_env_vars(self, release_version, env_dict):
         """

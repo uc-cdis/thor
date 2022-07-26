@@ -21,6 +21,7 @@ from thor.dao.task_dao import \
 from thor.maestro.run_bash_script import attempt_to_run
 from thor.time.scheduler import Scheduler
 import thor.dao.clear_tables_reseed as ctrs
+from thor.maestro.bash import BashJobManager
 
 # Sample POST request with curl:
 # curl -X POST --header "Content-Type: application/json" --data @json_objs/sample_task_0.json 0.0.0.0:6565/tasks
@@ -291,8 +292,10 @@ async def run_task(task_id: int):
     log.info(f"Successfully set task with id {task_id} to status RUNNING.")
 
     release_name = read_release(task.release_id).version
-    os.environ["RELEASE_VERSION"] = release_name
-    status_code = attempt_to_run(task.step_num)
+
+    curr_job_manager = BashJobManager(release_name)
+
+    status_code = curr_job_manager.run_job(task.step_num)
     if status_code == 0:
         update_task(task_id, "status", "SUCCESS")
         log.info(f"Task with id {task_id} SUCCESS.")
