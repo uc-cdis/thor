@@ -326,14 +326,14 @@ async def start_task(task_identifier: TaskIdentifier):
     if release_name not in release_name_list:
         log.error(f"Attempt to start task with invalid release name {release_name}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
+            [{"loc":["body","release_name"],"msg":f"Release_name {release_name} does not exist."}])
     
     current_task = get_release_task_step(release_name, step_num)
     
     if current_task == None:
         log.error(f"Attempt to start task with invalid step number {step_num}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","step_num"],"msg":"No such step_num exists."}])
+            [{"loc":["body","step_num"],"msg":f"No step with number {step_num} exists."}])
 
     task_id = current_task.task_id
     release_id = current_task.release_id

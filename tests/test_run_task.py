@@ -115,3 +115,33 @@ def test_run_task_complete():
     assert read_release(release_id).result == "RELEASED"
 
 
+def test_run_task_invalids():
+    """
+    Tests the behavior of the endpoint when passing invalid parameters.
+    """
+    reseed()
+    clear_shell_script_target()
+
+    # Test invalid release name
+    start_task_result = client.post(f"/tasks/start", 
+        json={"release_name": "invalid_release_name", "step_num": 1},
+        headers={"Content-Type": "application/json"}
+        )
+    assert start_task_result.status_code == 422
+    assert start_task_result.json() == {
+            "detail": [{
+                'loc': ['body', 'release_name'], 
+                'msg': "Release_name invalid_release_name does not exist."}]
+        }
+
+    # Test invalid step number
+    start_task_result = client.post(f"/tasks/start", 
+        json={"release_name": "2021.07", "step_num": -1},
+        headers={"Content-Type": "application/json"}
+        )
+    assert start_task_result.status_code == 422
+    assert start_task_result.json() == {
+            "detail": [{
+                'loc': ['body', 'step_num'], 
+                'msg': "No step with number -1 exists."}]
+        }
