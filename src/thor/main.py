@@ -150,15 +150,26 @@ async def create_new_task(new_task: Task):
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
 
-@app.put("/tasks/{task_id}")
-async def update_task_status(task_id: int, status_obj: TaskStatus):
+@app.put("/releases/{release_name}/tasks/{step_num}")
+async def update_task_status(release_name: str, step_num: int, status_obj: TaskStatus):
     """
     This endpoint is used to update the status of a task.
     """
     new_status = status_obj.status
-    update_task(task_id, "status", new_status)
-    log.info(f"Successfully updated task with id {task_id}.")
-    return JSONResponse(content={"task_id": task_id, "status": new_status})
+    task_to_update = get_release_task_step(release_name, step_num)
+    if task_to_update is None:
+        log.error(f"Attempt to update task with invalid release_name {release_name} and step_num {step_num}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","release_name"],"msg":"No such release_name exists."}, \
+            {"loc":["body","step_num"],"msg":"No such step_num exists."}])
+    else:
+        update_task(task_to_update.task_id, "status", new_status)
+        log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
+        return JSONResponse(content={
+            "release_name": release_name, 
+            "step_num": step_num,
+            "status": new_status
+            })
 
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):
