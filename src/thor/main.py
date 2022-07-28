@@ -199,7 +199,7 @@ async def start_release(release_name: str):
     if release_id not in get_release_keys():
         log.error(f"Attempt to start release with invalid release_id {release_id}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
+            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Successfully started release with name {release_name}.")
@@ -258,7 +258,7 @@ async def restart_release(release_name: str):
     if release_id not in get_release_keys():
         log.error(f"Attempt to restart release with invalid name {release_name}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
+            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Restarted release with name {release_name}.")

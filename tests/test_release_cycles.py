@@ -166,3 +166,13 @@ def test_failing_release_cycle(release_name):
             assert task_results[i] == "PENDING"
         
 
+@pytest.mark.parametrize("release_name", ["bad_release_name"])
+def test_bad_release_name(release_name):
+    """
+    Tests that a bad release name returns a bad response. 
+    """
+    reseed()
+    post_response = client.post(f"/releases/{release_name}/start")
+    assert post_response.status_code == 422
+    assert post_response.json()["detail"] == [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}]
+
