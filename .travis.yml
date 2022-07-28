@@ -21,4 +21,4 @@ install:
 
 script:
   # - poetry run pytest -vv -s tests
-  - $HOME/.local/bin/poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml
+  - poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml -vv -s tests

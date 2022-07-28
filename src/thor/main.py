@@ -230,15 +230,19 @@ async def start_release(release_name: str):
             # some logic will have to be reworked below. 
             break
     # Now, we can update the release status.
-    log.info(all(task_results.values()))
-    if set(task_results.values()) == {"SUCCESS"}:
-        update_release(release_id, "result", "RELEASED")
-        log.info(f"Successfully completed release {release_name}.")
-    else:
-        update_release(release_id, "result", "PAUSED")
+    # Note that task/start is already doing much of the following, and 
+    # dup functionality has been commented out for redundancy. 
+    # log.info(all(task_results.values()))
+    # if set(task_results.values()) == {"SUCCESS"}:
+        # update_release(release_id, "result", "RELEASED")
+        # log.info(f"Successfully completed release {release_name}.")
+    # else:
+
+    if set(task_results.values()) != {"SUCCESS"}:
+        # update_release(release_id, "result", "PAUSED")
         # print([(task == "FAILED") for task in task_results.values()])
         fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
-        log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
+        log.info(f"Started release {release_name} but failed on task #{fail_index}.")
 
     return JSONResponse(content={"release_name": release_name, "task_results": task_results})
 
@@ -273,23 +277,25 @@ async def restart_release(release_name: str):
             step_results = await start_task(task_identifier = step_body)
             step_status = json.loads(step_results.body.decode("utf-8"))["status"]
             if step_status == "SUCCESS":
-                update_task(step.task_id, "status", "SUCCESS")
                 task_results[step.step_num] = "SUCCESS"
             # Some more support for different statuses might be nice, 
             # but that depends on how smart we want thor to be at restarting tasks.
             else:
-                update_task(step.task_id, "status", "FAILED")
                 task_results[step.step_num] = "FAILED"
                 break
 
     # Now, we can update the release status.
-    if set(task_results.values()) == {"SUCCESS"}:
-        update_release(release_id, "result", "RELEASED")
-        log.info(f"Successfully completed release {release_name}.")
-    else:
-        update_release(release_id, "result", "PAUSED")
+
+    # run_task should already be doing the parts commented out, so this is redundant. 
+    # if set(task_results.values()) == {"SUCCESS"}:
+        # update_release(release_id, "result", "RELEASED")
+        # log.info(f"Successfully completed release {release_name}.")
+    # else:
+    if set(task_results.values()) != {"SUCCESS"}:
+        # update_release(release_id, "result", "PAUSED")
+        # run_task should already be doing this, so this is redundant. 
         fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
-        log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
+        log.info(f"Restart of release {release_name} failed on task #{fail_index}.")
     
     return JSONResponse(content={\
         "release_name": release_name, "task_results": task_results, \
