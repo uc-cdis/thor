@@ -16,6 +16,23 @@ def clear_shell_script_target():
     with open(target_absolute_path, "w") as target_file:
         target_file.write("Shell Script Target\n\n")
 
+def ensure_shell_script_integrity():
+    """
+    Checks all the shell scripts before running to ensure that 
+    they're all in the original, unaltered state. 
+    Mostly useful while testing here, as destructively rewriting critical functions
+    leads to errors when left half-done. """
+
+    with open("dummy_thor_config.json", "r") as read_config_file:
+        config = json.load(read_config_file)
+    for i in range(1, len(config) + 1):
+        script_name = "dummy" + str(i) + ".sh"
+        script_path = os.path.join(os.getcwd(), f"jenkins-jobs-scripts/step{i}/", script_name)
+        # print(script_path)
+        with open(script_path, "w") as write_script_file:
+            write_script_file.write(f"echo dummy step {i} >> ../shell_script_target.txt")
+
+
 @pytest.mark.parametrize("release_name", ["test_release_3"])
 def test_restart_release(release_name):
     """
@@ -23,6 +40,7 @@ def test_restart_release(release_name):
     Deliberately edits dummy8.sh to ensure failure. 
     Then, fixes the error and restarts the release, succeeding.
     """
+    ensure_shell_script_integrity()
     reseed()
     clear_shell_script_target()
 

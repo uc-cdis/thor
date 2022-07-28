@@ -269,7 +269,8 @@ async def restart_release(release_name: str):
         if step.status == "SUCCESS":
             task_results[step.step_num] = "SUCCESS"
         else:
-            step_results = await run_task(step.task_id)
+            step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
+            step_results = await start_task(task_identifier = step_body)
             step_status = json.loads(step_results.body.decode("utf-8"))["status"]
             if step_status == "SUCCESS":
                 update_task(step.task_id, "status", "SUCCESS")
@@ -293,32 +294,6 @@ async def restart_release(release_name: str):
     return JSONResponse(content={\
         "release_name": release_name, "task_results": task_results, \
             "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
-
-
-@app.put("/run_task/{task_id}")
-async def run_task(task_id: int):
-    """ This endpoint is used to run a task. """
-    task = read_task(task_id)
-
-    if task.status != "PENDING" and task.status != "FAILED":
-        log.error(f"Attempt to run task with status {task.status}.")
-        raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","status"],"msg":"Task status is not PENDING or FAILED."}])
-
-    update_task(task_id, "status", "RUNNING")
-    log.info(f"Successfully set task with id {task_id} to status RUNNING.")
-
-    release_name = read_release(task.release_id).version
-    curr_job_manager = BashJobManager(release_name)
-
-    status_code = curr_job_manager.run_job(task.step_num)
-    if status_code == 0:
-        update_task(task_id, "status", "SUCCESS")
-        log.info(f"Task with id {task_id} SUCCESS.")
-    else:
-        update_task(task_id, "status", "FAILED")
-        log.info(f"Task with id {task_id} FAILED with code {status_code}.")
-    return JSONResponse(content={"task_id": task_id, "status": "SUCCESS" if status_code == 0 else "FAILED"})
 
 @app.post("/tasks/start")
 async def start_task(task_identifier: TaskIdentifier):
@@ -390,9 +365,16 @@ async def run_step(release_name: str, step_num: int):
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","step_num"],"msg":"No such step_num exists."}])
     else:
-        task_id = [task.task_id for task in release_tasks if task.step_num == step_num][0]
         # Note that as each release should only have one of each step_num, this should be unique. 
-        return await run_task(task_id)
+        step_body = TaskIdentifier(release_name=release_name, step_num=step_num)
+        step_results = await start_task(task_identifier = step_body)
+        step_status = json.loads(step_results.body.decode("utf-8"))["status"]
+
+        return JSONResponse(content={
+            "release_name": release_name, 
+            "step_num": step_num, 
+            "status": "SUCCESS" if step_status == 0 else "FAILED"
+            })
 
 
 @app.put("/clear")
