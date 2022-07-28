@@ -10,7 +10,7 @@ jira = JIRA(
 )
 
 version = jira.get_project_version_by_name(
-    os.environ["JIRA_PROJECT"], os.environ["RELEASE_NAME"]
+    os.environ["JIRA_PROJECT"], os.environ["RELEASE_VERSION"]
 )
 if version:
     version.update(released=True)

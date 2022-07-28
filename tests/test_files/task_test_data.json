@@ -1,0 +1,63 @@
+{
+	"tasks": [{
+		"task_id": 1,
+		"task_name": "Create Release in JIRA",
+		"status": "success",
+		"release_id": 4,
+		"step_num": 1
+	}, {
+		"task_id": 2,
+		"task_name": "Cut integration branch",
+		"status": "success",
+		"release_id": 4,
+		"step_num": 2
+	}, {
+		"task_id": 3,
+		"task_name": "Update CI env with the latest integration branch",
+		"status": "success",
+		"release_id": 4,
+		"step_num": 3
+	}, {
+		"task_id": 4,
+		"task_name": "Generate release notes",
+		"status": "success",
+		"release_id": 4,
+		"step_num": 4
+	}, {
+		"task_id": 5,
+		"task_name": "Run Load Tests",
+		"status": "success",
+		"release_id": 4,
+		"step_num": 5
+	}, {
+		"task_id": 6,
+		"task_name": "Merge integration branch into stable and tag release",
+		"status": "success",
+		"release_id": 4,
+		"step_num": 6
+	}, {
+		"task_id": 7,
+		"task_name": "Mark gen3 release as released in JIRA",
+		"status": "success",
+		"release_id": 4,
+		"step_num": 7
+	}, {
+		"task_id": 8,
+		"task_name": "Create Release in JIRA",
+		"status": "success",
+		"release_id": 3,
+		"step_num": 1
+	}, {
+		"task_id": 9,
+		"task_name": "Cut integration branch",
+		"status": "success",
+		"release_id": 3,
+		"step_num": 2
+	}, {
+		"task_id": 10,
+		"task_name": "Update CI env with the latest integration branch",
+		"status": "PENDING",
+		"release_id": 3,
+		"step_num": 3
+	}]
+}

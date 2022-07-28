@@ -1,7 +1,7 @@
 # Thor
 The Gen3 Release Orchestrator
 
-<img src="/images/logo.png" alt="drawing" width="250"/>
+<img src="./images/logo.png" alt="drawing" width="250"/>
 
 _Image by [cromaconceptovisual](https://pixabay.com/users/cromaconceptovisual-4595909) from [Pixabay](https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4898879)_
 
@@ -25,7 +25,9 @@ This new tool (THOR) has the following features:
 
 # Architectural diagrams
 
-TBD
+<img src="./images/diagram.png" alt="drawing" width="1250"/>
+
+_Image by Colin Yao_
 
 # How to run Thor
 
@@ -38,7 +40,7 @@ psql -U postgres -c "create database thor_test_tmp"
 ## Create tables and test data
 
 ```
-PYTHONPATH=src/thor/ poetry run python -m create_all_tables
+poetry run python src/thor/create_all_tables.py
 ```
 
 You should see something like:
@@ -68,11 +70,43 @@ thor_test_tmp=# select * from releases;
 ## How to test
 
 ```
-PYTHONPATH=src/thor/ poetry run pytest -vv -s tests
+poetry run pytest -vv -s tests
 ```
 
 ## Start the FastAPI web server
 
 ```
-PYTHONPATH=src/thor/ poetry run gunicorn main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
+poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
 ```
+
+## Time travel
+
+```
+LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="-15d" poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
+```
+or
+```
+LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="@2020-12-24 20:30:00" poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
+```
+
+# Local development with Docker
+
+## ## Launch the containers
+
+```
+docker compose up -d
+```
+
+## Create the database
+
+```
+docker exec -it postgres psql -U postgres -c "create database thor_test_tmp"
+```
+
+## Create tables and test data
+
+```
+docker exec -it thor /env/bin/python src/thor/create_all_tables.py
+```
+
+Thor API is then available at http://localhost:8001

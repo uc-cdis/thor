@@ -6,7 +6,7 @@ authors = ["CTDS UChicago <cdis@uchicago.edu>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 fastapi = "^0.65.1"
 uvicorn = "^0.14.0"
 gunicorn = "^20.1.0"
@@ -17,8 +17,19 @@ pygit2 = "^1.6.1"
 SQLAlchemy = "^1.4.23"
 psycopg2 = "^2.9.1"
 pytest = "^6.2.4"
+aiocron = "^1.7"
+mock = "^4.0.3"
+freezegun = "^1.1.0"
+python-dotenv = "^0.19.0"
+nest-asyncio = "^1.5.1"
+jsontemplates = "^0.1.0"
 
 [tool.poetry.dev-dependencies]
+
+[tool.poetry.plugins."thor.modules"]
+"dao" = "thor.dao"
+"maestro" = "thor.maestro"
+"time" = "thor.time"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,0 +1,173 @@
+{
+    "step1": {
+        "step_num": 1,
+        "job_name":  "create-gen3-release-in-jira",  
+        "job_description": "Create gen3 release in jira",
+        "job_params": {
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
+            "JIRA_PROJECT": "QAT"
+        },  
+        "schedule":  "0 21 8-15 * 5",  
+        "script": "dummy1.sh",
+        "run_next":  "step2"
+    },   
+
+    "step2": {  
+        "step_num": 2,
+        "job_name":  "create-gen3-release-candidate-branch",  
+        "job_description": "Cut the integration branch integration",
+        "job_params": {
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
+            "FORK_FROM":"main"
+        },  
+        "schedule": null,  
+        "run_next":  "step3"
+    },   
+
+    "step3": {  
+        "step_num": 3,
+        "job_name":  "check-quay-image",  
+        "job_description": "Check if integration branch quay images are successfully created", 
+        "job_params": {
+            "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
+        },  
+        "schedule": null,  
+        "run_next":  "step4"
+    },
+    
+    "step4": {  
+        "step_num": 4,
+        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",
+        "job_description": "Pushing integration branch quay images to AWS ECR",   
+        "job_params": {
+            "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
+        },  
+        "schedule": null,  
+        "run_next":  "step5"
+    }, 
+
+    "step5": {  
+        "step_num": 5,
+        "job_name":  "update-ci-env-with-latest-integration-branch",  
+        "job_description": " Create gitops-qa PRs to deploy the integration branch to QA environments",  
+        "job_params": {
+            "REPO_NAME":"gitops-qa",
+            "INTEGRATION_BRANCH":"{{ INTEGRATION_BRANCH }}",
+            "PR_TITLE":"Updating CI env with",
+            "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
+        },  
+        "schedule": null,  
+        "run_next":  "step6"
+    },    
+
+    "step6": {  
+        "step_num": 6,
+        "job_name":  null,
+        "job_description": "Release testing round qa envs",  
+        "job_params": null,
+        "schedule": null,  
+        "run_next":  "step7"
+    },
+
+    "step7": {  
+        "step_num": 7,
+        "job_name":  "gen3-run-load-tests",  
+        "job_description": "Run load tests on qa-dcp", 
+        "job_params": {
+            "TARGET_ENVIRONMENT":"qa-dcp",
+            "LOAD_TEST_DESCRIPTOR":"str", 
+            "PRESIGNED_URL_ACL_FILTER":"QA", 
+            "SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT":100,
+            "DESIRED_NUMBER_OF_FENCE_PODS":10,
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}",
+            "INDEXD_NUM_OF_RECORDS_TO_CREATE":100,
+            "SIGNED_URL_PROTOCOL":"s3",
+            "SQS_URL":"https://sqs.us-east-1.amazonaws.com/707767160287/qaplanetv2--qa-niaid--audit-sqs"
+        },  
+        "schedule": null,  
+        "run_next":  "step8"
+    },   
+
+    "step8": {  
+        "step_num": 8,
+        "job_name":  "merge-integration-branch-into-stable-and-tag",  
+        "job_description": "Merge the integration branch into stable and tag the release", 
+        "job_params": {
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}"
+        },  
+        "run_next":  "step9"
+    },   
+
+    "step9": {  
+        "step_num": 9,
+        "job_name":  "check-quay-image",  
+        "job_description": "Check if monthly release quay images are successfully created", 
+        "job_params": {
+            "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
+        },  
+        "schedule": null,  
+        "run_next":  "step10"
+    },
+    
+    "step10": {  
+        "step_num": 10,
+        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
+        "job_description": "Pushing monthly release quay images to AWS ECR (as a backup)",
+        "job_params": {
+            "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
+        },  
+        "schedule": null,  
+        "run_next":  "step11"
+    }, 
+
+    "step11": {  
+        "step_num": 11,
+        "job_name":  "update-ci-env-with-latest-integration-branch",  
+        "job_description": "Sanity Check the release",  
+        "job_params": {
+            "REPO_NAME":"gitops-qa",
+            "INTEGRATION_BRANCH":"{{ RELEASE_VERSION }}",
+            "PR_TITLE":"Updating CI env with",
+            "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
+        },  
+        "schedule": null,  
+        "run_next":  "step12"
+    },
+
+    "step12": {  
+        "job_name":  "gen3-qa-release-notes-generator",  
+        "job_description": "Generate release notes and publish release manifest",
+        "job_params": {},  
+        "schedule": null,  
+        "run_next":  "step13"
+    },
+
+    "step13": {  
+        "job_name":  null, 
+        "job_description": "Send slack message to publish release",
+        "job_params": null,
+        "schedule":  null,
+        "run_next": "step14"
+    },
+
+    "step14": {  
+        "job_name":  "delete-integration-branch-from-ecr",  
+        "job_description": "Deleting the integration-branch will help lower the cost on the AWS",
+        "job_params": {
+            "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
+        },  
+        "schedule":  null,
+        "run_next": "step15"
+    },
+
+    "step15": {  
+        "job_name":  "mark-gen3-release-as-released",  
+        "job_description": "Mark the release as released",
+        "job_params": {
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
+            "JIRA_PROJECT":"QAT" 
+        },  
+        "schedule":  null,
+        "run_next": null
+    }
+}
