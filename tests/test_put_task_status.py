@@ -47,3 +47,15 @@ def test_put_task_status(release_name, step_num, status):
             "step_num": step_num
             }
         }
+
+@pytest.mark.parametrize("release_name, step_num", [("invalid_release", 1), ("2021.09", -1), ("invalid release", -1)])
+def test_put_task_status_failing(release_name, step_num):
+    reseed()
+    put_response = client.put(f"/releases/{release_name}/tasks/{step_num}", json={"status": "SUCCESS"}, headers={"Content-Type": "application/json"})
+    assert put_response.status_code == 422
+    assert put_response.json() == {
+        "detail": [{
+            "loc":["body","release_name"],
+            "msg": f"No task with step_num {step_num} and release_name {release_name} exists."
+        }]
+    }

@@ -163,8 +163,7 @@ async def update_task_status(release_name: str, step_num: int, status_obj: TaskS
     if task_to_update is None:
         log.error(f"Attempt to update task with invalid release_name {release_name} and step_num {step_num}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}, \
-            {"loc":["body","step_num"],"msg":"No such step_num exists."}])
+            [{"loc":["body","release_name"],"msg":f"No task with step_num {step_num} and release_name {release_name} exists."}])
     else:
         update_task(task_to_update.task_id, "status", new_status)
         log.info(f"Successfully updated task for step {step_num} for release {release_name}.")

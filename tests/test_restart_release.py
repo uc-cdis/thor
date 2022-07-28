@@ -44,7 +44,7 @@ def test_restart_release(release_name):
     reseed()
     clear_shell_script_target()
 
-    print("bananas good")
+    # print("bananas good")
 
     # Creates a release (and associated tasks)
     post_response = client.post("/releases/" + release_name)
