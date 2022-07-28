@@ -217,7 +217,10 @@ async def start_release(release_name: str):
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
     for step in release_tasks:
-        step_results = await run_task(step.task_id)
+        # step_results = await run_task(step.task_id)
+        # step_status = json.loads(step_results.body.decode("utf-8"))["status"]
+        step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
+        step_results = await start_task(task_identifier = step_body)
         step_status = json.loads(step_results.body.decode("utf-8"))["status"]
         task_results[step.step_num] = step_status
         

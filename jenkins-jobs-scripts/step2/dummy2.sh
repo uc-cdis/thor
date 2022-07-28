@@ -1,1 +1,1 @@
-echo "dummy step 2" >> ../shell_script_target.txt
+echo dummy step 2 >> ../shell_script_target.txt
