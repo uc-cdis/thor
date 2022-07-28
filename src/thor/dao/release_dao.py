@@ -162,8 +162,6 @@ def read_all_releases():
     Primarily to be used by main:app/releases, as it must call get_all_releases
     in a somewhat inefficient manner otherwise. """
 
-    print("\n\n read_all_releases start \n\n")
-
     with session_scope() as session:
 
         # There's something seriously screwed up here.
@@ -208,7 +206,7 @@ def delete_release(release_id):
             session.delete(session.query(Release).get(release_id))
         except Exception:
             print(f"Cannot delete: {release_id} is not in the database")
-            log.info(f"Entry {release_id} was deleted from Releases table. ")
+        log.info(f"Entry {release_id} was deleted from Releases table. ")
 
 
 def delete_releases(input):
@@ -229,15 +227,6 @@ def delete_releases(input):
             for i in input:
                 delete_release(i)
             log.info(f"All entries in list {input} were deleted. ")
-
-
-def get_release_num():
-    """ Gets the number of entries in the current database table. 
-    Returns this number as an integer. """
-
-    with session_scope() as session:
-        rows = session.query(Release).count()
-        return rows
 
 
 def get_release_keys():

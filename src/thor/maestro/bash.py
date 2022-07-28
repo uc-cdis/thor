@@ -5,9 +5,6 @@ import json
 from pathlib import Path
 
 from thor.maestro.baton import JobManager
-from thor.dao.task_dao import create_task, lookup_task_key, update_task
-from thor.dao.release_dao import release_id_lookup_class
-from thor.maestro.run_bash_script import pull_job_params
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)

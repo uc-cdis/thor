@@ -34,7 +34,7 @@ def test_put_task_status(release_name, step_num, status):
     get_response = client.get(f"/releases/{release_name}/tasks/{step_num}")
     assert get_response.status_code == 200
     release_id = release_id_lookup_class().release_id_lookup(release_name)
-    print(get_release_task_step(release_name, step_num), release_name, step_num, type(release_id), type(step_num))
+    # print(get_release_task_step(release_name, step_num), release_name, step_num, type(release_id), type(step_num))
     current_task = get_release_task_step(release_name, step_num)
     task_id = current_task.task_id
     task_name = current_task.task_name
