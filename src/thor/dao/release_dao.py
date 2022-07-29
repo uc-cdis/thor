@@ -14,11 +14,11 @@ from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(config.DATABASE_URL)
+engine = sa.create_engine(config.DATABASE_URL, echo = False)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
-logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.ERROR)
 log = logging.getLogger(__name__)
 
 

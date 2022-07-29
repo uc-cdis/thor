@@ -116,7 +116,7 @@ def test_failing_release_cycle(release_name):
 
     # Starts the release, causing the associated shell scripts to be run
     start_results = client.post(f"/releases/{release_name}/start")
-    print(start_results.json())
+    # print(start_results.json())
 
     # REWRITES SHELL SCRIPT 7 TO BE CORRECT AGAIN (IMPORTANT)
     with open(shell_script_fail_absolute_path, "w") as shell_script_fail_file:
