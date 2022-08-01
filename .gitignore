@@ -19,5 +19,6 @@ admin_auth
 .DS_Store
 .coverage
 .coverage.xml
+coverage.xml
 
 /workspace
