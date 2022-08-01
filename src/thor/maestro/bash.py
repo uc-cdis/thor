@@ -126,6 +126,11 @@ class BashJobManager(JobManager):
         workspace_path.mkdir(exist_ok=True)
         for i in range(1, num_steps+1):
             (workspace_path / str(i)).mkdir(exist_ok=True)
+        if DEVELOPMENT:
+            script_target_file_name = "workspace/shell_script_target.txt"
+            target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
+            with open(target_absolute_path, "w") as target_file:
+                target_file.write("Shell Script Target\n\n")
         return
 
     def check_result_of_job(self, job_name):
