@@ -17,8 +17,9 @@ client = TestClient(app)
 def clear_shell_script_target():
     script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
-    with open(target_absolute_path, "w") as target_file:
-        target_file.write("Shell Script Target\n\n")
+    if os.path.exists(target_absolute_path):
+        with open(target_absolute_path, "w") as target_file:
+            target_file.write("Shell Script Target\n\n")
 
 @pytest.mark.parametrize("release_name, step_num", [("2021.07", 1), ("2021.07", 2), ("2021.07", 3)])
 def test_run_task_incomplete(release_name, step_num):

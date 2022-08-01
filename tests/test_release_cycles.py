@@ -13,8 +13,9 @@ client = TestClient(app)
 def clear_shell_script_target():
     script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
-    with open(target_absolute_path, "w") as target_file:
-        target_file.write("Shell Script Target\n\n")
+    if os.path.exists(target_absolute_path):
+        with open(target_absolute_path, "w") as target_file:
+            target_file.write("Shell Script Target\n\n")
 
 def ensure_shell_script_integrity():
     """
