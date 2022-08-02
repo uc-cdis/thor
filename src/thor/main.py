@@ -35,6 +35,9 @@ class Task(BaseModel):
 class TaskStatus(BaseModel):
     status: str
 
+class TaskIdentifier(BaseModel):
+    release_name: str
+    step_num: int
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -102,7 +105,7 @@ async def get_release_task_specific(release_name: str, step_num: int):
 
     if task_to_return is None:
         log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
-        raise HTTPException(status_code=404, detail="No task found for release with name {release_name} and step_num {step_num}.")
+        raise HTTPException(status_code=404, detail=f"No task found for release with name {release_name} and step_num {step_num}.")
     else:
         task = jsonable_encoder(task_to_return)
         log.info(f"Successfully obtained task info for release with name {release_name} and step_num {step_num}.")
@@ -150,15 +153,25 @@ async def create_new_task(new_task: Task):
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
 
-@app.put("/tasks/{task_id}")
-async def update_task_status(task_id: int, status_obj: TaskStatus):
+@app.put("/releases/{release_name}/tasks/{step_num}")
+async def update_task_status(release_name: str, step_num: int, status_obj: TaskStatus):
     """
     This endpoint is used to update the status of a task.
     """
     new_status = status_obj.status
-    update_task(task_id, "status", new_status)
-    log.info(f"Successfully updated task with id {task_id}.")
-    return JSONResponse(content={"task_id": task_id, "status": new_status})
+    task_to_update = get_release_task_step(release_name, step_num)
+    if task_to_update is None:
+        log.error(f"Attempt to update task with invalid release_name {release_name} and step_num {step_num}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","release_name"],"msg":f"No task with step_num {step_num} and release_name {release_name} exists."}])
+    else:
+        update_task(task_to_update.task_id, "status", new_status)
+        log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
+        return JSONResponse(content={
+            "release_name": release_name, 
+            "step_num": step_num,
+            "status": new_status
+            })
 
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):
@@ -186,7 +199,7 @@ async def start_release(release_name: str):
     if release_id not in get_release_keys():
         log.error(f"Attempt to start release with invalid release_id {release_id}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
+            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Successfully started release with name {release_name}.")
@@ -203,7 +216,10 @@ async def start_release(release_name: str):
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
     for step in release_tasks:
-        step_results = await run_task(step.task_id)
+        # step_results = await run_task(step.task_id)
+        # step_status = json.loads(step_results.body.decode("utf-8"))["status"]
+        step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
+        step_results = await start_task(task_identifier = step_body)
         step_status = json.loads(step_results.body.decode("utf-8"))["status"]
         task_results[step.step_num] = step_status
         
@@ -213,15 +229,19 @@ async def start_release(release_name: str):
             # some logic will have to be reworked below. 
             break
     # Now, we can update the release status.
-    log.info(all(task_results.values()))
-    if set(task_results.values()) == {"SUCCESS"}:
-        update_release(release_id, "result", "RELEASED")
-        log.info(f"Successfully completed release {release_name}.")
-    else:
-        update_release(release_id, "result", "PAUSED")
+    # Note that task/start is already doing much of the following, and 
+    # dup functionality has been commented out for redundancy. 
+    # log.info(all(task_results.values()))
+    # if set(task_results.values()) == {"SUCCESS"}:
+        # update_release(release_id, "result", "RELEASED")
+        # log.info(f"Successfully completed release {release_name}.")
+    # else:
+
+    if set(task_results.values()) != {"SUCCESS"}:
+        # update_release(release_id, "result", "PAUSED")
         # print([(task == "FAILED") for task in task_results.values()])
         fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
-        log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
+        log.info(f"Started release {release_name} but failed on task #{fail_index}.")
 
     return JSONResponse(content={"release_name": release_name, "task_results": task_results})
 
@@ -238,7 +258,7 @@ async def restart_release(release_name: str):
     if release_id not in get_release_keys():
         log.error(f"Attempt to restart release with invalid name {release_name}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
+            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Restarted release with name {release_name}.")
@@ -252,79 +272,85 @@ async def restart_release(release_name: str):
         if step.status == "SUCCESS":
             task_results[step.step_num] = "SUCCESS"
         else:
-            step_results = await run_task(step.task_id)
+            step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
+            step_results = await start_task(task_identifier = step_body)
             step_status = json.loads(step_results.body.decode("utf-8"))["status"]
             if step_status == "SUCCESS":
-                update_task(step.task_id, "status", "SUCCESS")
                 task_results[step.step_num] = "SUCCESS"
             # Some more support for different statuses might be nice, 
             # but that depends on how smart we want thor to be at restarting tasks.
             else:
-                update_task(step.task_id, "status", "FAILED")
                 task_results[step.step_num] = "FAILED"
                 break
 
     # Now, we can update the release status.
-    if set(task_results.values()) == {"SUCCESS"}:
-        update_release(release_id, "result", "RELEASED")
-        log.info(f"Successfully completed release {release_name}.")
-    else:
-        update_release(release_id, "result", "PAUSED")
+
+    # run_task should already be doing the parts commented out, so this is redundant. 
+    # if set(task_results.values()) == {"SUCCESS"}:
+        # update_release(release_id, "result", "RELEASED")
+        # log.info(f"Successfully completed release {release_name}.")
+    # else:
+    if set(task_results.values()) != {"SUCCESS"}:
+        # update_release(release_id, "result", "PAUSED")
+        # run_task should already be doing this, so this is redundant. 
         fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
-        log.info(f"Failed to complete release {release_name} on task #{fail_index}.")
+        log.info(f"Restart of release {release_name} failed on task #{fail_index}.")
     
     return JSONResponse(content={\
         "release_name": release_name, "task_results": task_results, \
             "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
 
-
-@app.put("/run_task/{task_id}")
-async def run_task(task_id: int):
-    """ This endpoint is used to run a task. """
-    task = read_task(task_id)
-
-    if task.status != "PENDING" and task.status != "FAILED":
-        log.error(f"Attempt to run task with status {task.status}.")
+@app.post("/tasks/start")
+async def start_task(task_identifier: TaskIdentifier):
+    """ This endpoint is used to run a specific step in a release. """
+    release_name = task_identifier.release_name
+    step_num = task_identifier.step_num
+    release_name_list = [r.version for r in read_all_releases()]
+    if release_name not in release_name_list:
+        log.error(f"Attempt to start task with invalid release name {release_name}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","status"],"msg":"Task status is not PENDING or FAILED."}])
+            [{"loc":["body","release_name"],"msg":f"Release_name {release_name} does not exist."}])
+    
+    current_task = get_release_task_step(release_name, step_num)
+    
+    if current_task == None:
+        log.error(f"Attempt to start task with invalid step number {step_num}.")
+        raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","step_num"],"msg":f"No step with number {step_num} exists."}])
 
+    task_id = current_task.task_id
+    release_id = current_task.release_id
+
+    update_release(release_id, "result", "RUNNING")
+    log.info(f"Started release {release_name} to run single step {step_num}.")
     update_task(task_id, "status", "RUNNING")
-    log.info(f"Successfully set task with id {task_id} to status RUNNING.")
+    log.info(f"Started task with release_name {release_name} and step_num {step_num}.")
 
-    release_name = read_release(task.release_id).version
     curr_job_manager = BashJobManager(release_name)
+    os.environ["RELEASE_VERSION"] = release_name
+    status_code = curr_job_manager.run_job(current_task.step_num)
 
-    status_code = curr_job_manager.run_job(task.step_num)
     if status_code == 0:
         update_task(task_id, "status", "SUCCESS")
-        log.info(f"Task with id {task_id} SUCCESS.")
+        log.info(f"Task #{step_num} of release {release_name} SUCCESS.")
     else:
         update_task(task_id, "status", "FAILED")
-        log.info(f"Task with id {task_id} FAILED with code {status_code}.")
-    return JSONResponse(content={"task_id": task_id, "status": "SUCCESS" if status_code == 0 else "FAILED"})
+        log.info(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
 
-@app.put("/releases/{release_name}/run_step/{step_num}")
-async def run_step(release_name: str, step_num: int):
-    """ This endpoint is used to run a specific step in a release. """
-    rid_lookupper = release_id_lookup_class()
-    release_id = rid_lookupper.release_id_lookup(release_name)
-
-    if release_id not in get_release_keys():
-        log.error(f"Attempt to run step with invalid name {release_name}.")
-        raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
-
-    release_tasks = get_release_tasks(release_id)
-
-    if step_num not in [task.step_num for task in release_tasks]:
-        log.error(f"Attempt to run step with invalid step number {step_num}.")
-        raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","step_num"],"msg":"No such step_num exists."}])
+    release_statuses = [s.status for s in get_release_tasks(release_id)]
+    if set(release_statuses) == {"SUCCESS"}:
+        update_release(release_id, "result", "RELEASED")
+        log.info(f"Successfully completed release {release_name}.")
     else:
-        task_id = [task.task_id for task in release_tasks if task.step_num == step_num][0]
-        # Note that as each release should only have one of each step_num, this should be unique. 
-        return await run_task(task_id)
+        update_release(release_id, "result", "PAUSED")
+        fail_index = next(i for i, x in enumerate(release_statuses) if x != "SUCCESS")
+        log.info(f"Release {release_name} still waiting on task #{fail_index}.")
 
+    return JSONResponse(content={
+        "release_name": release_name, 
+        "step_num": step_num, 
+        "status": "SUCCESS" if status_code == 0 else "FAILED"
+        })
 
 @app.put("/clear")
 async def clear_all():

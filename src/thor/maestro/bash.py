@@ -5,9 +5,6 @@ import json
 from pathlib import Path
 
 from thor.maestro.baton import JobManager
-from thor.dao.task_dao import create_task, lookup_task_key, update_task
-from thor.dao.release_dao import release_id_lookup_class
-from thor.maestro.run_bash_script import pull_job_params
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -129,6 +126,12 @@ class BashJobManager(JobManager):
         workspace_path.mkdir(exist_ok=True)
         for i in range(1, num_steps+1):
             (workspace_path / str(i)).mkdir(exist_ok=True)
+        if DEVELOPMENT:
+            script_target_file_name = "workspace/shell_script_target.txt"
+            target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
+        if not os.path.exists(target_absolute_path):
+            with open(target_absolute_path, "w") as target_file:
+                target_file.write("Shell Script Target\n\n")
         return
 
     def check_result_of_job(self, job_name):

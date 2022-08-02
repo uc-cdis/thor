@@ -41,7 +41,7 @@ def create_test_data():
     s = Session()
 
     # Add dummy release entries for testing purposes
-    print("creating rows in the releases table...")
+    # print("creating rows in the releases table...")
     release_dao.manual_create_release(3, "2021.09", "In Progress")
     release_dao.manual_create_release(4, "2021.07", "Completed")
 
