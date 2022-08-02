@@ -34,7 +34,9 @@ def test_put_task_status(release_name, step_num, status):
     get_response = client.get(f"/releases/{release_name}/tasks/{step_num}")
     assert get_response.status_code == 200
     release_id = release_id_lookup_class().release_id_lookup(release_name)
-    print(get_release_task_step(release_name, step_num), release_name, step_num, type(release_id), type(step_num))
+
+    # print(get_release_task_step(release_name, step_num), release_name, step_num, type(release_id), type(step_num))
+
     current_task = get_release_task_step(release_name, step_num)
     task_id = current_task.task_id
     task_name = current_task.task_name
@@ -47,3 +49,15 @@ def test_put_task_status(release_name, step_num, status):
             "step_num": step_num
             }
         }
+
+@pytest.mark.parametrize("release_name, step_num", [("invalid_release", 1), ("2021.09", -1), ("invalid release", -1)])
+def test_put_task_status_failing(release_name, step_num):
+    reseed()
+    put_response = client.put(f"/releases/{release_name}/tasks/{step_num}", json={"status": "SUCCESS"}, headers={"Content-Type": "application/json"})
+    assert put_response.status_code == 422
+    assert put_response.json() == {
+        "detail": [{
+            "loc":["body","release_name"],
+            "msg": f"No task with step_num {step_num} and release_name {release_name} exists."
+        }]
+    }

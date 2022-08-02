@@ -15,6 +15,7 @@ admin_auth
 .s3cfg 
 .aws/
 
+# Various temp files for configs
 .DS_Store
 .coverage
 .coverage.xml

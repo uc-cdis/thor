@@ -105,7 +105,7 @@ async def get_release_task_specific(release_name: str, step_num: int):
 
     if task_to_return is None:
         log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
-        raise HTTPException(status_code=404, detail="No task found for release with name {release_name} and step_num {step_num}.")
+        raise HTTPException(status_code=404, detail=f"No task found for release with name {release_name} and step_num {step_num}.")
     else:
         task = jsonable_encoder(task_to_return)
         log.info(f"Successfully obtained task info for release with name {release_name} and step_num {step_num}.")
@@ -163,8 +163,8 @@ async def update_task_status(release_name: str, step_num: int, status_obj: TaskS
     if task_to_update is None:
         log.error(f"Attempt to update task with invalid release_name {release_name} and step_num {step_num}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}, \
-            {"loc":["body","step_num"],"msg":"No such step_num exists."}])
+            [{"loc":["body","release_name"],"msg":f"No task with step_num {step_num} and release_name {release_name} exists."}])
+            
     else:
         update_task(task_to_update.task_id, "status", new_status)
         log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
@@ -200,7 +200,7 @@ async def start_release(release_name: str):
     if release_id not in get_release_keys():
         log.error(f"Attempt to start release with invalid release_id {release_id}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_id"],"msg":"No such release_id exists."}])
+            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Successfully started release with name {release_name}.")
@@ -259,7 +259,7 @@ async def restart_release(release_name: str):
     if release_id not in get_release_keys():
         log.error(f"Attempt to restart release with invalid name {release_name}.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
+            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Restarted release with name {release_name}.")
@@ -309,6 +309,7 @@ async def start_task(task_identifier: TaskIdentifier):
     release_name_list = [r.version for r in read_all_releases()]
     if release_name not in release_name_list:
         log.error(f"Attempt to start task with invalid release name {release_name}.")
+
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_name"],"msg":f"Release_name {release_name} does not exist."}])
     
@@ -352,36 +353,6 @@ async def start_task(task_identifier: TaskIdentifier):
         "step_num": step_num, 
         "status": "SUCCESS" if status_code == 0 else "FAILED"
         })
-
-@app.put("/releases/{release_name}/run_step/{step_num}")
-async def run_step(release_name: str, step_num: int):
-    """ This endpoint is used to run a specific step in a release. """
-    rid_lookupper = release_id_lookup_class()
-    release_id = rid_lookupper.release_id_lookup(release_name)
-
-    if release_id not in get_release_keys():
-        log.error(f"Attempt to run step with invalid name {release_name}.")
-        raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":"No such release_name exists."}])
-
-    release_tasks = get_release_tasks(release_id)
-
-    if step_num not in [task.step_num for task in release_tasks]:
-        log.error(f"Attempt to run step with invalid step number {step_num}.")
-        raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","step_num"],"msg":"No such step_num exists."}])
-    else:
-        # Note that as each release should only have one of each step_num, this should be unique. 
-        step_body = TaskIdentifier(release_name=release_name, step_num=step_num)
-        step_results = await start_task(task_identifier = step_body)
-        step_status = json.loads(step_results.body.decode("utf-8"))["status"]
-
-        return JSONResponse(content={
-            "release_name": release_name, 
-            "step_num": step_num, 
-            "status": "SUCCESS" if step_status == 0 else "FAILED"
-            })
-
 
 @app.put("/clear")
 async def clear_all():
