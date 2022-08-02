@@ -20,5 +20,6 @@ admin_auth
 .coverage
 .coverage.xml
 coverage.xml
+.secrets.baseline
 
 /workspace
