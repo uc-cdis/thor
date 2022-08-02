@@ -110,3 +110,9 @@ docker exec -it thor /env/bin/python src/thor/create_all_tables.py
 ```
 
 Thor API is then available at http://localhost:8001
+
+## Generating OpenAPI documentation
+
+The OpenAPI documentation is available at /openapi.json. 
+Unfortunately, FastAPI does not support exporting this via yaml, so
+you may use a method of your choice to convert this json to a yaml file. 

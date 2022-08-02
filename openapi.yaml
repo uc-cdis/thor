@@ -120,6 +120,41 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
+    put:
+      summary: Update Task Status
+      description: This endpoint is used to update the status of a task.
+      operationId: update_task_status_releases__release_name__tasks__step_num__put
+      parameters:
+      - required: true
+        schema:
+          title: Release Name
+          type: string
+        name: release_name
+        in: path
+      - required: true
+        schema:
+          title: Step Num
+          type: integer
+        name: step_num
+        in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TaskStatus"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
   "/tasks":
     get:
       summary: Get All Tasks
@@ -197,35 +232,6 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
-    put:
-      summary: Update Task Status
-      description: This endpoint is used to update the status of a task.
-      operationId: update_task_status_tasks__task_id__put
-      parameters:
-      - required: true
-        schema:
-          title: Task Id
-          type: integer
-        name: task_id
-        in: path
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/TaskStatus"
-        required: true
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
   "/time/test":
     get:
       summary: What Time Is It
@@ -289,48 +295,17 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
-  "/run_task/{task_id}":
-    put:
-      summary: Run Task
-      description: 'This endpoint is used to run a task. '
-      operationId: run_task_run_task__task_id__put
-      parameters:
-      - required: true
-        schema:
-          title: Task Id
-          type: integer
-        name: task_id
-        in: path
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
-  "/releases/{release_name}/run_step/{step_num}":
-    put:
-      summary: Run Step
+  "/tasks/start":
+    post:
+      summary: Start Task
       description: 'This endpoint is used to run a specific step in a release. '
-      operationId: run_step_releases__release_name__run_step__step_num__put
-      parameters:
-      - required: true
-        schema:
-          title: Release Name
-          type: string
-        name: release_name
-        in: path
-      - required: true
-        schema:
-          title: Step Num
-          type: integer
-        name: step_num
-        in: path
+      operationId: start_task_tasks_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TaskIdentifier"
+        required: true
       responses:
         '200':
           description: Successful Response
@@ -393,6 +368,19 @@ components:
         step_num:
           title: Step Num
           type: integer
+    TaskIdentifier:
+      title: TaskIdentifier
+      required:
+      - release_name
+      - step_num
+      type: object
+      properties:
+        release_name:
+          title: Release Name
+          type: string
+        step_num:
+          title: Step Num
+          type: integer
     TaskStatus:
       title: TaskStatus
       required:
@@ -421,3 +409,4 @@ components:
         type:
           title: Error Type
           type: string
+          
