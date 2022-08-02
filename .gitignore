@@ -14,3 +14,10 @@ admin_auth
 #s3 creds 
 .s3cfg 
 .aws/
+
+.DS_Store
+.coverage
+.coverage.xml
+coverage.xml
+
+workspace/
