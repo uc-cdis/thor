@@ -1,5 +1,7 @@
 import os
 import sqlalchemy as sa
+import psycopg2 as p2
+
 from sqlalchemy.sql.sqltypes import String
 
 from thor.dao import config
@@ -89,41 +91,39 @@ def create_release(version, result):
     Throws errors if the given 'version' or 'result' are not Strings. """
 
     curr_keys = get_release_keys()
+    curr_keys.sort()
 
-    with session_scope() as session:
-        curr_keys.sort()
+    try:
+        if not isinstance(version, str):
+            raise TypeError(f"The value for version, {version} is not a string.")
+        if not isinstance(result, str):
+            raise TypeError(f"The value for result, {result} is not a string.")
+    except TypeError as type_error:
+        print(type_error)
 
+    else:
+        # Insanity has led me to do this. 
+        create_session = Session()
+        current_release = Release(version=version, result=result)
         try:
-            if not isinstance(version, str):
-                raise TypeError(f"The value for version, {version} is not a string.")
-            if not isinstance(result, str):
-                raise TypeError(f"The value for result, {result} is not a string.")
-        except TypeError as type_error:
-            print(type_error)
-
-        # Thanks to Brian for working out this set difference method.
-        # By generating 2 sets, one with the existing keys,
-        # and one with optimally allocated keys, we can use their difference
-        # to figure out the minimum keys that haven't been used.
+            create_session.add(current_release)
+            create_session.commit()
+            release_id = current_release.release_id
+        except p2.errors.UniqueViolation as p:
+            print(p)
+            create_session.rollback()
+            create_session.close()
+            return None
+        # except sa.exc.IntegrityError as ie:
+        #     log.error(f"Release with version {version} already exists in the database.")
+        #     return None
+        except Exception as e:
+            log.info(f"Error: {e}")
+            raise e
         else:
-            # if len(curr_keys) == 0:
-            #     min_key = 0
-            # else:
-            #     print(len(curr_keys))
-            #     minimal_release_ids = set(range(len(curr_keys)))
-            #     unused_ids = minimal_release_ids - set(curr_keys)
-            #     if unused_ids:
-            #         min_key = list(unused_ids)[0]
-            #     else:
-            #         min_key = curr_keys[-1] + 1
-
-            # current_release = Release(
-            #     release_id=min_key, version=version, result=result
-            # )
-            current_release = Release(version=version, result=result)
-
-            session.add(current_release)
-        return None
+            log.info(f"Added release {release_id} to the database.")
+            create_session.close()
+            return release_id
 
 
 def read_release(release_id):
@@ -265,8 +265,8 @@ if __name__ == "__main__":
     # print(read_all_releases())
     # Deliberately introduced failing command:
 
-    create_release("v3", "good")
-    create_release("v4", "bad")
+    # create_release("v5", "good")
+    print(create_release("v10", "evil"))
 
     print(read_all_releases())
 
