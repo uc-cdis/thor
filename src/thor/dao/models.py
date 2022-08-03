@@ -6,10 +6,11 @@ from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 
 Base = declarative_base()
 
+db = SQLAlchemy()
 
 class Release(Base):
     __tablename__ = "releases"
-    __table_args__ = (UniqueConstraint("version"),)
+    __table_args__ = db.UniqueConstraint("version")
 
     release_id = Column(
         Integer, primary_key=True, autoincrement=True, nullable=False
