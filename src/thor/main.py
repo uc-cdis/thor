@@ -190,16 +190,20 @@ async def what_time_is_it():
 async def start_release(release_name: str):
     """
     This endpoint starts a release from the very beginning. 
-    Assumes that all tasks thus far have status 'PENDING', 
-    and that the release_name is valid. 
+    Creates the release from scratch and starts from the first step. 
+    Checks that the release doesn't already exist. 
     """
     rid_lookupper = release_id_lookup_class()
     release_id = rid_lookupper.release_id_lookup(release_name)
 
-    if release_id not in get_release_keys():
-        log.error(f"Attempt to start release with invalid release_id {release_id}.")
+    if release_id: # If not none, then it already exists - this should be avoided.
+        log.error(f"Attempt to start release with name {release_name} that already exists.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
+            [{"loc":["body","release_name"],"msg":f"Release with name {release_name} already exists."}])
+    else:
+        release_id = create_release(release_name)
+        log.info(f"Successfully created release with name {release_name} and id {release_id}.")    
+    
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Successfully started release with name {release_name}.")
