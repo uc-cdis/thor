@@ -15,7 +15,7 @@ month = datetime.date(1900, monthinteger, 1).strftime("%B")
 result = jira.create_version(
     "{}".format(os.environ["RELEASE_VERSION"]),
     os.environ["JIRA_PROJECT"],
-    description="[Thor testing] Gen3 Release - {}".format(month),
+    description="[Thor] Gen3 Release - {}".format(month),
     releaseDate=None,
     startDate=None,
     archived=False,
