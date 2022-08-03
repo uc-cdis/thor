@@ -106,23 +106,24 @@ def create_release(version, result):
         # and one with optimally allocated keys, we can use their difference
         # to figure out the minimum keys that haven't been used.
         else:
-            if len(curr_keys) == 0:
-                min_key = 0
-            else:
-                print(len(curr_keys))
-                minimal_release_ids = set(range(len(curr_keys)))
-                unused_ids = minimal_release_ids - set(curr_keys)
-                if unused_ids:
-                    min_key = list(unused_ids)[0]
-                else:
-                    min_key = curr_keys[-1] + 1
+            # if len(curr_keys) == 0:
+            #     min_key = 0
+            # else:
+            #     print(len(curr_keys))
+            #     minimal_release_ids = set(range(len(curr_keys)))
+            #     unused_ids = minimal_release_ids - set(curr_keys)
+            #     if unused_ids:
+            #         min_key = list(unused_ids)[0]
+            #     else:
+            #         min_key = curr_keys[-1] + 1
 
-            current_release = Release(
-                release_id=min_key, version=version, result=result
-            )
+            # current_release = Release(
+            #     release_id=min_key, version=version, result=result
+            # )
+            current_release = Release(version=version, result=result)
 
             session.add(current_release)
-        return min_key
+        return None
 
 
 def read_release(release_id):
@@ -264,9 +265,14 @@ if __name__ == "__main__":
     # print(read_all_releases())
     # Deliberately introduced failing command:
 
-    release_name = "bananas"
-    rid = release_id_lookup_class()
-    print(rid.release_id_lookup(release_name))
+    create_release("v3", "good")
+    create_release("v4", "bad")
+
+    print(read_all_releases())
+
+    # release_name = "bananas"
+    # rid = release_id_lookup_class()
+    # print(rid.release_id_lookup(release_name))
 
     # new_version = "2021.09"
     # new_result = "success"
