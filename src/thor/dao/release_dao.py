@@ -14,11 +14,11 @@ from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(config.DATABASE_URL)
+engine = sa.create_engine(config.DATABASE_URL, echo = False)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
-logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.ERROR)
 log = logging.getLogger(__name__)
 
 
@@ -106,12 +106,16 @@ def create_release(version, result):
         # and one with optimally allocated keys, we can use their difference
         # to figure out the minimum keys that haven't been used.
         else:
-            minimal_release_ids = set(range(len(curr_keys)))
-            unused_ids = minimal_release_ids - set(curr_keys)
-            if unused_ids:
-                min_key = list(unused_ids)[0]
+            if len(curr_keys) == 0:
+                min_key = 0
             else:
-                min_key = curr_keys[-1] + 1
+                print(len(curr_keys))
+                minimal_release_ids = set(range(len(curr_keys)))
+                unused_ids = minimal_release_ids - set(curr_keys)
+                if unused_ids:
+                    min_key = list(unused_ids)[0]
+                else:
+                    min_key = curr_keys[-1] + 1
 
             current_release = Release(
                 release_id=min_key, version=version, result=result
@@ -162,8 +166,6 @@ def read_all_releases():
     Primarily to be used by main:app/releases, as it must call get_all_releases
     in a somewhat inefficient manner otherwise. """
 
-    print("\n\n read_all_releases start \n\n")
-
     with session_scope() as session:
 
         # There's something seriously screwed up here.
@@ -208,7 +210,7 @@ def delete_release(release_id):
             session.delete(session.query(Release).get(release_id))
         except Exception:
             print(f"Cannot delete: {release_id} is not in the database")
-            log.info(f"Entry {release_id} was deleted from Releases table. ")
+        log.info(f"Entry {release_id} was deleted from Releases table. ")
 
 
 def delete_releases(input):
@@ -229,15 +231,6 @@ def delete_releases(input):
             for i in input:
                 delete_release(i)
             log.info(f"All entries in list {input} were deleted. ")
-
-
-def get_release_num():
-    """ Gets the number of entries in the current database table. 
-    Returns this number as an integer. """
-
-    with session_scope() as session:
-        rows = session.query(Release).count()
-        return rows
 
 
 def get_release_keys():

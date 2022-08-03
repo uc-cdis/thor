@@ -13,8 +13,25 @@ client = TestClient(app)
 def clear_shell_script_target():
     script_target_file_name = "workspace/shell_script_target.txt"
     target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
-    with open(target_absolute_path, "w") as target_file:
-        target_file.write("Shell Script Target\n\n")
+    if os.path.exists(target_absolute_path):
+        with open(target_absolute_path, "w") as target_file:
+            target_file.write("Shell Script Target\n\n")
+
+def ensure_shell_script_integrity():
+    """
+    Checks all the shell scripts before running to ensure that 
+    they're all in the original, unaltered state. 
+    Mostly useful while testing here, as destructively rewriting critical functions
+    leads to errors when left half-done. """
+
+    with open("dummy_thor_config.json", "r") as read_config_file:
+        config = json.load(read_config_file)
+    for i in range(1, len(config) + 1):
+        script_name = "dummy" + str(i) + ".sh"
+        script_path = os.path.join(os.getcwd(), f"jenkins-jobs-scripts/step{i}/", script_name)
+        # print(script_path)
+        with open(script_path, "w") as write_script_file:
+            write_script_file.write(f"echo dummy step {i} >> ../shell_script_target.txt")
 
 
 @pytest.mark.parametrize("release_name", ["test_release_1"])
@@ -24,6 +41,7 @@ def test_successful_release_cycle(release_name):
     and ensures that they all work out. 
     Expects this release cycle to be successful. 
     """
+    ensure_shell_script_integrity()
     reseed()
     clear_shell_script_target()
 
@@ -82,6 +100,7 @@ def test_failing_release_cycle(release_name):
     and actively writes to the step7 script to ensure this. 
     Will rewrite afterwards with the correct script. 
     """
+    ensure_shell_script_integrity()
     reseed()
     clear_shell_script_target()
 
@@ -98,7 +117,7 @@ def test_failing_release_cycle(release_name):
 
     # Starts the release, causing the associated shell scripts to be run
     start_results = client.post(f"/releases/{release_name}/start")
-    print(start_results.json())
+    # print(start_results.json())
 
     # REWRITES SHELL SCRIPT 7 TO BE CORRECT AGAIN (IMPORTANT)
     with open(shell_script_fail_absolute_path, "w") as shell_script_fail_file:
@@ -147,4 +166,14 @@ def test_failing_release_cycle(release_name):
         else:
             assert task_results[i] == "PENDING"
         
+
+@pytest.mark.parametrize("release_name", ["bad_release_name"])
+def test_bad_release_name(release_name):
+    """
+    Tests that a bad release name returns a bad response. 
+    """
+    reseed()
+    post_response = client.post(f"/releases/{release_name}/start")
+    assert post_response.status_code == 422
+    assert post_response.json()["detail"] == [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}]
 

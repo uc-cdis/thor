@@ -76,12 +76,15 @@ def create_task(name, status, release_id, step_num):
         curr_keys.sort()
 
         # The following code generates the minimum working ID in the database.
-        minimal_task_ids = set(range(len(curr_keys)))
-        unused_ids = minimal_task_ids - set(curr_keys)
-        if unused_ids:
-            min_key = list(unused_ids)[0]
+        if len(curr_keys) == 0:
+            min_key = 0
         else:
-            min_key = curr_keys[-1] + 1
+            minimal_task_ids = set(range(len(curr_keys)))
+            unused_ids = minimal_task_ids - set(curr_keys)
+            if unused_ids:
+                min_key = list(unused_ids)[0]
+            else:
+                min_key = curr_keys[-1] + 1
 
         currentTask = Task(
             task_id=min_key, task_name=name, status=status, release_id=release_id, step_num=step_num
@@ -260,8 +263,9 @@ def lookup_task_key(desired_task_name, desired_release_id):
 
 if __name__ == "__main__":
     # print(read_all_tasks())
-    tasklist = get_release_tasks(6)
-    print(tasklist)
+    print(get_release_task_step(4, 4))
+    # tasklist = get_release_tasks(6)
+    # print(tasklist)
     # wanted_string = "Update CI env with the latest integration branch"
     # wanted_id = 3
 

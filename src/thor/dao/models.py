@@ -42,9 +42,6 @@ class Task(Base):
     # This should enforce uniqueness when trying to write a
     # step_num and release_id pair that are already in the DB.
 
-    def get_release_id(self):
-        return self.release_id
-
     def __repr__(self):
         return "ID: '{}', Name: '{}', Status: '{}', Release ID: '{}', Task Num: '{}'".format(
             self.task_id, self.task_name, self.status, self.release_id, self.step_num
