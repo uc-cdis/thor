@@ -6,20 +6,20 @@ from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 
 Base = declarative_base()
 
-db = SQLAlchemy()
-
 class Release(Base):
     __tablename__ = "releases"
-    __table_args__ = db.UniqueConstraint("version")
+    __table_args__ = (UniqueConstraint("version"),)
 
     release_id = Column(
         Integer, primary_key=True, autoincrement=True, nullable=False
     )  # Unique arbitrary int assigned when input
 
-    version = Column(String)  # expected to be in form 20XX.YY
+    version = Column(String, unique=True)  # expected to be in form 20XX.YY
     # Also now expected to be unique from release to release.
     # In the future, if we move past monthly release cycles,
     # we will need to implement names like "20XX.YYa", "20XX.YYb", etc.
+
+    __table_args__ = (UniqueConstraint("version"),)
 
     result = Column(String)  # expected to be "success", "failed", or "in progress"
 
