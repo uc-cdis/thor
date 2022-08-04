@@ -35,11 +35,11 @@ def test_post_task():
         expected_post_test_result = json.load(post_task_good_test_data)
 
     assert get_response.json() == expected_post_test_result
-    reseed()
+    client.put("/clear")
 
 def test_post_task_bad():
     # Zeroth, we test posting a task in a not-JSON format. 
-    reseed()
+    client.put("/clear")
     post_response = client.post("/tasks", headers={"Content-Type": "application/json"}, \
         data = "not-a-json")
     assert post_response.status_code == 422
@@ -58,7 +58,7 @@ def test_post_task_bad():
     assert error_message["loc"] == ["body", "release_id"]
     assert error_message["msg"] == "field required"
     assert error_message["type"] == "value_error.missing"
-    reseed()
+    client.put("/clear")
 
     # Next, we test posting a task without a task name
     post_response = client.post("/tasks", json = \
@@ -69,7 +69,7 @@ def test_post_task_bad():
     assert error_message["loc"] == ["body", "task_name"]
     assert error_message["msg"] == "field required"
     assert error_message["type"] == "value_error.missing"
-    reseed()
+    client.put("/clear")
 
     # Next, we test posting a task without a task num
     post_response = client.post("/tasks", json = \
@@ -80,7 +80,7 @@ def test_post_task_bad():
     assert error_message["loc"] == ["body", "step_num"]
     assert error_message["msg"] == "field required"
     assert error_message["type"] == "value_error.missing"
-    reseed()
+    client.put("/clear")
 
     # Note for maintenance: There are no bad task names (so far), 
     # as the task name is a string and passed via JSON. 
@@ -98,7 +98,7 @@ def test_post_task_bad():
     assert error_message["loc"] == ["body", "release_id"]
     assert error_message["msg"] == "value is not a valid integer"
     assert error_message["type"] == "type_error.integer"
-    reseed()
+    client.put("/clear")
 
     # We also test posting a task with a task number with a bad type
     post_response = client.post("/tasks", json = \
@@ -111,7 +111,7 @@ def test_post_task_bad():
     assert error_message["loc"] == ["body", "step_num"]
     assert error_message["msg"] == "value is not a valid integer"
     assert error_message["type"] == "type_error.integer"
-    reseed()
+    client.put("/clear")
 
     # Above are all the errors we can expect Pydantic to catch. 
     # The rest should be handled by logic in main, and should be done gracefully.
@@ -126,4 +126,4 @@ def test_post_task_bad():
     error_message = post_response.json()["detail"][0]
     assert error_message["loc"] == ["body", "release_id"]
     assert error_message["msg"] == "No such release_id exists."
-    reseed()
+    client.put("/clear")

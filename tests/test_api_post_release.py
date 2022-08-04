@@ -21,7 +21,7 @@ with open(test_data_absolute_path, "r") as post_release_test:
 
 @pytest.mark.parametrize("release_name", ["test_release_5"])
 def test_post_release(release_name: str):
-    reseed()
+    client.put("/clear")
     post_response = client.post("/releases/" + release_name)
     assert post_response.status_code == 200
     assert list(post_response.json().keys()) == ["release_id"]

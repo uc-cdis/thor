@@ -42,7 +42,7 @@ def test_successful_release_cycle(release_name):
     Expects this release cycle to be successful. 
     """
     ensure_shell_script_integrity()
-    clear_tables()
+    client.put("/clear")
     clear_shell_script_target()
 
     # Creates and starts a release, running through tasks.
@@ -95,7 +95,7 @@ def test_failing_release_cycle(release_name):
     Will rewrite afterwards with the correct script. 
     """
     ensure_shell_script_integrity()
-    clear_tables()
+    client.put("/clear")
     clear_shell_script_target()
 
     # IMPORTANT: REWRITES SHELL SCRIPT 7 TO FAIL
@@ -162,7 +162,7 @@ def test_bad_release_name(release_name):
     """
     Tests that a bad release name returns a bad response. 
     """
-    clear_tables()
+    client.put("/clear")
     client.post(f"/releases/{release_name}/start")
     post_response = client.post(f"/releases/{release_name}/start")
     assert post_response.status_code == 422
