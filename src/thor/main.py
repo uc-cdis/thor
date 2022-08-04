@@ -114,28 +114,24 @@ async def get_release_task_specific(release_name: str, step_num: int):
 @app.get("/tasks")
 async def get_all_tasks(release_name: str = None, step_num: int = None):
     # Due to change in spec, we also support passing release_name and step_num
-    # as query parameters to select a single task.
+    # as query parameters to select a single task, or passing release_name only
+    # to select all tasks for a release.
     """ 
     Takes in a release_name and step_num as query parameters, 
     and returns the corresponding task with the given release_name and step_num.
+    If only release_name is given, returns all tasks for that release.
     If no query parameters passed, returns all the tasks in the Tasks table. 
     """
 
     if release_name and step_num:
-        task_to_return = jsonable_encoder(get_release_task_step(release_name, step_num))
-        # print(task_to_return)
-        if task_to_return is None:
-            log.info(f"No task found for release with name {release_name} and step_num {step_num}.")
-            raise HTTPException(status_code=404, detail="No task found for release with name {release_name} and step_num {step_num}.")
-        log.info(f"Successfully retrieved task info for step #{step_num} of {release_name}. ")
-        return JSONResponse(content = {"task": task_to_return})
+        return await get_release_task_specific(release_name, step_num)
     elif release_name == None and step_num == None:
         tasks_to_return = [jsonable_encoder(task) for task in read_all_tasks()]
         log.info("Successfully retrieved all tasks from Tasks. ")
         return JSONResponse(content={"tasks": tasks_to_return})
     else:
         if release_name:
-            raise HTTPException(status_code=400, detail="Please provide step_num in addition to release_name.")
+            return await get_all_release_tasks(release_name)
         if step_num:
             raise HTTPException(status_code=400, detail="Please provide release_name in addition to step_num.")
 
