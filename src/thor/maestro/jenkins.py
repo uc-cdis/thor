@@ -18,7 +18,8 @@ class JenkinsJobManager(JobManager):
     Creates Jenkins Job Manager API client
     """
         # use parent default
-        self.base_jenkins_url = f"https://{jenkins_instance}.planx-pla.net/job"
+        self.base_jenkins_url = jenkins_instance
+        # Expects form "https://{jenkins_instance}.planx-pla.net/job"
         self.jenkins_api_token = os.environ["JENKINS_API_TOKEN"].strip()
         self.jenkins_username = os.environ["JENKINS_USERNAME"].strip()
         self.jenkins_job_token = os.environ["JENKINS_JOB_TOKEN"].strip()
