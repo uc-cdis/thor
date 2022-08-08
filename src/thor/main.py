@@ -44,7 +44,7 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(title="Thor Gen3 Release Orchestrator",)
 
-
+@app.get("/")
 @app.get("/releases")
 async def get_all_releases():
     """ Returns all the releases in the Releases table. """
