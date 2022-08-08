@@ -14,7 +14,7 @@ engine = sa.create_engine(config.DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
-logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 log = logging.getLogger(__name__)
 
 
