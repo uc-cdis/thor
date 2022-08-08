@@ -42,7 +42,7 @@ def test_restart_release(release_name):
     Then, fixes the error and restarts the release, succeeding.
     """
     ensure_shell_script_integrity()
-    reseed()
+    client.put("/clear")
     clear_shell_script_target()
 
     # print("bananas good")
@@ -118,7 +118,7 @@ def test_bad_release_name(release_name):
     """
     Tests that a bad release name returns a bad response. 
     """
-    reseed()
+    client.put("/clear")
     post_response = client.post(f"/releases/{release_name}/restart")
     assert post_response.status_code == 422
     assert post_response.json()["detail"] == [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}]

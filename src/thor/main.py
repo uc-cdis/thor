@@ -190,16 +190,21 @@ async def what_time_is_it():
 async def start_release(release_name: str):
     """
     This endpoint starts a release from the very beginning. 
-    Assumes that all tasks thus far have status 'PENDING', 
-    and that the release_name is valid. 
+    Creates the release from scratch and starts from the first step. 
+    Checks that the release doesn't already exist. 
     """
     rid_lookupper = release_id_lookup_class()
     release_id = rid_lookupper.release_id_lookup(release_name)
 
-    if release_id not in get_release_keys():
-        log.error(f"Attempt to start release with invalid release_id {release_id}.")
+    if release_id != None: # If not none, then it already exists - this should be avoided.
+        log.error(f"Attempt to start release with name {release_name} that already exists.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
+            [{"loc":["body","release_name"],"msg":f"Release with name {release_name} already exists."}])
+    else:
+        create_release_results = await create_new_release(release_name)
+        release_id = json.loads(create_release_results.body.decode("utf-8"))["release_id"]
+        log.info(f"Successfully created release with name {release_name} and id {release_id}.")    
+
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Successfully started release with name {release_name}.")
@@ -214,6 +219,8 @@ async def start_release(release_name: str):
     # Now, we can execute the tasks in order. 
     # Success logging for return: 
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
+
+    print("prelim task results:", task_results)
 
     for step in release_tasks:
         # step_results = await run_task(step.task_id)
