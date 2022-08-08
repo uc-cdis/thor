@@ -1,17 +1,17 @@
 ### models.py ###
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Identity
 from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 
 Base = declarative_base()
 
-
 class Release(Base):
     __tablename__ = "releases"
+    __table_args__ = (UniqueConstraint("version"),)
 
     release_id = Column(
-        Integer, primary_key=True
+        Integer, primary_key=True, autoincrement=True, nullable=False
     )  # Unique arbitrary int assigned when input
 
     version = Column(String, unique=True)  # expected to be in form 20XX.YY
@@ -19,7 +19,11 @@ class Release(Base):
     # In the future, if we move past monthly release cycles,
     # we will need to implement names like "20XX.YYa", "20XX.YYb", etc.
 
+    __table_args__ = (UniqueConstraint("version"),)
+
     result = Column(String)  # expected to be "success", "failed", or "in progress"
+
+    UniqueConstraint("version")
 
     def __repr__(self):
         return "release_ID: '{}', Version: '{}', Result: '{}'".format(
