@@ -45,7 +45,7 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(title="Thor Gen3 Release Orchestrator",)
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def index():
     ''' Home page '''
     return """
