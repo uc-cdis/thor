@@ -42,11 +42,11 @@ def test_successful_release_cycle(release_name):
     Expects this release cycle to be successful. 
     """
     ensure_shell_script_integrity()
-    client.put("/clear")
+    client.put("/thor-admin/clear")
     clear_shell_script_target()
 
     # Creates and starts a release, running through tasks.
-    start_results = client.post(f"/releases/{release_name}/start")
+    start_results = client.post(f"/thor-admin/releases/{release_name}/start")
     assert start_results.status_code == 200
     print(start_results.json())
 
@@ -95,7 +95,7 @@ def test_failing_release_cycle(release_name):
     Will rewrite afterwards with the correct script. 
     """
     ensure_shell_script_integrity()
-    client.put("/clear")
+    client.put("/thor-admin/clear")
     clear_shell_script_target()
 
     # IMPORTANT: REWRITES SHELL SCRIPT 7 TO FAIL
@@ -105,7 +105,7 @@ def test_failing_release_cycle(release_name):
         shell_script_fail_file.write("INVALID COMMAND")
 
     # Creates and starts the release, causing the associated shell scripts to be run
-    start_results = client.post(f"/releases/{release_name}/start")
+    start_results = client.post(f"/thor-admin/releases/{release_name}/start")
     # print(start_results.json())
 
     # REWRITES SHELL SCRIPT 7 TO BE CORRECT AGAIN (IMPORTANT)
@@ -162,9 +162,9 @@ def test_bad_release_name(release_name):
     """
     Tests that a bad release name returns a bad response. 
     """
-    client.put("/clear")
-    client.post(f"/releases/{release_name}/start")
-    post_response = client.post(f"/releases/{release_name}/start")
+    client.put("/thor-admin/clear")
+    client.post(f"/thor-admin/releases/{release_name}/start")
+    post_response = client.post(f"/thor-admin/releases/{release_name}/start")
     assert post_response.status_code == 422
     assert post_response.json()["detail"] == [{"loc":["body","release_name"],"msg":f"Release with name {release_name} already exists."}]
 
