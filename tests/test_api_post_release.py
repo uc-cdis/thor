@@ -21,8 +21,8 @@ with open(test_data_absolute_path, "r") as post_release_test:
 
 @pytest.mark.parametrize("release_name", ["test_release_5"])
 def test_post_release(release_name: str):
-    client.put("/clear")
-    post_response = client.post("/releases/" + release_name)
+    client.put("/thor-admin/clear")
+    post_response = client.post("/thor-admin/releases/" + release_name)
     assert post_response.status_code == 200
     assert list(post_response.json().keys()) == ["release_id"]
     release_id = post_response.json()["release_id"]
@@ -65,9 +65,9 @@ def test_post_release_when_empty():
     # This was an error that was fixed, and we should keep it that way. 
     # We should be creating with no issues. 
 
-    client.put("/clear")
+    client.put("/thor-admin/clear")
 
-    post_response = client.post("/releases/test_release_5")
+    post_response = client.post("/thor-admin/releases/test_release_5")
     assert post_response.status_code == 200
     assert list(post_response.json().keys()) == ["release_id"]
     release_id = post_response.json()["release_id"]

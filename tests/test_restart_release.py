@@ -42,13 +42,13 @@ def test_restart_release(release_name):
     Then, fixes the error and restarts the release, succeeding.
     """
     ensure_shell_script_integrity()
-    client.put("/clear")
+    client.put("/thor-admin/clear")
     clear_shell_script_target()
 
     # print("bananas good")
 
     # Creates a release (and associated tasks)
-    post_response = client.post("/releases/" + release_name)
+    post_response = client.post("/thor-admin/releases/" + release_name)
     assert post_response.status_code == 200
     release_id = post_response.json()["release_id"]
 
@@ -59,7 +59,7 @@ def test_restart_release(release_name):
         shell_script_fail_file.write("INVALID COMMAND")
 
     # Starts the release, causing the associated shell scripts to be run
-    start_results = client.post(f"/releases/{release_name}/start")
+    start_results = client.post(f"/thor-admin/releases/{release_name}/start")
     # print(start_results.json())
 
     # REWRITES SHELL SCRIPT 8 TO BE CORRECT AGAIN (IMPORTANT)
@@ -71,7 +71,7 @@ def test_restart_release(release_name):
 
 
     # Restarts the release, running shell scripts from 8 onwards
-    restart_results = client.post(f"/releases/{release_name}/restart")
+    restart_results = client.post(f"/thor-admin/releases/{release_name}/restart")
     # print(restart_results.json())
 
     # Checks contents of the "shell_script_target.txt" file to ensure that
@@ -118,8 +118,8 @@ def test_bad_release_name(release_name):
     """
     Tests that a bad release name returns a bad response. 
     """
-    client.put("/clear")
-    post_response = client.post(f"/releases/{release_name}/restart")
+    client.put("/thor-admin/clear")
+    post_response = client.post(f"/thor-admin/releases/{release_name}/restart")
     assert post_response.status_code == 422
     assert post_response.json()["detail"] == [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}]
 
