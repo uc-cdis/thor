@@ -54,7 +54,7 @@ async def index():
             <title>Welcome to Thor!</title>
         </head>
         <body>
-            <h3>To get information on all releases, click on <a href="/releases"></h3>
+            <h3>To get information on all releases, click on <a href="/releases">releases</a></h3>
         </body>
     </html>
     """ 
