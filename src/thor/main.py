@@ -9,6 +9,7 @@ import json
 
 from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -45,6 +46,19 @@ log = logging.getLogger(__name__)
 app = FastAPI(title="Thor Gen3 Release Orchestrator",)
 
 @app.get("/")
+async def index():
+    ''' Home page '''
+    return """
+    <html>
+        <head>
+            <title>Welcome to Thor!</title>
+        </head>
+        <body>
+            <h3>To get information on all releases, click on <a href="/releases"></h3>
+        </body>
+    </html>
+    """ 
+
 @app.get("/releases")
 async def get_all_releases():
     """ Returns all the releases in the Releases table. """
