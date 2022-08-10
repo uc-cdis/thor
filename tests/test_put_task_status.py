@@ -24,7 +24,7 @@ with open(test_data_absolute_path, "r") as post_release_test:
 [("2021.09", 1, "SUCCESS"), ("2021.09", 3, "FAILURE"), ("2021.07", 4, "PENDING")])
 def test_put_task_status(release_name, step_num, status):
     reseed()
-    put_response = client.put(f"/releases/{release_name}/tasks/{step_num}", json={"status": status}, headers={"Content-Type": "application/json"})
+    put_response = client.put(f"/thor-admin/releases/{release_name}/tasks/{step_num}", json={"status": status}, headers={"Content-Type": "application/json"})
     assert put_response.status_code == 200
     assert put_response.json() == {
         "release_name": release_name, "step_num": step_num, "status": status
@@ -51,7 +51,7 @@ def test_put_task_status(release_name, step_num, status):
 @pytest.mark.parametrize("release_name, step_num", [("invalid_release", 1), ("2021.09", -1), ("invalid release", -1)])
 def test_put_task_status_failing(release_name, step_num):
     reseed()
-    put_response = client.put(f"/releases/{release_name}/tasks/{step_num}", json={"status": "SUCCESS"}, headers={"Content-Type": "application/json"})
+    put_response = client.put(f"/thor-admin/releases/{release_name}/tasks/{step_num}", json={"status": "SUCCESS"}, headers={"Content-Type": "application/json"})
     assert put_response.status_code == 422
     assert put_response.json() == {
         "detail": [{

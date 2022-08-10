@@ -343,7 +343,7 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
-  "/clear":
+  "/thor-admin/clear":
     put:
       summary: Clear All
       description: 'This endpoint is used to clear all data. '
@@ -354,7 +354,7 @@ paths:
           content:
             application/json:
               schema: {}
-  "/reseed":
+  "/thor-admin/reseed":
     put:
       summary: Reseed
       description: 'Reseeds data using the native reseed() and test data. '
