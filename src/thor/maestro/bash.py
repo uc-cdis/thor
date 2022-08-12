@@ -9,7 +9,7 @@ from thor.maestro.baton import JobManager
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
-DEVELOPMENT = True
+# DEVELOPMENT = True
 
 class BashJobManager(JobManager):
     def __init__(self, release_name):
