@@ -29,6 +29,7 @@ class BashJobManager(JobManager):
         """
         log.info("Running bash job for step {}".format(step_num))
         script_path = self.identify_script_to_run(step_num)
+        log.info("Executing script {}".format(script_path)
         if script_path == None:
             log.info("No script found for step {}".format(step_num))
             return
