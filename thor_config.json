@@ -7,8 +7,8 @@
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
             "JIRA_PROJECT": "QAT"
         },  
-        "schedule":  "0 21 8-15 * 5",  
-        "script": "dummy1.sh",
+        "schedule":  "null",  
+        "script": "create-release-in-jira.sh",
         "run_next":  "step2"
     },   
 
@@ -19,8 +19,9 @@
         "job_params": {
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
             "FORK_FROM":"main"
-        },  
-        "schedule": null,  
+        },
+        "schedule": null,
+        "script": "create-release-candidate-branch.sh",
         "run_next":  "step3"
     },   
 
