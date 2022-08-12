@@ -26,6 +26,7 @@ nest-asyncio = "^1.5.1"
 jsontemplates = "^0.1.0"
 
 [tool.poetry.dev-dependencies]
+pyyaml = "^5.3.1"
 
 [tool.poetry.plugins."thor.modules"]
 "dao" = "thor.dao"
