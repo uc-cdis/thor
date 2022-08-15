@@ -37,12 +37,12 @@ def test_get_single_from_all(task):
     assert response.status_code == 200
     assert response.json() == {"task": task}
 
-@pytest.mark.parametrize("release_name", ["2021.09", "2021.07"])
-def test_all_for_release_from_all(release_name):
-    reseed()
-    response = client.get("/tasks", params = {"release_name": release_name})
-    assert response.status_code == 200
-    assert response.json() == expected_output_for_get_tasks
+# @pytest.mark.parametrize("release_name", ["2021.09"])
+# def test_all_for_release_from_all(release_name):
+#     reseed()
+#     response = client.get("/tasks", params = {"release_name": release_name})
+#     assert response.status_code == 200
+#     assert response.json() == expected_output_for_get_tasks
 
 def test_get_single_from_all_failing():
     reseed()
