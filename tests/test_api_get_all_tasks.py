@@ -37,6 +37,7 @@ def test_get_single_from_all(task):
     assert response.status_code == 200
     assert response.json() == {"task": task}
 
+@pytest.mark.parametrize("release_name", ["2021.09", "2021.07"])
 def test_all_for_release_from_all(release_name):
     reseed()
     response = client.get("/tasks", params = {"release_name": release_name})
@@ -61,6 +62,7 @@ def test_get_single_from_all_failing():
     response = client.get("/tasks", params = {"step_num": "1"})
     assert response.status_code == 400
 
-    # Failing because step_num not given
-    response = client.get("/tasks", params = {"release_name": "2021.09"})
-    assert response.status_code == 400
+    # The below test is now acceptable as expected behavior. 
+    # # Failing because step_num not given
+    # response = client.get("/tasks", params = {"release_name": "2021.09"})
+    # assert response.status_code == 400
