@@ -9,6 +9,7 @@ import json
 
 from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -44,6 +45,19 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(title="Thor Gen3 Release Orchestrator",)
 
+@app.get("/", response_class=HTMLResponse)
+async def index():
+    ''' Home page '''
+    return """
+    <html>
+        <head>
+            <title>Welcome to Thor!</title>
+        </head>
+        <body>
+            <h3>To get information on all releases, click on <a href="/releases">releases</a></h3>
+        </body>
+    </html>
+    """ 
 
 @app.get("/releases")
 async def get_all_releases():
@@ -63,7 +77,7 @@ async def get_single_release(release_name: str):
     log.info(f"Successfully obtained release info for {release_id}. ")
     return JSONResponse(content={"release": release})
 
-@app.post("/releases/{release_name}")
+@app.post("/thor-admin/releases/{release_name}")
 async def create_new_release(release_name: str):
     """ This endpoint is used to create a new release and all associated tasks with status PENDING. """
     release_id = create_release(version = release_name, result = "PENDING")
@@ -135,7 +149,7 @@ async def get_all_tasks(release_name: str = None, step_num: int = None):
         if step_num:
             raise HTTPException(status_code=400, detail="Please provide release_name in addition to step_num.")
 
-@app.post("/tasks")
+@app.post("/thor-admin/tasks")
 async def create_new_task(new_task: Task):
     """ This endpoint is used to create a new task. """
     # First, must check that the release_id is valid.
@@ -149,7 +163,7 @@ async def create_new_task(new_task: Task):
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
 
-@app.put("/releases/{release_name}/tasks/{step_num}")
+@app.put("/thor-admin/releases/{release_name}/tasks/{step_num}")
 async def update_task_status(release_name: str, step_num: int, status_obj: TaskStatus):
     """
     This endpoint is used to update the status of a task.
@@ -182,20 +196,25 @@ async def what_time_is_it():
     """ auxiliary api endpoint to return the current timestamp in which Thor is operating. """
     return {"current_time": datetime.datetime.now()}
 
-@app.post("/releases/{release_name}/start")
+@app.post("/thor-admin/releases/{release_name}/start")
 async def start_release(release_name: str):
     """
     This endpoint starts a release from the very beginning. 
-    Assumes that all tasks thus far have status 'PENDING', 
-    and that the release_name is valid. 
+    Creates the release from scratch and starts from the first step. 
+    Checks that the release doesn't already exist. 
     """
     rid_lookupper = release_id_lookup_class()
     release_id = rid_lookupper.release_id_lookup(release_name)
 
-    if release_id not in get_release_keys():
-        log.error(f"Attempt to start release with invalid release_id {release_id}.")
+    if release_id != None: # If not none, then it already exists - this should be avoided.
+        log.error(f"Attempt to start release with name {release_name} that already exists.")
         raise HTTPException(status_code=422, detail= \
-            [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}])
+            [{"loc":["body","release_name"],"msg":f"Release with name {release_name} already exists."}])
+    else:
+        create_release_results = await create_new_release(release_name)
+        release_id = json.loads(create_release_results.body.decode("utf-8"))["release_id"]
+        log.info(f"Successfully created release with name {release_name} and id {release_id}.")    
+
     update_release(release_id, "result", "RUNNING")
     os.environ["RELEASE_VERSION"] = release_name
     log.info(f"Successfully started release with name {release_name}.")
@@ -210,6 +229,8 @@ async def start_release(release_name: str):
     # Now, we can execute the tasks in order. 
     # Success logging for return: 
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
+
+    print("prelim task results:", task_results)
 
     for step in release_tasks:
         # step_results = await run_task(step.task_id)
@@ -242,7 +263,7 @@ async def start_release(release_name: str):
     return JSONResponse(content={"release_name": release_name, "task_results": task_results})
 
 
-@app.post("/releases/{release_name}/restart")
+@app.post("/thor-admin/releases/{release_name}/restart")
 async def restart_release(release_name: str):
     """
     Restarts a release from the first unsuccessful step. 
@@ -296,7 +317,7 @@ async def restart_release(release_name: str):
         "release_name": release_name, "task_results": task_results, \
             "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
 
-@app.post("/tasks/start")
+@app.post("/thor-admin/tasks/start")
 async def start_task(task_identifier: TaskIdentifier):
     """ This endpoint is used to run a specific step in a release. """
     release_name = task_identifier.release_name
@@ -348,7 +369,7 @@ async def start_task(task_identifier: TaskIdentifier):
         "status": "SUCCESS" if status_code == 0 else "FAILED"
         })
 
-@app.put("/clear")
+@app.put("/thor-admin/clear")
 async def clear_all():
     """ This endpoint is used to clear all data. """
     # Tasks first: 
@@ -363,7 +384,7 @@ async def clear_all():
     log.info("Successfully cleared all data.")
     return JSONResponse(content={"status": "Success."})
 
-@app.put("/reseed")
+@app.put("/thor-admin/reseed")
 async def reseed():
     """ Reseeds data using the native reseed() and test data. """
     ctrs.reseed()

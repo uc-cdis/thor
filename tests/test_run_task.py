@@ -29,7 +29,7 @@ def test_run_task_incomplete(release_name, step_num):
     reseed()
     clear_shell_script_target()
 
-    start_task_result = client.post(f"/tasks/start", 
+    start_task_result = client.post(f"/thor-admin/tasks/start", 
         json={"release_name": release_name, "step_num": step_num},
         headers={"Content-Type": "application/json"}
         )
@@ -69,7 +69,7 @@ def test_run_task_complete():
 
     # Create new test release for working with
     release_name = "test_release_run_task"
-    post_response = client.post(f"/releases/{release_name}")
+    post_response = client.post(f"/thor-admin/releases/{release_name}")
     assert post_response.status_code == 200
     release_id = post_response.json()["release_id"]
     
@@ -88,7 +88,7 @@ def test_run_task_complete():
 
     # Run last task
 
-    start_task_result = client.post(f"/tasks/start",
+    start_task_result = client.post(f"/thor-admin/tasks/start",
         json={"release_name": release_name, "step_num": last_task.step_num},
         headers={"Content-Type": "application/json"}
         )
@@ -124,7 +124,7 @@ def test_run_task_invalids():
     clear_shell_script_target()
 
     # Test invalid release name
-    start_task_result = client.post(f"/tasks/start", 
+    start_task_result = client.post(f"/thor-admin/tasks/start", 
         json={"release_name": "invalid_release_name", "step_num": 1},
         headers={"Content-Type": "application/json"}
         )
@@ -136,7 +136,7 @@ def test_run_task_invalids():
         }
 
     # Test invalid step number
-    start_task_result = client.post(f"/tasks/start", 
+    start_task_result = client.post(f"/thor-admin/tasks/start", 
         json={"release_name": "2021.07", "step_num": -1},
         headers={"Content-Type": "application/json"}
         )
