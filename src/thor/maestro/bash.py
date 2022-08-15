@@ -129,9 +129,9 @@ class BashJobManager(JobManager):
         if DEVELOPMENT:
             script_target_file_name = "workspace/shell_script_target.txt"
             target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
-        if not os.path.exists(target_absolute_path):
-            with open(target_absolute_path, "w") as target_file:
-                target_file.write("Shell Script Target\n\n")
+            if not os.path.exists(target_absolute_path):
+                with open(target_absolute_path, "w") as target_file:
+                    target_file.write("Shell Script Target\n\n")
         return
 
     def check_result_of_job(self, job_name):

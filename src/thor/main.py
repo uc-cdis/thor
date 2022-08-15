@@ -85,10 +85,10 @@ async def create_new_release(release_name: str):
     release_id = create_release(version = release_name, result = "PENDING")
     log.info(f"Successfully created release with id {release_id}.")
     if DEVELOPMENT == "true":
-        with open("thor_config.json") as f:
+        with open("dummy_thor_config.json") as f:
             steps_dict = json.load(f)
     else:
-        with open("dummy_thor_config.json") as f:
+        with open("thor_config.json") as f:
             steps_dict = json.load(f)
 
     # print(steps_dict)
