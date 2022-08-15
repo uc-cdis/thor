@@ -9,7 +9,7 @@ from thor.maestro.baton import JobManager
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
-DEVELOPMENT = True
+DEVELOPMENT = os.getenv("DEVELOPMENT")
 
 class BashJobManager(JobManager):
     def __init__(self, release_name):
@@ -29,6 +29,7 @@ class BashJobManager(JobManager):
         """
         log.info("Running bash job for step {}".format(step_num))
         script_path = self.identify_script_to_run(step_num)
+        log.info("Executing script {}".format(script_path))
         if script_path == None:
             log.info("No script found for step {}".format(step_num))
             return
@@ -88,7 +89,7 @@ class BashJobManager(JobManager):
         Returns the job_params dict. 
         NOTE: Looks at DEVELOPMENT to determine which config file to use.
         """
-        if DEVELOPMENT:
+        if DEVELOPMENT == "true":
             with open("dummy_thor_config.json") as f:
                 steps_dict = json.load(f)
         else:
@@ -126,7 +127,7 @@ class BashJobManager(JobManager):
         workspace_path.mkdir(exist_ok=True)
         for i in range(1, num_steps+1):
             (workspace_path / str(i)).mkdir(exist_ok=True)
-        if DEVELOPMENT:
+        if DEVELOPMENT == "true":
             script_target_file_name = "workspace/shell_script_target.txt"
             target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
             if not os.path.exists(target_absolute_path):
