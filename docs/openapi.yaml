@@ -180,7 +180,8 @@ paths:
     get:
       description: "Takes in a release_name and step_num as query parameters, \nand\
         \ returns the corresponding task with the given release_name and step_num.\n\
-        If no query parameters passed, returns all the tasks in the Tasks table. "
+        If only release_name is given, returns all tasks for that release.\nIf no\
+        \ query parameters passed, returns all the tasks in the Tasks table. "
       operationId: get_all_tasks_tasks_get
       parameters:
       - in: query
