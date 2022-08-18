@@ -176,6 +176,18 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Get Release Task Specific
+  /status:
+    get:
+      description: 'Basic Status UI page '
+      operationId: status_response_status_get
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Successful Response
+      summary: Status Response
   /tasks:
     get:
       description: "Takes in a release_name and step_num as query parameters, \nand\
