@@ -27,6 +27,8 @@ from thor.maestro.bash import BashJobManager
 # Sample POST request with curl:
 # curl -X POST --header "Content-Type: application/json" --data @json_objs/sample_task_0.json 0.0.0.0:6565/tasks
 
+DEVELOPMENT = os.getenv("DEVELOPMENT")
+
 
 class Task(BaseModel):
     task_name: str
@@ -95,8 +97,13 @@ async def create_new_release(release_name: str):
     """ This endpoint is used to create a new release and all associated tasks with status PENDING. """
     release_id = create_release(version = release_name, result = "PENDING")
     log.info(f"Successfully created release with id {release_id}.")
-    with open("dummy_thor_config.json") as f:
-        steps_dict = json.load(f)
+
+    if DEVELOPMENT == "true":
+        with open("dummy_thor_config.json") as f:
+            steps_dict = json.load(f)
+    else:
+        with open("thor_config.json") as f:
+            steps_dict = json.load(f)
 
     # print(steps_dict)
 
