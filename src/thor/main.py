@@ -61,6 +61,19 @@ async def index():
     </html>
     """ 
 
+@app.get("/status", response_class=HTMLResponse)
+async def status_response():
+    ''' Basic Status UI page '''
+
+    with open("src/thor/status_ui.html") as status_html:
+        html_table = status_html.read()
+
+    log.info(html_table)
+
+    return html_table
+
+
+
 @app.get("/releases")
 async def get_all_releases():
     """ Returns all the releases in the Releases table. """
