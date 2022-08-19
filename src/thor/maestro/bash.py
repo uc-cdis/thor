@@ -3,6 +3,7 @@ import logging
 import requests
 import json
 from pathlib import Path
+import subprocess
 
 from thor.maestro.baton import JobManager
 
@@ -55,9 +56,16 @@ class BashJobManager(JobManager):
         """
         Takes in the name of a shell script (string) and runs it. 
         Returns the status code as an int. 
+        Writes results (stdout, stderr) into a log file in the current directory.
         """
-        status_code = os.system("sh " + cmd)
-        return status_code
+        complete_process = subprocess.run(["sh", cmd], capture_output=True)
+        log.info(f"Logging for process {cmd}. ")
+        log.info(complete_process.stdout)
+        log.info(complete_process.stderr)
+
+        return complete_process.returncode
+
+        # return os.system("sh " + cmd)
 
     def identify_script_to_run(self, step_num):
         """
