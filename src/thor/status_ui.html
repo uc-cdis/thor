@@ -9,11 +9,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>Task ID</th>
                     <th>Step Number</th>
                     <th>Task Name</th>
                     <th>Task Status</th>
-                    <th>Release ID</th>
                 </tr>
             </thead>
             <tbody id="contents">
@@ -48,7 +46,7 @@
             }
         }
 
-        const columns = ["task_id", "step_num", "task_name", "status", "release_id"]
+        const columns = ["step_num", "task_name", "status"]
 
         // fetch releases data and populate selector
         fetch(`/releases`, {
