@@ -8,9 +8,8 @@ import os.path
 from fastapi.testclient import TestClient
 
 from thor.main import app
-from thor.dao.clear_tables_reseed import reseed
-from thor.dao.release_dao import release_id_lookup_class, read_release, create_release
-from thor.dao.task_dao import get_release_task_step, get_release_tasks, update_task
+from thor.dao.clear_tables_reseed import clear_tables
+from thor.dao.release_dao import create_release
 
 client = TestClient(app)
 
@@ -20,7 +19,7 @@ def test_duplicate_releases(release_name):
     """
     Tests the running of one task to make sure that it is run properly. 
     """
-    reseed()
+    clear_tables()
 
     first_rid = create_release(release_name, "PENDING")
     assert first_rid != None
