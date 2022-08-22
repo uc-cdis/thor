@@ -263,10 +263,12 @@ def lookup_task_key(desired_task_name, desired_release_id):
 
 if __name__ == "__main__":
     # print(read_all_tasks())
-    print(get_release_task_step(4, 4))
+    # print(get_release_task_step(4, 4))
     # tasklist = get_release_tasks(6)
     # print(tasklist)
     # wanted_string = "Update CI env with the latest integration branch"
     # wanted_id = 3
 
     # print(lookup_key(wanted_string, wanted_id))
+    print(create_task("testtask", "PNDING", 1, 1))
+    print(read_all_tasks())

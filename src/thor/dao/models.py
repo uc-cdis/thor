@@ -1,7 +1,8 @@
 ### models.py ###
+import enum
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Identity
+from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 
 Base = declarative_base()
@@ -21,7 +22,16 @@ class Release(Base):
 
     __table_args__ = (UniqueConstraint("version"),)
 
-    result = Column(String)  # expected to be "success", "failed", or "in progress"
+    class ReleaseResults(enum.Enum):
+        PENDING = enum.auto()
+        RUNNING = enum.auto()
+        PAUSED  = enum.auto()
+        SUCCESS = enum.auto()
+
+        def __str__(self):
+            return self.name
+
+    result = Column(Enum(ReleaseResults))
 
     UniqueConstraint("version")
 
@@ -38,7 +48,17 @@ class Task(Base):
         Integer, primary_key=True
     )  # Unique arbitrary int assigned at input
     task_name = Column(String)  # Name of task (e.g. "cut_integration_branch")
-    status = Column(String)  # expected to be "success", "failed", or "in progress"
+
+    class TaskStatus(enum.Enum):
+        PENDING = enum.auto()
+        RUNNING = enum.auto()
+        FAILED  = enum.auto()
+        SUCCESS = enum.auto()
+
+        def __str__(self):
+            return self.name
+
+    status = Column(Enum(TaskStatus))  # expected to be "success", "failed", or "in progress"
     release_id = Column(Integer, ForeignKey("releases.release_id"), nullable=False)
     step_num = Column(Integer)
 
