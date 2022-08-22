@@ -13,6 +13,7 @@ def test_run_shell_logging():
     """
 
     bjm = BashJobManager("arbitrary")
+    ogcwd = os.getcwd()
     print(os.getcwd())
     os.chdir("tests/test_files")
     bjm.run_shell("test_run_shell_script.sh")
@@ -27,5 +28,6 @@ def test_run_shell_logging():
             assert read_target_file.read() == read_log_file.read()
     
     os.remove(log_absolute_path)
-    os.chdir("..")
+    os.chdir("../..")
+    assert os.getcwd() == ogcwd
 
