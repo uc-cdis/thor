@@ -1,0 +1,4 @@
+python stdout
+python stderr
+shell stdout
+shell stderr

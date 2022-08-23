@@ -27,6 +27,8 @@ from thor.maestro.bash import BashJobManager
 # Sample POST request with curl:
 # curl -X POST --header "Content-Type: application/json" --data @json_objs/sample_task_0.json 0.0.0.0:6565/tasks
 
+DEVELOPMENT = os.getenv("DEVELOPMENT")
+
 
 class Task(BaseModel):
     task_name: str
@@ -59,6 +61,18 @@ async def index():
     </html>
     """ 
 
+@app.get("/status", response_class=HTMLResponse)
+async def status_response():
+    ''' Basic Status UI page '''
+    with open("src/thor/status_ui.html") as status_html:
+        html_table = status_html.read()
+
+    log.info(html_table)
+
+    return html_table
+
+
+
 @app.get("/releases")
 async def get_all_releases():
     """ Returns all the releases in the Releases table. """
@@ -82,8 +96,13 @@ async def create_new_release(release_name: str):
     """ This endpoint is used to create a new release and all associated tasks with status PENDING. """
     release_id = create_release(version = release_name, result = "PENDING")
     log.info(f"Successfully created release with id {release_id}.")
-    with open("dummy_thor_config.json") as f:
-        steps_dict = json.load(f)
+
+    if DEVELOPMENT == "true":
+        with open("dummy_thor_config.json") as f:
+            steps_dict = json.load(f)
+    else:
+        with open("thor_config.json") as f:
+            steps_dict = json.load(f)
 
     # print(steps_dict)
 
