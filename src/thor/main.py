@@ -194,13 +194,19 @@ async def update_task_status(release_name: str, step_num: int, status_obj: TaskS
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_name"],"msg":f"No task with step_num {step_num} and release_name {release_name} exists."}])
     else:
-        update_task(task_to_update.task_id, "status", new_status)
-        log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
-        return JSONResponse(content={
-            "release_name": release_name, 
-            "step_num": step_num,
-            "status": new_status
-            })
+        try:
+            update_task(task_to_update.task_id, "status", new_status)
+            log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
+            return JSONResponse(content={
+                "release_name": release_name, 
+                "step_num": step_num,
+                "status": new_status
+                })
+        except Exception as e:
+            log.info(f"Exception when updating task {release_name}:{step_num}:")
+            log.info(f"{e}")
+            raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","status"],"msg":f"\"{new_status}\" is not a valid status. "}])
 
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):
@@ -248,8 +254,6 @@ async def start_release(release_name: str):
     # Now, we can execute the tasks in order. 
     # Success logging for return: 
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
-
-    print("prelim task results:", task_results)
 
     for step in release_tasks:
         # step_results = await run_task(step.task_id)
@@ -305,7 +309,7 @@ async def restart_release(release_name: str):
 
     task_results = {}
     for step in release_tasks:
-        if step.status == "SUCCESS":
+        if str(step.status) == "SUCCESS":
             task_results[step.step_num] = "SUCCESS"
         else:
             step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
@@ -372,15 +376,13 @@ async def start_task(task_identifier: TaskIdentifier):
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
+        update_release(release_id, "result", "PAUSED")
+        log.info(f"Release {release_name} stopped on task #{step_num}.")
 
-    release_statuses = [s.status for s in get_release_tasks(release_id)]
+    release_statuses = [str(s.status) for s in get_release_tasks(release_id)]
     if set(release_statuses) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_name}.")
-    else:
-        update_release(release_id, "result", "PAUSED")
-        fail_index = next(i for i, x in enumerate(release_statuses) if x != "SUCCESS")
-        log.info(f"Release {release_name} still waiting on task #{fail_index}.")
 
     return JSONResponse(content={
         "release_name": release_name, 

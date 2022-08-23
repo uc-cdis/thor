@@ -48,9 +48,10 @@ def test_restart_release(release_name):
     # print("bananas good")
 
     # Creates a release (and associated tasks)
-    post_response = client.post("/thor-admin/releases/" + release_name)
-    assert post_response.status_code == 200
-    release_id = post_response.json()["release_id"]
+        # Note: This is no longer necessary as /start does this. 
+    # post_response = client.post("/thor-admin/releases/" + release_name)
+    # assert post_response.status_code == 200
+    # release_id = post_response.json()["release_id"]
 
     # IMPORTANT: REWRITES SHELL SCRIPT 8 TO FAIL
     shell_script_fail_file_name = "jenkins-jobs-scripts/step8/dummy8.sh"
@@ -101,11 +102,12 @@ def test_restart_release(release_name):
     assert release_name in [r["version"] for r in release_get_response.json()["releases"]]
     
     # print(start_results.json())
-    assert {r["release_id"]:r["result"] \
-        for r in release_get_response.json()["releases"]}[release_id] == "RELEASED"
+    print(release_get_response.json()["releases"])
+    assert {dict["version"]: dict["result"]
+        for dict in release_get_response.json()["releases"]}[release_name] == "RELEASED"
 
     # Tasks:
-    tasks_get_response = client.get(f"/releases/{release_id}/tasks")
+    tasks_get_response = client.get(f"/releases/{release_name}/tasks")
     assert tasks_get_response.status_code == 200
     assert list(tasks_get_response.json().keys()) == ["release_tasks"]
     response_body = tasks_get_response.json()["release_tasks"]

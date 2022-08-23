@@ -2,12 +2,12 @@
   "releases": [
     {
       "version": "2021.09",
-      "result": "In Progress",
+      "result": "PENDING",
       "release_id": 3
     },
     {
       "version": "2021.07",
-      "result": "Completed",
+      "result": "RELEASED",
       "release_id": 4
     }
   ]
