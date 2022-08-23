@@ -104,7 +104,7 @@ def test_restart_release(release_name):
     # print(start_results.json())
     print(release_get_response.json()["releases"])
     assert {dict["version"]: dict["result"]
-        for dict in release_get_response.json()["releases"]}[release_name] == "SUCCESS"
+        for dict in release_get_response.json()["releases"]}[release_name] == "RELEASED"
 
     # Tasks:
     tasks_get_response = client.get(f"/releases/{release_name}/tasks")

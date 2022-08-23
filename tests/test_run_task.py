@@ -55,7 +55,7 @@ def test_run_task_incomplete(release_name, step_num):
 
     # Check release status in DB
     release_id = release_id_lookup_class.release_id_lookup(None, release_name)
-    assert str(read_release(release_id).result) == "SUCCESS"
+    assert str(read_release(release_id).result) == "RELEASED"
     
 
 
@@ -113,7 +113,7 @@ def test_run_task_complete():
     assert str(current_task.status) == "SUCCESS"
 
     # Check release status in DB
-    assert str(read_release(release_id).result) == "SUCCESS"
+    assert str(read_release(release_id).result) == "RELEASED"
 
 
 def test_run_task_invalids():

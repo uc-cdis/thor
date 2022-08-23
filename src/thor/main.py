@@ -362,7 +362,7 @@ async def start_task(task_identifier: TaskIdentifier):
 
     release_statuses = [str(s.status) for s in get_release_tasks(release_id)]
     if set(release_statuses) == {"SUCCESS"}:
-        update_release(release_id, "result", "SUCCESS")
+        update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_name}.")
 
     return JSONResponse(content={

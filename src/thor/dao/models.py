@@ -27,7 +27,7 @@ class Release(Base):
         PENDING = "PENDING"
         RUNNING = "RUNNING"
         PAUSED  = "PAUSED"
-        SUCCESS = "SUCCESS"
+        RELEASED = "RELEASED"
 
         def __str__(self):
             return self.name
