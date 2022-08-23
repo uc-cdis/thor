@@ -7,10 +7,10 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 
-options = {"server": "https://ctds-planx.atlassian.net"}
-jira = JIRA(
-    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip())
-)
+# options = {"server": "https://ctds-planx.atlassian.net"}
+# jira = JIRA(
+#     options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip())
+# )
 
 monthinteger = int(os.environ["RELEASE_VERSION"].split(".")[1])
 month = datetime.date(1900, monthinteger, 1).strftime("%B")
