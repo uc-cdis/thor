@@ -266,7 +266,8 @@ if __name__ == "__main__":
     # Deliberately introduced failing command:
 
     # create_release("v5", "good")
-    print(create_release("v10", "evil"))
+    print(create_release("10", "evil"))
+    print(create_release("10", "evil"))
 
     print(read_all_releases())
 
