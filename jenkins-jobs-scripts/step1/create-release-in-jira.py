@@ -6,7 +6,7 @@ import datetime
 
 options = {"server": "https://ctds-planx.atlassian.net"}
 jira = JIRA(
-    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"], os.environ["JIRA_API_TOKEN"])
+    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip())
 )
 
 monthinteger = int(os.environ["RELEASE_VERSION"].split(".")[1])
