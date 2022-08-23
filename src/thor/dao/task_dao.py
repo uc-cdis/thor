@@ -292,5 +292,5 @@ if __name__ == "__main__":
     # wanted_id = 3
 
     # print(lookup_key(wanted_string, wanted_id))
-    print(create_task("testtask", "PNDING", 1, 1))
-    # print(read_all_tasks())
+    print(create_task("testtask", "PENDING", 1, 1))
+    print(read_all_tasks())

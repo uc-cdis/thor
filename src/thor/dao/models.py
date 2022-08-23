@@ -1,5 +1,6 @@
 ### models.py ###
 import enum
+import json
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Enum
@@ -23,10 +24,10 @@ class Release(Base):
     __table_args__ = (UniqueConstraint("version"),)
 
     class ReleaseResults(enum.Enum):
-        PENDING = enum.auto()
-        RUNNING = enum.auto()
-        PAUSED  = enum.auto()
-        SUCCESS = enum.auto()
+        PENDING = "PENDING"
+        RUNNING = "RUNNING"
+        PAUSED  = "PAUSED"
+        SUCCESS = "SUCCESS"
 
         def __str__(self):
             return self.name
@@ -35,10 +36,18 @@ class Release(Base):
 
     UniqueConstraint("version")
 
+    def __str__(self):
+        return f'{{"release_id": {self.release_id}, "version": {self.version}, "result": {self.result}}}'
+        
     def __repr__(self):
-        return "release_ID: '{}', Version: '{}', Result: '{}'".format(
-            self.release_id, self.version, self.result
-        )
+        return json.dumps({
+            "release_id": self.release_id,
+            "version": self.version, 
+            "result": str(self.result)
+        })
+        # "release_ID: '{}', Version: '{}', Result: '{}'".format(
+        #     self.release_id, self.version, self.result
+        # )
 
 
 class Task(Base):
@@ -50,10 +59,10 @@ class Task(Base):
     task_name = Column(String)  # Name of task (e.g. "cut_integration_branch")
 
     class TaskStatus(enum.Enum):
-        PENDING = enum.auto()
-        RUNNING = enum.auto()
-        FAILED  = enum.auto()
-        SUCCESS = enum.auto()
+        PENDING = "PENDING"
+        RUNNING = "RUNNING"
+        FAILED  = "FAILED"
+        SUCCESS = "SUCCESS"
 
         def __str__(self):
             return self.name
