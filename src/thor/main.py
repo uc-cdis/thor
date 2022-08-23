@@ -175,13 +175,19 @@ async def update_task_status(release_name: str, step_num: int, status_obj: TaskS
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_name"],"msg":f"No task with step_num {step_num} and release_name {release_name} exists."}])
     else:
-        update_task(task_to_update.task_id, "status", new_status)
-        log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
-        return JSONResponse(content={
-            "release_name": release_name, 
-            "step_num": step_num,
-            "status": new_status
-            })
+        try:
+            update_task(task_to_update.task_id, "status", new_status)
+            log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
+            return JSONResponse(content={
+                "release_name": release_name, 
+                "step_num": step_num,
+                "status": new_status
+                })
+        except Exception as e:
+            log.info(f"Exception when updating task {release_name}:{step_num}:")
+            log.info(f"{e}")
+            raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","status"],"msg":f"\"{new_status}\" is not a valid status. "}])
 
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):

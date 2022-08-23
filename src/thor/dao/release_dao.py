@@ -267,5 +267,6 @@ if __name__ == "__main__":
 
     # create_release("v5", "good")
     print(create_release("v12", "PEDING"))
+    # manual_create_release(release_id=2, version="arbitrary", result="PNDING")
 
     print(read_all_releases())

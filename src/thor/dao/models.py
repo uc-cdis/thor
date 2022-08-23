@@ -58,7 +58,7 @@ class Task(Base):
         def __str__(self):
             return self.name
 
-    status = Column(Enum(TaskStatus))  # expected to be "success", "failed", or "in progress"
+    status = Column(Enum(TaskStatus))  
     release_id = Column(Integer, ForeignKey("releases.release_id"), nullable=False)
     step_num = Column(Integer)
 
