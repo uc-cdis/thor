@@ -49,7 +49,7 @@
         const columns = ["step_num", "task_name", "status"]
 
         // fetch releases data and populate selector
-        fetch(`/releases`, {
+        fetch('releases', {
             method: "GET",
         }).then((res) => 
         {
@@ -67,7 +67,7 @@
         });
 
         // fetch entire table data for startup
-        fetch(`/tasks`, {
+        fetch('tasks', {
             method: "GET",
         }).then((res) => 
         {
@@ -86,7 +86,7 @@
             const chosen_release_name = event.target.value;
         
             // get the data matching that ID
-            fetch(`/tasks?release_name=${chosen_release_name}`, {
+            fetch(`tasks?release_name=${chosen_release_name}`, {
                 method: "GET",
             }).then((res) => {
                 res.json().then((data) => 
