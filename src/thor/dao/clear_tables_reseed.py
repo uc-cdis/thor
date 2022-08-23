@@ -42,7 +42,7 @@ def create_test_data():
 
     # Add dummy release entries for testing purposes
     # print("creating rows in the releases table...")
-    release_dao.manual_create_release(3, "2021.09", "RUNNING")
+    release_dao.manual_create_release(3, "2021.09", "PENDING")
     release_dao.manual_create_release(4, "2021.07", "SUCCESS")
 
     task_dao.manual_create_task(1, "Create Release in JIRA", "SUCCESS", 4, 1)

@@ -236,8 +236,6 @@ async def start_release(release_name: str):
     # Success logging for return: 
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
-    print("prelim task results:", task_results)
-
     for step in release_tasks:
         # step_results = await run_task(step.task_id)
         # step_status = json.loads(step_results.body.decode("utf-8"))["status"]
@@ -292,7 +290,7 @@ async def restart_release(release_name: str):
 
     task_results = {}
     for step in release_tasks:
-        if step.status == "SUCCESS":
+        if str(step.status) == "SUCCESS":
             task_results[step.step_num] = "SUCCESS"
         else:
             step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
@@ -359,15 +357,13 @@ async def start_task(task_identifier: TaskIdentifier):
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
-
-    release_statuses = [s.status for s in get_release_tasks(release_id)]
-    if set(release_statuses) == {"SUCCESS"}:
-        update_release(release_id, "result", "RELEASED")
-        log.info(f"Successfully completed release {release_name}.")
-    else:
         update_release(release_id, "result", "PAUSED")
-        fail_index = next(i for i, x in enumerate(release_statuses) if x != "SUCCESS")
-        log.info(f"Release {release_name} still waiting on task #{fail_index}.")
+        log.info(f"Release {release_name} stopped on task #{step_num}.")
+
+    release_statuses = [str(s.status) for s in get_release_tasks(release_id)]
+    if set(release_statuses) == {"SUCCESS"}:
+        update_release(release_id, "result", "SUCCESS")
+        log.info(f"Successfully completed release {release_name}.")
 
     return JSONResponse(content={
         "release_name": release_name, 
