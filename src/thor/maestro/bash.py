@@ -59,11 +59,7 @@ class BashJobManager(JobManager):
         Writes results (stdout, stderr) into a log file in the current directory.
         """
         logfile = open("logfile.txt", "w+")
-        # complete_process = subprocess.run(["sh", cmd], capture_output=True, )
         complete_process = subprocess.run(["sh", cmd], stdout=logfile, stderr=logfile)
-        # log.info(f"Logging for process {cmd}. ")
-        # log.info(complete_process.stdout)
-        # log.info(complete_process.stderr)
 
         return complete_process.returncode
 

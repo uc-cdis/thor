@@ -1,0 +1,107 @@
+<html>
+    <head>
+        <title>Thor Status UI</title>
+    </head>
+    <body> 
+        <select id="release_selector" name="Select Release">
+        </select>
+
+        <table>
+            <thead> 
+                <tr>
+                    <th>Step Number</th>
+                    <th>Task Name</th>
+                    <th>Task Status</th>
+                </tr>
+            </thead>
+            <tbody id="contents">
+            </tbody>
+        </table>
+    </body>
+    <script>
+        // populate table with new data
+        function updateTable(data, values) {
+            const tbody = document.getElementById("contents");
+            // clear existing data from tbody if it exists
+            tbody.innerHTML = "";
+            data.forEach(task => {
+                var p = "";
+                p += "<tr>";
+                values.forEach(value => {
+                    p += "<td>" + task[value] + "</td>";
+                    })
+                p += "</tr>";
+                tbody.insertAdjacentHTML("beforeend", p);
+            })
+        }
+
+        // populate select options
+        function updateSelect(data) {
+            for (var i = 0; i < data.length; i++) {
+                var s = document.getElementById("release_selector");
+                var o = document.createElement("option");
+                // add data to option
+                o.textContent += data[i]
+                s.appendChild(o);
+            }
+        }
+
+        const columns = ["step_num", "task_name", "status"]
+
+        // fetch releases data and populate selector
+        fetch('releases', {
+            method: "GET",
+        }).then((res) => 
+        {
+            res.json().then((data) => 
+                {
+                    let release_list = [];
+                    for (const release of data["releases"]) {
+                        release_list.push(release["version"])
+                    }
+                    updateSelect(release_list);
+                })
+                .catch((err) => {
+                console.log("ERROR: " + err);
+            });
+        });
+
+        // fetch entire table data for startup
+        fetch('tasks', {
+            method: "GET",
+        }).then((res) => 
+        {
+            res.json().then((data) => 
+                {
+                    updateTable(data["tasks"], columns)
+                })
+                .catch((err) => {
+                console.log("ERROR: " + err);
+            });
+        });
+
+        // add event listener to trigger when new data is selected
+        document.getElementById("release_selector").addEventListener("change", function (event) {
+            // capture the ID
+            const chosen_release_name = event.target.value;
+        
+            // get the data matching that ID
+            fetch(`tasks?release_name=${chosen_release_name}`, {
+                method: "GET",
+            }).then((res) => {
+                res.json().then((data) => 
+                {
+                    updateTable(data["release_tasks"], columns)
+                })
+                .catch((err) => {
+                console.log("ERROR: " + err);
+            });
+            })
+        });
+
+    </script>
+</html>
+<!--
+// Code was lifted from here and modified: 
+// https://stackoverflow.com/questions/61086030/fetch-data-to-table-using-javascript
+-->
