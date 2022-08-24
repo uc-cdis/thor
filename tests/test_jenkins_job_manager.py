@@ -7,7 +7,7 @@ expected_url = "https://jenkins2.planx-pla.net/job/this-is-a-test/buildWithParam
 
 
 def test_assemble_url():
-    jjm = JenkinsJobManager("jenkins2")
+    jjm = JenkinsJobManager("https://jenkins2.planx-pla.net")
     job_params_dict = {
         "THE_NAME": "William",
         "RELEASE_VERSION": "2021.09",
