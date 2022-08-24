@@ -1,4 +1,3 @@
-from jira import JIRA
 import re
 import os
 import sys
