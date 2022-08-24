@@ -16,7 +16,7 @@ jjm.run_job(job_name = "gen3-run-all-load-tests-for-release-testing", \
 
 result_returned = False
 while not result_returned:
-    time.wait(10)
+    time.wait(1800)
     try:
         job_result = jjm.check_result_of_job("gen3-run-all-load-tests-for-release-testing", os.environ["RELEASE_VERSION"])
     except Exception as e:
