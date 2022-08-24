@@ -8,24 +8,17 @@ log = logging.getLogger(__name__)
 
 jjm = JenkinsJobManager("https://jenkins.planx-pla.net/") 
 
-jjm.run_job(job_name = "gen3-run-load-tests", \
+jjm.run_job(job_name = "gen3-run-all-load-tests-for-release-testing", \
     job_parameters = {
-        "TARGET_ENVIRONMENT":os.environ["TARGET_ENVIRONMENT"],
-        "LOAD_TEST_DESCRIPTOR":os.environ["LOAD_TEST_DESCRIPTOR"], 
-        "PRESIGNED_URL_ACL_FILTER":os.environ["PRESIGNED_URL_ACL_FILTER"], 
-        "SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT":os.environ["SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT"],
-        "DESIRED_NUMBER_OF_FENCE_PODS":os.environ["DESIRED_NUMBER_OF_FENCE_PODS"],
-        "RELEASE_VERSION":os.environ["RELEASE_VERSION"],
-        "INDEXD_NUM_OF_RECORDS_TO_CREATE":os.environ["INDEXD_NUM_OF_RECORDS_TO_CREATE"],
-        "SIGNED_URL_PROTOCOL":os.environ["SIGNED_URL_PROTOCOL"],
-        "SQS_URL":os.environ["SQS_URL"]
+        "LIST_OF_LOAD_TEST_SCENARIOS":"fence-presigned-url,sheepdog-import-clinical-metada,metadata-service-create-and-query,metadata-service-filter-large-database,metadata-service-create-and-delete,metadata-service-create-mds-record,drs-endpoint,ga4gh-drs-performance,create-indexd-records",
+        "RELEASE_VERSION":os.environ["RELEASE_VERSION"]
     })
 
 result_returned = False
 while not result_returned:
     time.wait(10)
     try:
-        job_result = jjm.check_result_of_job("gen3-run-load-tests", os.environ["RELEASE_VERSION"])
+        job_result = jjm.check_result_of_job("gen3-run-all-load-tests-for-release-testing", os.environ["RELEASE_VERSION"])
     except Exception as e:
         log.error(f"error checking job result: {e}")
         continue
