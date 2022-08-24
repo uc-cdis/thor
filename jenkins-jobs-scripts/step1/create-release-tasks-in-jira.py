@@ -3,6 +3,15 @@ import re
 import os
 import sys
 import datetime
+import requests
+
+# begin url
+url = "https://ctds-planx.atlassian.net//rest/api/3/version"
+auth = HTTPBasicAuth(
+    os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip()
+)
+headers = {"Accept": "application/json", "Content-Type": "application/json"}
+# end url
 
 release = os.environ["RELEASE_VERSION"]
 
@@ -113,21 +122,25 @@ story_dict = {
     "assignee": {"accountId": team_members[team_member_index]["id"]},
 }
 
-new_story = jira.create_issue(fields=story_dict)
-RELEASE_STORY = new_story.key
+issue_create_req = requests.post(url=url, fields=story_dict, headers=headers, auth=auth)
+RELEASE_STORY = issue_create_req.json()["key"]
+# new_story = jira.create_issue(fields=story_dict)
+# RELEASE_STORY = new_story.key
 
 print("start adding tasks to " + RELEASE_TITLE)
 
 
 def create_ticket(issue_dict, team_member_index):
-    new_issue = jira.create_issue(fields=issue_dict)
+    new_issue_request = requests.post(url=url, fields=issue_dict, headers=headers, auth=auth)
+    # new_issue = jira.create_issue(fields=issue_dict)
     # jira.add_issues_to_epic(RELEASE_EPIC, [new_issue.key])
     print(
         team_members[team_member_index]["name"]
         + " has been assigned to "
         + task["title"]
     )
-    return new_issue.key
+    return new_issue_request.json()["key"]
+    # return new_issue.key
 
 
 for task in tasks:
