@@ -83,7 +83,11 @@ tasks = [
     },
 ]
 
-user_ids = os.environ["JIRA_USER_IDS"].split(",")
+user_ids = [
+"5bedb75065b6ad1237756b4d", 
+"62bb0a4ffa171a27239d015e",
+ "5dbe0c65c32caa0daa4715f5"
+ ]
 
 team_members = [
     {"name": "haraprasadj", "id": user_ids[2]},
