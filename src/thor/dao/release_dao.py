@@ -266,19 +266,7 @@ if __name__ == "__main__":
     # Deliberately introduced failing command:
 
     # create_release("v5", "good")
-    print(create_release("10", "evil"))
-    print(create_release("10", "evil"))
+    # print(create_release("v12", "PENDING"))
+    # manual_create_release(release_id=2, version="arbitrary", result="PNDING")
 
     print(read_all_releases())
-
-    # release_name = "bananas"
-    # rid = release_id_lookup_class()
-    # print(rid.release_id_lookup(release_name))
-
-    # new_version = "2021.09"
-    # new_result = "success"
-    # create_release(new_version, new_result)
-
-    # This command doesn't actually fail. I'm suspecting that
-    # this is because the database needs to be recreated, but
-    # I don't know how to drop and recreate the entire database.
