@@ -1,0 +1,438 @@
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    Task:
+      properties:
+        release_id:
+          title: Release Id
+          type: integer
+        step_num:
+          title: Step Num
+          type: integer
+        task_name:
+          title: Task Name
+          type: string
+      required:
+      - task_name
+      - release_id
+      - step_num
+      title: Task
+      type: object
+    TaskIdentifier:
+      properties:
+        release_name:
+          title: Release Name
+          type: string
+        step_num:
+          title: Step Num
+          type: integer
+      required:
+      - release_name
+      - step_num
+      title: TaskIdentifier
+      type: object
+    TaskStatus:
+      properties:
+        status:
+          title: Status
+          type: string
+      required:
+      - status
+      title: TaskStatus
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            type: string
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  title: Thor Gen3 Release Orchestrator
+  version: 0.1.0
+openapi: 3.0.2
+paths:
+  /:
+    get:
+      description: 'Home page '
+      operationId: index__get
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Successful Response
+      summary: Index
+  /releases:
+    get:
+      description: 'Returns all the releases in the Releases table. '
+      operationId: get_all_releases_releases_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Get All Releases
+  /releases/{release_name}:
+    get:
+      description: 'Reads out the release associated with a particular release name. '
+      operationId: get_single_release_releases__release_name__get
+      parameters:
+      - in: path
+        name: release_name
+        required: true
+        schema:
+          title: Release Name
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Single Release
+  /releases/{release_name}/tasks:
+    get:
+      description: "This returns JSON of all tasks with release_name corresponding\
+        \ to the given name. \nIf there are no such tasks, returns an empty list. "
+      operationId: get_all_release_tasks_releases__release_name__tasks_get
+      parameters:
+      - in: path
+        name: release_name
+        required: true
+        schema:
+          title: Release Name
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get All Release Tasks
+  /releases/{release_name}/tasks/{step_num}:
+    get:
+      description: "This returns the task with release_name corresponding to the given\
+        \ input, and \nstep_num corresponding to the given input. There should only\
+        \ be one such task. \nIf there are no such tasks, returns a JSON with task:None. "
+      operationId: get_release_task_specific_releases__release_name__tasks__step_num__get
+      parameters:
+      - in: path
+        name: release_name
+        required: true
+        schema:
+          title: Release Name
+          type: string
+      - in: path
+        name: step_num
+        required: true
+        schema:
+          title: Step Num
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Release Task Specific
+  /status:
+    get:
+      description: 'Basic Status UI page '
+      operationId: status_response_status_get
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Successful Response
+      summary: Status Response
+  /tasks:
+    get:
+      description: "Takes in a release_name and step_num as query parameters, \nand\
+        \ returns the corresponding task with the given release_name and step_num.\n\
+        If only release_name is given, returns all tasks for that release.\nIf no\
+        \ query parameters passed, returns all the tasks in the Tasks table. "
+      operationId: get_all_tasks_tasks_get
+      parameters:
+      - in: query
+        name: release_name
+        required: false
+        schema:
+          title: Release Name
+          type: string
+      - in: query
+        name: step_num
+        required: false
+        schema:
+          title: Step Num
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get All Tasks
+  /tasks/{task_id}:
+    get:
+      description: 'Reads out the task associated with a given task_id. '
+      operationId: get_single_task_tasks__task_id__get
+      parameters:
+      - in: path
+        name: task_id
+        required: true
+        schema:
+          title: Task Id
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Single Task
+  /thor-admin/clear:
+    put:
+      description: 'This endpoint is used to clear all data. '
+      operationId: clear_all_thor_admin_clear_put
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Clear All
+  /thor-admin/releases/{release_name}:
+    post:
+      description: 'This endpoint is used to create a new release and all associated
+        tasks with status PENDING. '
+      operationId: create_new_release_thor_admin_releases__release_name__post
+      parameters:
+      - in: path
+        name: release_name
+        required: true
+        schema:
+          title: Release Name
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create New Release
+  /thor-admin/releases/{release_name}/restart:
+    post:
+      description: "Restarts a release from the first unsuccessful step. \nWill then\
+        \ run through the steps in order until complete or unsuccessful. "
+      operationId: restart_release_thor_admin_releases__release_name__restart_post
+      parameters:
+      - in: path
+        name: release_name
+        required: true
+        schema:
+          title: Release Name
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Restart Release
+  /thor-admin/releases/{release_name}/start:
+    post:
+      description: "This endpoint starts a release from the very beginning. \nCreates\
+        \ the release from scratch and starts from the first step. \nChecks that the\
+        \ release doesn't already exist. "
+      operationId: start_release_thor_admin_releases__release_name__start_post
+      parameters:
+      - in: path
+        name: release_name
+        required: true
+        schema:
+          title: Release Name
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Start Release
+  /thor-admin/releases/{release_name}/tasks/{step_num}:
+    put:
+      description: This endpoint is used to update the status of a task.
+      operationId: update_task_status_thor_admin_releases__release_name__tasks__step_num__put
+      parameters:
+      - in: path
+        name: release_name
+        required: true
+        schema:
+          title: Release Name
+          type: string
+      - in: path
+        name: step_num
+        required: true
+        schema:
+          title: Step Num
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskStatus'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Task Status
+  /thor-admin/reseed:
+    put:
+      description: 'Reseeds data using the native reseed() and test data. '
+      operationId: reseed_thor_admin_reseed_put
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Reseed
+  /thor-admin/tasks:
+    post:
+      description: 'This endpoint is used to create a new task. '
+      operationId: create_new_task_thor_admin_tasks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create New Task
+  /thor-admin/tasks/start:
+    post:
+      description: 'This endpoint is used to run a specific step in a release. '
+      operationId: start_task_thor_admin_tasks_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskIdentifier'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Start Task
+  /time/test:
+    get:
+      description: 'auxiliary api endpoint to return the current timestamp in which
+        Thor is operating. '
+      operationId: what_time_is_it_time_test_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: What Time Is It

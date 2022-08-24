@@ -3,13 +3,14 @@ import logging
 import requests
 import json
 from pathlib import Path
+import subprocess
 
 from thor.maestro.baton import JobManager
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
-DEVELOPMENT = True
+DEVELOPMENT = os.getenv("DEVELOPMENT")
 
 class BashJobManager(JobManager):
     def __init__(self, release_name):
@@ -29,6 +30,7 @@ class BashJobManager(JobManager):
         """
         log.info("Running bash job for step {}".format(step_num))
         script_path = self.identify_script_to_run(step_num)
+        log.info("Executing script {}".format(script_path))
         if script_path == None:
             log.info("No script found for step {}".format(step_num))
             return
@@ -54,9 +56,14 @@ class BashJobManager(JobManager):
         """
         Takes in the name of a shell script (string) and runs it. 
         Returns the status code as an int. 
+        Writes results (stdout, stderr) into a log file in the current directory.
         """
-        status_code = os.system("sh " + cmd)
-        return status_code
+        logfile = open("logfile.txt", "w+")
+        complete_process = subprocess.run(["sh", cmd], stdout=logfile, stderr=logfile)
+
+        return complete_process.returncode
+
+        # return os.system("sh " + cmd)
 
     def identify_script_to_run(self, step_num):
         """
@@ -88,7 +95,7 @@ class BashJobManager(JobManager):
         Returns the job_params dict. 
         NOTE: Looks at DEVELOPMENT to determine which config file to use.
         """
-        if DEVELOPMENT:
+        if DEVELOPMENT == "true":
             with open("dummy_thor_config.json") as f:
                 steps_dict = json.load(f)
         else:
@@ -126,12 +133,12 @@ class BashJobManager(JobManager):
         workspace_path.mkdir(exist_ok=True)
         for i in range(1, num_steps+1):
             (workspace_path / str(i)).mkdir(exist_ok=True)
-        if DEVELOPMENT:
+        if DEVELOPMENT == "true":
             script_target_file_name = "workspace/shell_script_target.txt"
             target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
-        if not os.path.exists(target_absolute_path):
-            with open(target_absolute_path, "w") as target_file:
-                target_file.write("Shell Script Target\n\n")
+            if not os.path.exists(target_absolute_path):
+                with open(target_absolute_path, "w") as target_file:
+                    target_file.write("Shell Script Target\n\n")
         return
 
     def check_result_of_job(self, job_name):
@@ -143,4 +150,5 @@ class BashJobManager(JobManager):
 
 if __name__ == "__main__":
     bjm = BashJobManager("thing1")
-    print(bjm.run_job(1, {"a": "b", "c": "d"}))
+    # print(bjm.run_job(1, {"a": "b", "c": "d"}))
+    bjm.run_shell("env_printer.sh")

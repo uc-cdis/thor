@@ -1,6 +1,8 @@
+from venv import create
 import sqlalchemy as sa
 import os
 import logging
+import psycopg2 as p2
 
 from thor.dao import config
 from thor.dao.models import Task
@@ -14,7 +16,7 @@ engine = sa.create_engine(config.DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
-logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 log = logging.getLogger(__name__)
 
 
@@ -71,11 +73,13 @@ def create_task(name, status, release_id, step_num):
     in the database. If not, probably nothing should break, but we may 
     see some unexpected behavior. Best to avoid if possible. """
 
-    with session_scope() as session:
-        curr_keys = get_task_keys()
-        curr_keys.sort()
+    curr_keys = get_task_keys()
+    curr_keys.sort()
 
-        # The following code generates the minimum working ID in the database.
+    # The following code generates the minimum working ID in the database.
+    if len(curr_keys) == 0:
+        min_key = 0
+    else:
         minimal_task_ids = set(range(len(curr_keys)))
         unused_ids = minimal_task_ids - set(curr_keys)
         if unused_ids:
@@ -83,13 +87,34 @@ def create_task(name, status, release_id, step_num):
         else:
             min_key = curr_keys[-1] + 1
 
-        currentTask = Task(
-            task_id=min_key, task_name=name, status=status, release_id=release_id, step_num=step_num
-        )
-        log.info(f"Added task {min_key} to Tasks table")
-
-        session.add(currentTask)
-        return min_key
+    create_session = Session()
+    current_task = Task(
+        task_id = min_key, 
+        task_name = name, 
+        status = status, 
+        release_id = release_id, 
+        step_num = step_num)
+    try:
+        create_session.add(current_task)
+        task_id = current_task.task_id
+        create_session.commit()
+    except p2.errors.UniqueViolation as p:
+        print(p)
+        create_session.rollback()
+        create_session.close()
+        return None
+    # except sa.exc.IntegrityError as ie:
+    #     log.error(f"Release with version {version} already exists in the database.")
+    #     return None
+    except Exception as e:
+        log.info(f"Error: {e}")
+        create_session.rollback()
+        create_session.close()
+        raise e
+    else:
+        log.info(f"Added task {task_id} to the database.")
+        create_session.close()
+        return task_id
 
 
 def read_task(key):
@@ -260,10 +285,12 @@ def lookup_task_key(desired_task_name, desired_release_id):
 
 if __name__ == "__main__":
     # print(read_all_tasks())
-    print(get_release_task_step(4, 4))
+    # print(get_release_task_step(4, 4))
     # tasklist = get_release_tasks(6)
     # print(tasklist)
     # wanted_string = "Update CI env with the latest integration branch"
     # wanted_id = 3
 
     # print(lookup_key(wanted_string, wanted_id))
+    print(create_task("testtask", "PENDING", 1, 1))
+    print(read_all_tasks())

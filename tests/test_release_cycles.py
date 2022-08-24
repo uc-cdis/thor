@@ -6,7 +6,7 @@ import os.path
 from fastapi.testclient import TestClient
 
 from thor.main import app
-from thor.dao.clear_tables_reseed import reseed
+from thor.dao.clear_tables_reseed import clear_tables
 
 client = TestClient(app)
 
@@ -42,17 +42,13 @@ def test_successful_release_cycle(release_name):
     Expects this release cycle to be successful. 
     """
     ensure_shell_script_integrity()
-    reseed()
+    client.put("/thor-admin/clear")
     clear_shell_script_target()
 
-    # Creates a release (and associated tasks)
-    post_response = client.post("/releases/" + release_name)
-    assert post_response.status_code == 200
-    release_id = post_response.json()["release_id"]
-
-    # Starts the release, causing the associated shell scripts to be run
-    start_results = client.post(f"/releases/{release_name}/start")
-    # print(start_results.json())
+    # Creates and starts a release, running through tasks.
+    start_results = client.post(f"/thor-admin/releases/{release_name}/start")
+    assert start_results.status_code == 200
+    print(start_results.json())
 
     # Checks contents of the "shell_script_target.txt" file to ensure that
     # all the shell scripts were run correctly.
@@ -74,13 +70,11 @@ def test_successful_release_cycle(release_name):
     # occurred as expected. 
 
     # Release:
-    release_get_response = client.get(f"/releases/")
+    release_get_response = client.get(f"/releases/{release_name}")
     assert release_get_response.status_code == 200
-    assert release_name in [r["version"] for r in release_get_response.json()["releases"]]
+    assert release_get_response.json()["release"] != None
     
-    # print(start_results.json())
-    assert {r["release_id"]:r["result"] \
-        for r in release_get_response.json()["releases"]}[release_id] == "RELEASED"
+    assert release_get_response.json()["release"]["result"] == "RELEASED"
 
     # Tasks:
     tasks_get_response = client.get(f"/releases/{release_name}/tasks")
@@ -101,13 +95,8 @@ def test_failing_release_cycle(release_name):
     Will rewrite afterwards with the correct script. 
     """
     ensure_shell_script_integrity()
-    reseed()
+    client.put("/thor-admin/clear")
     clear_shell_script_target()
-
-    # Creates a release (and associated tasks)
-    post_response = client.post("/releases/" + release_name)
-    assert post_response.status_code == 200
-    release_id = post_response.json()["release_id"]
 
     # IMPORTANT: REWRITES SHELL SCRIPT 7 TO FAIL
     shell_script_fail_file_name = "jenkins-jobs-scripts/step7/dummy7.sh"
@@ -115,8 +104,8 @@ def test_failing_release_cycle(release_name):
     with open(shell_script_fail_absolute_path, "w") as shell_script_fail_file:
         shell_script_fail_file.write("INVALID COMMAND")
 
-    # Starts the release, causing the associated shell scripts to be run
-    start_results = client.post(f"/releases/{release_name}/start")
+    # Creates and starts the release, causing the associated shell scripts to be run
+    start_results = client.post(f"/thor-admin/releases/{release_name}/start")
     # print(start_results.json())
 
     # REWRITES SHELL SCRIPT 7 TO BE CORRECT AGAIN (IMPORTANT)
@@ -147,6 +136,7 @@ def test_failing_release_cycle(release_name):
     assert release_get_response.status_code == 200
     assert release_name in [r["version"] for r in release_get_response.json()["releases"]]
     
+    release_id = [r["release_id"] for r in release_get_response.json()["releases"] if r["version"] == release_name][0]
     # print(start_results.json())
     assert {r["release_id"]:r["result"] \
         for r in release_get_response.json()["releases"]}[release_id] == "PAUSED"
@@ -172,8 +162,9 @@ def test_bad_release_name(release_name):
     """
     Tests that a bad release name returns a bad response. 
     """
-    reseed()
-    post_response = client.post(f"/releases/{release_name}/start")
+    client.put("/thor-admin/clear")
+    client.post(f"/thor-admin/releases/{release_name}/start")
+    post_response = client.post(f"/thor-admin/releases/{release_name}/start")
     assert post_response.status_code == 422
-    assert post_response.json()["detail"] == [{"loc":["body","release_name"],"msg":f"No release with name {release_name} exists."}]
+    assert post_response.json()["detail"] == [{"loc":["body","release_name"],"msg":f"Release with name {release_name} already exists."}]
 

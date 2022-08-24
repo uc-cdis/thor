@@ -7,8 +7,8 @@
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
             "JIRA_PROJECT": "QAT"
         },  
-        "schedule":  "0 21 8-15 * 5",  
-        "script": "dummy1.sh",
+        "schedule":  "null",  
+        "script": "create-release-in-jira.sh",
         "run_next":  "step2"
     },   
 
@@ -19,8 +19,9 @@
         "job_params": {
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
             "FORK_FROM":"main"
-        },  
-        "schedule": null,  
+        },
+        "schedule": null,
+        "script": "create-release-candidate-branch.sh",
         "run_next":  "step3"
     },   
 
@@ -134,7 +135,8 @@
         "run_next":  "step12"
     },
 
-    "step12": {  
+    "step12": {
+        "step_num": 12,
         "job_name":  "gen3-qa-release-notes-generator",  
         "job_description": "Generate release notes and publish release manifest",
         "job_params": {},  
@@ -142,7 +144,8 @@
         "run_next":  "step13"
     },
 
-    "step13": {  
+    "step13": {
+        "step_num": 13,
         "job_name":  null, 
         "job_description": "Send slack message to publish release",
         "job_params": null,
@@ -150,7 +153,8 @@
         "run_next": "step14"
     },
 
-    "step14": {  
+    "step14": {
+        "step_num": 14,
         "job_name":  "delete-integration-branch-from-ecr",  
         "job_description": "Deleting the integration-branch will help lower the cost on the AWS",
         "job_params": {
@@ -160,7 +164,8 @@
         "run_next": "step15"
     },
 
-    "step15": {  
+    "step15": {
+        "step_num": 15,
         "job_name":  "mark-gen3-release-as-released",  
         "job_description": "Mark the release as released",
         "job_params": {
