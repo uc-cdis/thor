@@ -4,6 +4,8 @@ import os
 import logging
 import datetime
 import json
+
+import requests
 # from platform import release
 # from turtle import update
 
@@ -373,9 +375,17 @@ async def start_task(task_identifier: TaskIdentifier):
     if status_code == 0:
         update_task(task_id, "status", "SUCCESS")
         log.info(f"Task #{step_num} of release {release_name} SUCCESS.")
+        requests.post(os.getenv("SLACK_WEBHOOK"), 
+            json={
+                "text":f"Task #{step_num} of release {release_name} SUCCESS."
+            })
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
+        requests.post(os.getenv("SLACK_WEBHOOK"), 
+            json={
+                "text":f"Task #{step_num} of release {release_name} FAILED with code {status_code}."
+            })
         update_release(release_id, "result", "PAUSED")
         log.info(f"Release {release_name} stopped on task #{step_num}.")
 
@@ -383,6 +393,10 @@ async def start_task(task_identifier: TaskIdentifier):
     if set(release_statuses) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_name}.")
+        requests.post(os.getenv("SLACK_WEBHOOK"), 
+            json={
+                "text":f"Successfully completed release {release_name}."
+            })
 
     return JSONResponse(content={
         "release_name": release_name, 
