@@ -4,6 +4,8 @@ import os
 import logging
 import datetime
 import json
+
+import requests
 # from platform import release
 # from turtle import update
 
@@ -42,6 +44,15 @@ class TaskIdentifier(BaseModel):
     release_name: str
     step_num: int
 
+def post_slack(text):
+    if DEVELOPMENT!="true":
+        slack_hook = os.getenv("SLACK_WEBHOOK")
+        try:
+            requests.post(url=slack_hook, json={"text":text})
+        except Exception as e:
+            raise e
+
+
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
 
@@ -67,7 +78,7 @@ async def status_response():
     with open("src/thor/status_ui.html") as status_html:
         html_table = status_html.read()
 
-    log.info(html_table)
+    # log.info(html_table)
 
     return html_table
 
@@ -283,7 +294,8 @@ async def start_release(release_name: str):
         fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
         log.info(f"Started release {release_name} but failed on task #{fail_index}.")
 
-    return JSONResponse(content={"release_name": release_name, "task_results": task_results})
+    return JSONResponse(content={"release_name": release_name, "task_results": task_results,\
+        "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
 
 
 @app.post("/thor-admin/releases/{release_name}/restart")
@@ -373,9 +385,11 @@ async def start_task(task_identifier: TaskIdentifier):
     if status_code == 0:
         update_task(task_id, "status", "SUCCESS")
         log.info(f"Task #{step_num} of release {release_name} SUCCESS.")
+        post_slack(f"Task #{step_num} of release {release_name} SUCCESS.")
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
+        post_slack(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
         update_release(release_id, "result", "PAUSED")
         log.info(f"Release {release_name} stopped on task #{step_num}.")
 
@@ -383,6 +397,7 @@ async def start_task(task_identifier: TaskIdentifier):
     if set(release_statuses) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_name}.")
+        post_slack(f"Successfully completed release {release_name}.")
 
     return JSONResponse(content={
         "release_name": release_name, 

@@ -1,12 +1,16 @@
 <html>
     <head>
+        <!-- pragma: allowlist nextline secret -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <title>Thor Status UI</title>
     </head>
-    <body> 
-        <select id="release_selector" name="Select Release">
+    <body>
+        <h1 style="font-size:60px;text-align:center">Thor Status Dashboard</h1>
+        <select id="release_selector" name="Select Release" width="200px">
+            <option selected>Select a release:</option>
         </select>
 
-        <table>
+        <table class="table">
             <thead> 
                 <tr>
                     <th>Step Number</th>
@@ -17,6 +21,13 @@
             <tbody id="contents">
             </tbody>
         </table>
+
+        <!-- pragma: allowlist nextline secret -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <!-- pragma: allowlist nextline secret -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <!-- pragma: allowlist nextline secret -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </body>
     <script>
         // populate table with new data
@@ -24,6 +35,18 @@
             const tbody = document.getElementById("contents");
             // clear existing data from tbody if it exists
             tbody.innerHTML = "";
+
+            // Sort the data by step num. 
+            data.sort (
+                function (a, b) {
+                    if (a["step_num"] === b["step_num"]) {
+                        return 0;
+                    } else {
+                        return (a["step_num"] < b["step_num"]) ? -1 : 1;
+                    }
+                }
+            );
+
             data.forEach(task => {
                 var p = "";
                 p += "<tr>";
@@ -46,8 +69,9 @@
             }
         }
 
-        const columns = ["step_num", "task_name", "status"]
+        const columns = ["step_num", "task_name", "status"];
 
+        var release_list = [];
         // fetch releases data and populate selector
         fetch('releases', {
             method: "GET",
@@ -55,7 +79,7 @@
         {
             res.json().then((data) => 
                 {
-                    let release_list = [];
+                    // let release_list = [];
                     for (const release of data["releases"]) {
                         release_list.push(release["version"])
                     }
@@ -66,19 +90,21 @@
             });
         });
 
-        // fetch entire table data for startup
-        fetch('tasks', {
-            method: "GET",
-        }).then((res) => 
-        {
-            res.json().then((data) => 
-                {
-                    updateTable(data["tasks"], columns)
-                })
-                .catch((err) => {
-                console.log("ERROR: " + err);
-            });
-        });
+        // fetch first release data on startup
+        // first_release = release_list[0]
+        // console.log("words");
+        // fetch(`tasks?release_name=${first_release}`, {
+        //     method: "GET",
+        // }).then((res) => 
+        // {
+        //     res.json().then((data) => 
+        //         {
+        //             updateTable(data["release_tasks"], columns)
+        //         })
+        //         .catch((err) => {
+        //         console.log("ERROR: " + err);
+        //     });
+        // });
 
         // add event listener to trigger when new data is selected
         document.getElementById("release_selector").addEventListener("change", function (event) {
