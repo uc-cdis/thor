@@ -45,11 +45,12 @@ class TaskIdentifier(BaseModel):
     step_num: int
 
 def post_slack(text):
-    slack_hook = os.environ("SLACK_WEBHOOK")
-    try:
-        requests.post(url=slack_hook, json={"text":text})
-    except Exception as e:
-        raise e
+    if DEVELOPMENT!="true":
+        slack_hook = os.getenv("SLACK_WEBHOOK")
+        try:
+            requests.post(url=slack_hook, json={"text":text})
+        except Exception as e:
+            raise e
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
