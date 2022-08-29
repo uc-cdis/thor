@@ -33,13 +33,13 @@ class BashJobManager(JobManager):
         log.info("Executing script {}".format(script_path))
         if script_path == None:
             log.info("No script found for step {}".format(step_num))
-            return
+            return 0
         log.info("Script found for step {}".format(step_num))
         job_params = self.pull_job_params(step_num)
 
         if job_params == None:
             log.info("No job params found for step {}".format(step_num))
-            return
+            return 0
         log.info("Job params found for step {}".format(step_num))
 
         self.expose_env_vars(self.release_name, job_params)
@@ -112,7 +112,7 @@ class BashJobManager(JobManager):
         the relevant variable from the current release version. 
         """
         if env_dict == None:
-            return
+            return None
         for k, v in env_dict.items():
             if str(v).startswith("{{"):
                 param_keyword = v.strip("{ }")
@@ -122,7 +122,7 @@ class BashJobManager(JobManager):
                     os.environ[k] = "integration" + "".join(release_version.split("."))
             else:
                 os.environ[k] = str(v)
-        return
+        return None
 
     def make_clean_workspace(self, num_steps:int):
         """
@@ -139,7 +139,7 @@ class BashJobManager(JobManager):
             if not os.path.exists(target_absolute_path):
                 with open(target_absolute_path, "w") as target_file:
                     target_file.write("Shell Script Target\n\n")
-        return
+        return None
 
     def check_result_of_job(self, job_name):
         return super().check_result_of_job(job_name)

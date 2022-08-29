@@ -78,8 +78,6 @@ async def status_response():
     with open("src/thor/status_ui.html") as status_html:
         html_table = status_html.read()
 
-    # log.info(html_table)
-
     return html_table
 
 

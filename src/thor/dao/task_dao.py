@@ -207,7 +207,7 @@ def del_task(key):
         except Exception as e:
             print(str(key) + " is not an int. Check your types. ")
             log.info(f"TypeError: Bad key {key} was given. Could not delete.")
-            return
+            return None
 
         try:
             session.delete(session.query(Task).get(key))
