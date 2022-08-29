@@ -33,7 +33,8 @@ class BashJobManager(JobManager):
         log.info("Executing script {}".format(script_path))
         if script_path == None:
             log.info("No script found for step {}".format(step_num))
-            return 0
+            return 1
+            # This forces the step to manually fail
         log.info("Script found for step {}".format(step_num))
         job_params = self.pull_job_params(step_num)
 
