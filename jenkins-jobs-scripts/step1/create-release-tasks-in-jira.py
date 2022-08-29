@@ -2,6 +2,8 @@ import os
 import sys
 import datetime
 import requests
+from requests.auth import HTTPBasicAuth
+import re
 
 # begin url
 url = "https://ctds-planx.atlassian.net//rest/api/3/version"
@@ -14,9 +16,9 @@ headers = {"Accept": "application/json", "Content-Type": "application/json"}
 release = os.environ["RELEASE_VERSION"]
 
 options = {"server": "https://ctds-planx.atlassian.net"}
-jira = JIRA(
-    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"], os.environ["JIRA_API_TOKEN"])
-)
+# jira = JIRA(
+#     options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"], os.environ["JIRA_API_TOKEN"])
+# )
 
 tasks = [
     {
@@ -83,11 +85,8 @@ tasks = [
     },
 ]
 
-user_ids = [
-"5bedb75065b6ad1237756b4d", 
-"62bb0a4ffa171a27239d015e",
- "5dbe0c65c32caa0daa4715f5"
- ]
+
+user_ids = ["5bedb75065b6ad1237756b4d", "62bb0a4ffa171a27239d015e", "5dbe0c65c32caa0daa4715f5"] # pragma: allowlist secret
 
 team_members = [
     {"name": "haraprasadj", "id": user_ids[2]},
