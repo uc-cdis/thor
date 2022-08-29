@@ -39,11 +39,10 @@ class BashJobManager(JobManager):
 
         if job_params == None:
             log.info("No job params found for step {}".format(step_num))
-            return 0
-        log.info("Job params found for step {}".format(step_num))
-
-        self.expose_env_vars(self.release_name, job_params)
-        log.info("Env vars exposed for step {}".format(step_num))
+        else:
+            log.info("Job params found for step {}".format(step_num))
+            self.expose_env_vars(self.release_name, job_params)
+            log.info("Env vars exposed for step {}".format(step_num))
 
         self.make_clean_workspace(step_num)
         os.chdir("./workspace/" + str(step_num))
