@@ -130,5 +130,52 @@
         "schedule":  null,
         "script": "dummy11.sh",
         "run_next": null
+    },
+
+    "step12": {
+        "step_num": 12,
+        "job_name":  "gen3-qa-release-notes-generator",  
+        "job_description": "Generate release notes and publish release manifest",
+        "job_params": {},  
+        "schedule": null,  
+        "script": "dummy12.sh",
+        "run_next":  "step13"
+    },
+
+    "step13": {
+        "step_num": 13,
+        "job_name":  "slack_release_publish", 
+        "job_description": "Send slack message to publish release",
+        "job_params": {
+            "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
+        },
+        "schedule":  null,
+        "script": "dummy13.sh",
+        "run_next": "step14"
+    },
+
+    "step14": {
+        "step_num": 14,
+        "job_name":  "delete-integration-branch-from-ecr",  
+        "job_description": "Deleting the integration-branch will help lower the cost on the AWS",
+        "job_params": {
+            "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
+        },  
+        "schedule":  null,
+        "script": "dummy14.sh",
+        "run_next": "step15"
+    },
+
+    "step15": {
+        "step_num": 15,
+        "job_name":  "mark-gen3-release-as-released",  
+        "job_description": "Mark the release as released",
+        "job_params": {
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
+            "JIRA_PROJECT":"QAT" 
+        },  
+        "schedule":  null,
+        "script": "dummy15.sh",
+        "run_next": null
     }
 }

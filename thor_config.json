@@ -33,6 +33,7 @@
             "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
         },  
         "schedule": null,  
+        "script": "check_quay_image.sh",
         "run_next":  "step4"
     },
     
@@ -44,6 +45,7 @@
             "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
         },  
         "schedule": null,  
+        "script": "push-gen3-monthly-release-images-to-aws-ecr.sh",
         "run_next":  "step5"
     }, 
 
@@ -57,7 +59,8 @@
             "PR_TITLE":"Updating CI env with",
             "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
         },  
-        "schedule": null,  
+        "schedule": null, 
+        "script": "update-ci-env-with-latest-integration-br.sh",
         "run_next":  "step6"
     },    
 
@@ -86,6 +89,7 @@
             "SQS_URL":"https://sqs.us-east-1.amazonaws.com/707767160287/qaplanetv2--qa-niaid--audit-sqs"
         },  
         "schedule": null,  
+        "script": "gen3-run-load-tests.sh",
         "run_next":  "step8"
     },   
 
@@ -96,6 +100,7 @@
         "job_params": {
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}"
         },  
+        "script": "merge-integration-branch-into-stable-and-tag.sh",
         "run_next":  "step9"
     },   
 
@@ -107,6 +112,7 @@
             "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
         },  
         "schedule": null,  
+        "script": "check_quay_image.sh",
         "run_next":  "step10"
     },
     
@@ -118,6 +124,7 @@
             "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
         },  
         "schedule": null,  
+        "script": "push-gen3-monthly-release-images-to-aws-ecr.sh",
         "run_next":  "step11"
     }, 
 
@@ -132,6 +139,7 @@
             "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
         },  
         "schedule": null,  
+        "script": "update-ci-env-with-latest-integration-branch.sh",
         "run_next":  "step12"
     },
 
@@ -141,6 +149,7 @@
         "job_description": "Generate release notes and publish release manifest",
         "job_params": {},  
         "schedule": null,  
+        "script": "gen3-qa-release-notes-generator.sh",
         "run_next":  "step13"
     },
 
@@ -152,6 +161,7 @@
             "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
         },
         "schedule":  null,
+        "script": "slack_release_publish.sh",
         "run_next": "step14"
     },
 
@@ -163,6 +173,7 @@
             "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
         },  
         "schedule":  null,
+        "script": "delete-integration-branch-from-ecr.sh",
         "run_next": "step15"
     },
 
@@ -175,6 +186,7 @@
             "JIRA_PROJECT":"QAT" 
         },  
         "schedule":  null,
+        "script": "mark-gen3-release-as-released.sh",
         "run_next": null
     }
 }
