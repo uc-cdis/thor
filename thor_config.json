@@ -146,9 +146,11 @@
 
     "step13": {
         "step_num": 13,
-        "job_name":  null, 
+        "job_name":  "slack_release_publish", 
         "job_description": "Send slack message to publish release",
-        "job_params": null,
+        "job_params": {
+            "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
+        },
         "schedule":  null,
         "run_next": "step14"
     },
