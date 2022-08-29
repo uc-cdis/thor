@@ -4,6 +4,8 @@ import os
 import logging
 import datetime
 import json
+
+import requests
 # from platform import release
 # from turtle import update
 
@@ -27,6 +29,8 @@ from thor.maestro.bash import BashJobManager
 # Sample POST request with curl:
 # curl -X POST --header "Content-Type: application/json" --data @json_objs/sample_task_0.json 0.0.0.0:6565/tasks
 
+DEVELOPMENT = os.getenv("DEVELOPMENT")
+
 
 class Task(BaseModel):
     task_name: str
@@ -39,6 +43,15 @@ class TaskStatus(BaseModel):
 class TaskIdentifier(BaseModel):
     release_name: str
     step_num: int
+
+def post_slack(text):
+    if DEVELOPMENT!="true":
+        slack_hook = os.getenv("SLACK_WEBHOOK")
+        try:
+            requests.post(url=slack_hook, json={"text":text})
+        except Exception as e:
+            raise e
+
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__name__)
@@ -58,6 +71,18 @@ async def index():
         </body>
     </html>
     """ 
+
+@app.get("/status", response_class=HTMLResponse)
+async def status_response():
+    ''' Basic Status UI page '''
+    with open("src/thor/status_ui.html") as status_html:
+        html_table = status_html.read()
+
+    # log.info(html_table)
+
+    return html_table
+
+
 
 @app.get("/releases")
 async def get_all_releases():
@@ -82,8 +107,13 @@ async def create_new_release(release_name: str):
     """ This endpoint is used to create a new release and all associated tasks with status PENDING. """
     release_id = create_release(version = release_name, result = "PENDING")
     log.info(f"Successfully created release with id {release_id}.")
-    with open("dummy_thor_config.json") as f:
-        steps_dict = json.load(f)
+
+    if DEVELOPMENT == "true":
+        with open("dummy_thor_config.json") as f:
+            steps_dict = json.load(f)
+    else:
+        with open("thor_config.json") as f:
+            steps_dict = json.load(f)
 
     # print(steps_dict)
 
@@ -175,13 +205,19 @@ async def update_task_status(release_name: str, step_num: int, status_obj: TaskS
         raise HTTPException(status_code=422, detail= \
             [{"loc":["body","release_name"],"msg":f"No task with step_num {step_num} and release_name {release_name} exists."}])
     else:
-        update_task(task_to_update.task_id, "status", new_status)
-        log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
-        return JSONResponse(content={
-            "release_name": release_name, 
-            "step_num": step_num,
-            "status": new_status
-            })
+        try:
+            update_task(task_to_update.task_id, "status", new_status)
+            log.info(f"Successfully updated task for step {step_num} for release {release_name}.")
+            return JSONResponse(content={
+                "release_name": release_name, 
+                "step_num": step_num,
+                "status": new_status
+                })
+        except Exception as e:
+            log.info(f"Exception when updating task {release_name}:{step_num}:")
+            log.info(f"{e}")
+            raise HTTPException(status_code=422, detail= \
+            [{"loc":["body","status"],"msg":f"\"{new_status}\" is not a valid status. "}])
 
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):
@@ -230,8 +266,6 @@ async def start_release(release_name: str):
     # Success logging for return: 
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
-    print("prelim task results:", task_results)
-
     for step in release_tasks:
         # step_results = await run_task(step.task_id)
         # step_status = json.loads(step_results.body.decode("utf-8"))["status"]
@@ -260,7 +294,8 @@ async def start_release(release_name: str):
         fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
         log.info(f"Started release {release_name} but failed on task #{fail_index}.")
 
-    return JSONResponse(content={"release_name": release_name, "task_results": task_results})
+    return JSONResponse(content={"release_name": release_name, "task_results": task_results,\
+        "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
 
 
 @app.post("/thor-admin/releases/{release_name}/restart")
@@ -286,7 +321,7 @@ async def restart_release(release_name: str):
 
     task_results = {}
     for step in release_tasks:
-        if step.status == "SUCCESS":
+        if str(step.status) == "SUCCESS":
             task_results[step.step_num] = "SUCCESS"
         else:
             step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
@@ -350,18 +385,19 @@ async def start_task(task_identifier: TaskIdentifier):
     if status_code == 0:
         update_task(task_id, "status", "SUCCESS")
         log.info(f"Task #{step_num} of release {release_name} SUCCESS.")
+        post_slack(f"Task #{step_num} of release {release_name} SUCCESS.")
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
+        post_slack(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
+        update_release(release_id, "result", "PAUSED")
+        log.info(f"Release {release_name} stopped on task #{step_num}.")
 
-    release_statuses = [s.status for s in get_release_tasks(release_id)]
+    release_statuses = [str(s.status) for s in get_release_tasks(release_id)]
     if set(release_statuses) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
         log.info(f"Successfully completed release {release_name}.")
-    else:
-        update_release(release_id, "result", "PAUSED")
-        fail_index = next(i for i, x in enumerate(release_statuses) if x != "SUCCESS")
-        log.info(f"Release {release_name} still waiting on task #{fail_index}.")
+        post_slack(f"Successfully completed release {release_name}.")
 
     return JSONResponse(content={
         "release_name": release_name, 

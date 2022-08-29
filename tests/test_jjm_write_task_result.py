@@ -21,7 +21,7 @@ def prepare_db_testing():
 ## Test writing result when there is no prior value
 @mock.patch(
     "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",
-    mock.MagicMock(return_value="success"),
+    mock.MagicMock(return_value="SUCCESS"),
 )
 @mock.patch(
     "thor.dao.release_dao.release_id_lookup_class.release_id_lookup",
@@ -41,11 +41,11 @@ def test_write_no_prior(prepare_db_testing):
     be the task we want. We compare this task to the known task, and 
     assert that they are the same. """
 
-    test_jjm = JenkinsJobManager("jenkins2")
+    test_jjm = JenkinsJobManager("https://jenkins2.planx-pla.net")
 
     test_task_id = 0
     test_task_name = "test_job_42"
-    test_task_status = "success"
+    test_task_status = "SUCCESS"
     test_release_id = 3
     test_task_version = "2002.09"
     test_step_num = 12
@@ -56,7 +56,7 @@ def test_write_no_prior(prepare_db_testing):
 
     assert written_task.task_id == test_task_id
     assert written_task.task_name == test_task_name
-    assert written_task.status == test_task_status
+    assert str(written_task.status) == test_task_status
     assert written_task.release_id == test_release_id
     assert written_task.step_num == test_step_num
     assert type(written_task) == Task
@@ -70,7 +70,7 @@ def test_write_no_prior(prepare_db_testing):
 
 @mock.patch(
     "thor.maestro.jenkins.JenkinsJobManager.check_result_of_job",
-    mock.MagicMock(return_value="success"),
+    mock.MagicMock(return_value="SUCCESS"),
 )
 def test_write_while_prior(prepare_db_testing):
     """ The objective of this test is to ensure write_task_result
@@ -91,14 +91,14 @@ def test_write_while_prior(prepare_db_testing):
     test_task_version = "2021.09"
     test_task_step_num = 1
 
-    test_jjm = JenkinsJobManager("jenkins2")
+    test_jjm = JenkinsJobManager("https://jenkins2.planx-pla.net")
     test_jjm.write_task_result(test_task_name, test_task_version, test_task_step_num)
 
     # checking to make sure we've altered instead of inserting
     assert get_num_tasks() == 10
 
     written_task = read_task(10)
-    assert written_task.status == "success"
+    assert str(written_task.status) == "SUCCESS"
 
     reseed()
 

@@ -1,7 +1,9 @@
 ### models.py ###
+import enum
+import json
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Identity
+from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 
 Base = declarative_base()
@@ -21,14 +23,31 @@ class Release(Base):
 
     __table_args__ = (UniqueConstraint("version"),)
 
-    result = Column(String)  # expected to be "success", "failed", or "in progress"
+    class ReleaseResults(enum.Enum):
+        PENDING = "PENDING"
+        RUNNING = "RUNNING"
+        PAUSED  = "PAUSED"
+        RELEASED = "RELEASED"
+
+        def __str__(self):
+            return self.name
+
+    result = Column(Enum(ReleaseResults))
 
     UniqueConstraint("version")
 
+    def __str__(self):
+        return f'{{"release_id": {self.release_id}, "version": {self.version}, "result": {self.result}}}'
+        
     def __repr__(self):
-        return "release_ID: '{}', Version: '{}', Result: '{}'".format(
-            self.release_id, self.version, self.result
-        )
+        return json.dumps({
+            "release_id": self.release_id,
+            "version": self.version, 
+            "result": str(self.result)
+        })
+        # "release_ID: '{}', Version: '{}', Result: '{}'".format(
+        #     self.release_id, self.version, self.result
+        # )
 
 
 class Task(Base):
@@ -38,7 +57,17 @@ class Task(Base):
         Integer, primary_key=True
     )  # Unique arbitrary int assigned at input
     task_name = Column(String)  # Name of task (e.g. "cut_integration_branch")
-    status = Column(String)  # expected to be "success", "failed", or "in progress"
+
+    class TaskStatus(enum.Enum):
+        PENDING = "PENDING"
+        RUNNING = "RUNNING"
+        FAILED  = "FAILED"
+        SUCCESS = "SUCCESS"
+
+        def __str__(self):
+            return self.name
+
+    status = Column(Enum(TaskStatus))  
     release_id = Column(Integer, ForeignKey("releases.release_id"), nullable=False)
     step_num = Column(Integer)
 

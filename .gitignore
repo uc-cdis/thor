@@ -15,12 +15,13 @@ admin_auth
 .s3cfg 
 .aws/
 
+# Snyk integration
+.dccache
+
 # Various temp files for configs
 .DS_Store
 .coverage
 .coverage.xml
 coverage.xml
 
-/workspace
-workspace
 workspace/
