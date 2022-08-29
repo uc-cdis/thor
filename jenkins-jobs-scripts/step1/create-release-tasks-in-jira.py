@@ -141,7 +141,6 @@ def create_ticket(issue_dict, team_member_index):
         + task["title"]
     )
     return new_issue_request.json()["key"]
-    # return new_issue.key
 
 
 for task in tasks:

@@ -205,7 +205,7 @@ def delete_release(release_id):
         # Did not use type() below, to guard against possible subclasses of int
         if not isinstance(release_id, int):
             print(str(release_id) + " is not an int. Check your types. ")
-            return
+            return None
 
         try:
             session.delete(session.query(Release).get(release_id))
