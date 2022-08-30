@@ -117,7 +117,7 @@ async def create_new_release(release_name: str):
 
     for step in steps_dict:
         # print(steps_dict[step])
-        task_id = create_task(steps_dict[step]["job_name"], "PENDING", release_id, steps_dict[step]["step_num"])
+        task_id = create_task(steps_dict[step]["job_description"], "PENDING", release_id, steps_dict[step]["step_num"])
         log.info(f"Successfully created task with id {task_id} for release with id {release_id}.")
     log.info(f"Successfully created all tasks for release with id {release_id}.")
     return JSONResponse(content={"release_id": release_id})
