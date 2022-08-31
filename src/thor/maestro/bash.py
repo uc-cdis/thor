@@ -63,8 +63,6 @@ class BashJobManager(JobManager):
 
         return complete_process.returncode
 
-        # return os.system("sh " + cmd)
-
     def identify_script_to_run(self, step_num):
         """
         Given the step number of a step, reads thor_config.json to figure out
@@ -111,6 +109,7 @@ class BashJobManager(JobManager):
         in the current shell. If passed something in JINJA form, will create 
         the relevant variable from the current release version. 
         """
+        # Note: relies on 20XX.YY format for release_version. 
         if env_dict == None:
             return None
         for k, v in env_dict.items():
@@ -149,6 +148,4 @@ class BashJobManager(JobManager):
 
 
 if __name__ == "__main__":
-    bjm = BashJobManager("thing1")
-    # print(bjm.run_job(1, {"a": "b", "c": "d"}))
-    bjm.run_shell("env_printer.sh")
+    pass

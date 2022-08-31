@@ -7,7 +7,7 @@ _Image by [cromaconceptovisual](https://pixabay.com/users/cromaconceptovisual-45
 
 # Overview
 
-this new tool should help us achieve a fully-automated hands-free Gen3 release. We need to eliminate “toil” from our day-to-day tasks so we can focus on project-specific tasks, maintenance of our CI/CD pipelines, expansion of the Gen3-QA framework, test coverage and innovation.
+This new tool should help us achieve a fully-automated hands-free Gen3 release. We need to eliminate “toil” from our day-to-day tasks so we can focus on project-specific tasks, maintenance of our CI/CD pipelines, expansion of the Gen3-QA framework, test coverage and innovation.
 
 Manual and repetitive work is boring and error-prone, as software engineers, we can do better than this.
 
@@ -22,6 +22,7 @@ This new tool (THOR) has the following features:
   * Interacting with JIRA and Slack APIs
 * Provide FULL transparency to the Gen3 Release process through a friendly GUI that should help any Project Manager (PM) observe the progress of the releases throughout the environments they own.
 * Facilitate parameterization of our release automation and make it more flexible (e.g., change cadence / time-frame between releases).
+* Slack notifications posting to communicate release status publicly
 
 # Architectural diagrams
 
@@ -77,16 +78,6 @@ poetry run pytest -vv -s tests
 
 ```
 poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
-```
-
-## Time travel
-
-```
-LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="-15d" poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
-```
-or
-```
-LD_PRELOAD=/libfaketime/src/libfaketime.so.1 FAKETIME="@2020-12-24 20:30:00" poetry run gunicorn thor.main:app -b 0.0.0.0:6565 -k uvicorn.workers.UvicornWorker --reload
 ```
 
 # Local development with Docker

@@ -1,4 +1,8 @@
-Notes on first-time configuration
+Notes on first-time configuration - results may vary
+
+This was done on an unmodified machine with nothing installed. 
+Due to changes in the codebase, these steps may not work exactly, 
+but they are preserved for troubleshooting posterity. 
 
 Installed Homebrew. 
 Installed XCode Tools (likely unnecessary)

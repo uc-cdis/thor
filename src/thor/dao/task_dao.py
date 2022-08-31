@@ -87,6 +87,7 @@ def create_task(name, status, release_id, step_num):
         else:
             min_key = curr_keys[-1] + 1
 
+    # Here's the same code as in release_dao to handle UniqueViolation exceptions
     create_session = Session()
     current_task = Task(
         task_id = min_key, 
@@ -133,7 +134,6 @@ def read_task(key):
                 f"Attempted to retrieve key {key} from Tasks, but could not locate. "
             )
         else:
-            # Note: check how many errors this throws if release breaks.
             log.info(f"Retrieved task {task} from the database.")
             session.expunge_all()
             return task
@@ -176,6 +176,7 @@ def read_all_tasks():
         #
         # The expunge is also necessary, but I *don't know how it works.*
         # It has to be in this location, or the same error occurs.
+        # See the same mystery code in release_dao. 
 
         temp = [task for task in session.query(Task)]
         session.expunge_all()
@@ -269,28 +270,16 @@ def lookup_task_key(desired_task_name, desired_release_id):
     loud errors if it discovers more than one Task
     with corresponding task_name and release_id. """
 
-    with session_scope() as session:
-        key_list = get_task_keys()
-
-        for key in key_list:
-            current_task = read_task(key)
-            if (
-                current_task.task_name == desired_task_name
-                and current_task.release_id == desired_release_id
-            ):
-
-                return key
-        return None
+    key_list = get_task_keys()
+    for key in key_list:
+        current_task = read_task(key)
+        if (
+            current_task.task_name == desired_task_name
+            and current_task.release_id == desired_release_id
+        ):
+            return key
+    return None
 
 
 if __name__ == "__main__":
-    # print(read_all_tasks())
-    # print(get_release_task_step(4, 4))
-    # tasklist = get_release_tasks(6)
-    # print(tasklist)
-    # wanted_string = "Update CI env with the latest integration branch"
-    # wanted_id = 3
-
-    # print(lookup_key(wanted_string, wanted_id))
-    print(create_task("testtask", "PENDING", 1, 1))
     print(read_all_tasks())

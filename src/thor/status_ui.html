@@ -90,22 +90,6 @@
             });
         });
 
-        // fetch first release data on startup
-        // first_release = release_list[0]
-        // console.log("words");
-        // fetch(`tasks?release_name=${first_release}`, {
-        //     method: "GET",
-        // }).then((res) => 
-        // {
-        //     res.json().then((data) => 
-        //         {
-        //             updateTable(data["release_tasks"], columns)
-        //         })
-        //         .catch((err) => {
-        //         console.log("ERROR: " + err);
-        //     });
-        // });
-
         // add event listener to trigger when new data is selected
         document.getElementById("release_selector").addEventListener("change", function (event) {
             // capture the ID
