@@ -85,7 +85,7 @@ def manual_create_release(release_id, version, result):
 def create_release(version, result):
     """ Given string version, and string result, creates a Release object, 
     and inserts it into the database provided by session_scope. 
-    Autonatically generates a release_id that autoincrements. 
+    Automatically generates a release_id that autoincrements. 
     Throws errors if the given 'version' or 'result' are not Strings. """
 
     try:
