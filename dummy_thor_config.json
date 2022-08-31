@@ -15,7 +15,7 @@
     "step2": {  
         "step_num": 2,
         "job_name":  "create-gen3-release-candidate-branch",  
-        "job_description": "Cut the integration branch integration",
+        "job_description": "Cut the integration branch",
         "job_params": {
             "RELEASE_VERSION":"{{RELEASE_NAME}}",
             "FORK_FROM":"main"
@@ -28,7 +28,7 @@
     "step3": {  
         "step_num": 3,
         "job_name":  "check-quay-image",  
-        "job_description": "Check if integration branch quay images are successfully created", 
+        "job_description": "Check if integration branch quay images are ready", 
         "job_params": {
             "RELEASE_TAG": "{{INTEGRATION_BRANCH}}"
         },  
@@ -40,7 +40,7 @@
     "step4": {  
         "step_num": 4,
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
-        "job_description": "Pushing integration branch quay images to AWS ECR",   
+        "job_description": "Push integration branch quay images to ECR",   
         "job_params": {
             "RELEASE_VERSION": "{{INTEGRATION_BRANCH}}"
         },  
@@ -52,7 +52,7 @@
     "step5": {  
         "step_num": 5,
         "job_name":  "update-ci-env-with-latest-integration-branch",  
-        "job_description": " Create gitops-qa PRs to deploy the integration branch to QA environments",  
+        "job_description": "Deploy the integration branch to QA environments for testing",  
         "job_params": {
             "REPO_NAME":"gitops-qa-v2",
             "INTEGRATION_BRANCH":"{{INTEGRATION_BRANCH}}",
@@ -67,7 +67,7 @@
     "step6": {  
         "step_num": 6,
         "job_name":  "gen3-qa-release-notes-generator",  
-        "job_description": "Release testing round qa envs",  
+        "job_description": "Perform release testing on QA envs",  
         "job_params": {},  
         "schedule": null,  
         "script": "dummy6.sh",
@@ -97,7 +97,7 @@
     "step8": {  
         "step_num": 8,
         "job_name":  "apply-new-monthly-release-tags-to-all-imgs",  
-        "job_description": "Merge the integration branch into stable and tag the release", 
+        "job_description": "Merge code into stable and tag the release", 
         "job_params": {
             "RELEASE_VERSION":"{{RELEASE_NAME}}"
         },  
@@ -109,7 +109,7 @@
     "step9": {  
         "step_num": 9,
         "job_name":  "check-quay-image",  
-        "job_description": "Check if monthly release quay images are successfully created", 
+        "job_description": "Check if release quay images are ready", 
         "job_params": {
             "RELEASE_TAG": "{{RELEASE_NAME}}"
         },  
@@ -121,7 +121,7 @@
     "step10": {  
         "step_num": 10,
         "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
-        "job_description": "Pushing monthly release quay images to AWS ECR (as a backup)",
+        "job_description": "Push release quay images to ECR",
         "job_params": {
             "RELEASE_VERSION": "{{RELEASE_NAME}}"
         },  
@@ -133,7 +133,7 @@
     "step11": {  
         "step_num": 11,
         "job_name":  "mark-gen3-release-as-released",  
-        "job_description": "Sanity Check the release",  
+        "job_description": "Run sanity checks for the release",  
         "job_params": {
             "RELEASE_NAME":"{{RELEASE_NAME}}",
             "JIRA_PROJECT":"QAT" 
