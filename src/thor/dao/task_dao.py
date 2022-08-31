@@ -167,20 +167,8 @@ def read_all_tasks():
     in a somewhat inefficient manner otherwise. """
 
     with session_scope() as session:
-
-        # There's something seriously screwed up here.
-        # Returning the list directly causes the test to fail,
-        # and the encoder outputs empty dicts instead of proper
-        # formatted objects. But if we go through a "temp" variable,
-        # everything works for some reason.
-        #
-        # The expunge is also necessary, but I *don't know how it works.*
-        # It has to be in this location, or the same error occurs.
-        # See the same mystery code in release_dao. 
-
-        temp = [task for task in session.query(Task)]
-        session.expunge_all()
-        return temp
+        q = session.query(Task)
+    return [task for task in q.all()]
 
 
 def update_task(key, property, new_value):
