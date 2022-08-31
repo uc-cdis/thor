@@ -47,7 +47,7 @@ def test_post_release(release_name: str):
     expected_jobname_list = []
 
     for step in release_tasks_dict:
-        jobname = release_tasks_dict[step]["job_name"]
+        jobname = release_tasks_dict[step]["job_description"]
         expected_jobname_list.append(jobname)
 
     for task in response_body:
@@ -92,7 +92,8 @@ def test_post_release_when_empty():
     expected_jobname_list = []
 
     for step in release_tasks_dict:
-        jobname = release_tasks_dict[step]["job_name"]
+        jobname = release_tasks_dict[step]["job_description"]
+        print(jobname)
         expected_jobname_list.append(jobname)
 
     for task in response_body:
