@@ -146,12 +146,6 @@ class JenkinsJobManager(JobManager):
 
 if __name__ == "__main__":
     jjm = JenkinsJobManager()
-    # paramsDict = {
-    #     "RELEASE_VERSION": "2021.09",
-    #     "FORK_FROM": "main",
-    # }
-    # jjm.run_job("say-hello", paramsDict)
-    # print("\nCHECKRESULT\n", jjm.check_result_of_job("say-hello", "2021.09"), "\n\n")
 
     test_task_name = "Update CI env with the latest integration branch"
     test_task_version = "2021.09"

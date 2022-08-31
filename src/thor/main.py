@@ -21,8 +21,6 @@ from thor.dao.release_dao import \
 from thor.dao.task_dao import \
     create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, get_release_task_step,\
         update_task, delete_task
-# from thor.maestro.run_bash_script import attempt_to_run
-# from thor.time.scheduler import Scheduler
 import thor.dao.clear_tables_reseed as ctrs
 from thor.maestro.bash import BashJobManager
 
@@ -72,6 +70,7 @@ async def index():
     </html>
     """ 
 
+
 @app.get("/status", response_class=HTMLResponse)
 async def status_response():
     ''' Basic Status UI page '''
@@ -79,7 +78,6 @@ async def status_response():
         html_table = status_html.read()
 
     return html_table
-
 
 
 @app.get("/releases")
@@ -100,6 +98,7 @@ async def get_single_release(release_name: str):
     log.info(f"Successfully obtained release info for {release_id}. ")
     return JSONResponse(content={"release": release})
 
+
 @app.post("/thor-admin/releases/{release_name}")
 async def create_new_release(release_name: str):
     """ This endpoint is used to create a new release and all associated tasks with status PENDING. """
@@ -113,14 +112,12 @@ async def create_new_release(release_name: str):
         with open("thor_config.json") as f:
             steps_dict = json.load(f)
 
-    # print(steps_dict)
-
     for step in steps_dict:
-        # print(steps_dict[step])
         task_id = create_task(steps_dict[step]["job_description"], "PENDING", release_id, steps_dict[step]["step_num"])
         log.info(f"Successfully created task with id {task_id} for release with id {release_id}.")
     log.info(f"Successfully created all tasks for release with id {release_id}.")
     return JSONResponse(content={"release_id": release_id})
+
 
 @app.get("/releases/{release_name}/tasks")
 async def get_all_release_tasks(release_name: str):
@@ -153,6 +150,7 @@ async def get_release_task_specific(release_name: str, step_num: int):
         log.info(f"Successfully obtained task info for release with name {release_name} and step_num {step_num}.")
         return JSONResponse(content={"task": task})
 
+
 @app.get("/tasks")
 async def get_all_tasks(release_name: str = None, step_num: int = None):
     # Due to change in spec, we also support passing release_name and step_num
@@ -177,6 +175,7 @@ async def get_all_tasks(release_name: str = None, step_num: int = None):
         if step_num:
             raise HTTPException(status_code=400, detail="Please provide release_name in addition to step_num.")
 
+
 @app.post("/thor-admin/tasks")
 async def create_new_task(new_task: Task):
     """ This endpoint is used to create a new task. """
@@ -190,6 +189,7 @@ async def create_new_task(new_task: Task):
         release_id = new_task.release_id, step_num = new_task.step_num)
     log.info(f"Successfully created task with id {task_id}.")
     return JSONResponse(content={"task_id": task_id})
+
 
 @app.put("/thor-admin/releases/{release_name}/tasks/{step_num}")
 async def update_task_status(release_name: str, step_num: int, status_obj: TaskStatus):
@@ -217,6 +217,7 @@ async def update_task_status(release_name: str, step_num: int, status_obj: TaskS
             raise HTTPException(status_code=422, detail= \
             [{"loc":["body","status"],"msg":f"\"{new_status}\" is not a valid status. "}])
 
+
 @app.get("/tasks/{task_id}")
 async def get_single_task(task_id):
     """ Reads out the task associated with a given task_id. """
@@ -229,6 +230,7 @@ async def get_single_task(task_id):
 async def what_time_is_it():
     """ auxiliary api endpoint to return the current timestamp in which Thor is operating. """
     return {"current_time": datetime.datetime.now()}
+
 
 @app.post("/thor-admin/releases/{release_name}/start")
 async def start_release(release_name: str):
@@ -265,30 +267,19 @@ async def start_release(release_name: str):
     task_results = {step_num: "PENDING" for step_num in range(1, len(release_tasks)+1)}
 
     for step in release_tasks:
-        # step_results = await run_task(step.task_id)
-        # step_status = json.loads(step_results.body.decode("utf-8"))["status"]
         step_body = TaskIdentifier(release_name=release_name, step_num=step.step_num)
         step_results = await start_task(task_identifier = step_body)
         step_status = json.loads(step_results.body.decode("utf-8"))["status"]
         task_results[step.step_num] = step_status
         
-        # print(step.step_num, step_status)
         if step_status != "SUCCESS": 
             # This is expected to only be "FAILED", but if we expand in the future,
             # some logic will have to be reworked below. 
             break
-    # Now, we can update the release status.
-    # Note that task/start is already doing much of the following, and 
-    # dup functionality has been commented out for redundancy. 
-    # log.info(all(task_results.values()))
-    # if set(task_results.values()) == {"SUCCESS"}:
-        # update_release(release_id, "result", "RELEASED")
-        # log.info(f"Successfully completed release {release_name}.")
-    # else:
+
+    # Release status updating is mostly being handled by thor-admin/task/start
 
     if set(task_results.values()) != {"SUCCESS"}:
-        # update_release(release_id, "result", "PAUSED")
-        # print([(task == "FAILED") for task in task_results.values()])
         fail_index = [k for (k, v) in task_results.items() if v == "FAILED"]
         log.info(f"Started release {release_name} but failed on task #{fail_index}.")
 
@@ -333,16 +324,9 @@ async def restart_release(release_name: str):
                 task_results[step.step_num] = "FAILED"
                 break
 
-    # Now, we can update the release status.
+    # Same note about /task/start as above applies here wrt release status
 
-    # run_task should already be doing the parts commented out, so this is redundant. 
-    # if set(task_results.values()) == {"SUCCESS"}:
-        # update_release(release_id, "result", "RELEASED")
-        # log.info(f"Successfully completed release {release_name}.")
-    # else:
     if set(task_results.values()) != {"SUCCESS"}:
-        # update_release(release_id, "result", "PAUSED")
-        # run_task should already be doing this, so this is redundant. 
         fail_index = next(i for i, x in enumerate(task_results.values()) if x == "FAILED")
         log.info(f"Restart of release {release_name} failed on task #{fail_index}.")
     
@@ -350,9 +334,11 @@ async def restart_release(release_name: str):
         "release_name": release_name, "task_results": task_results, \
             "status": "RELEASED" if set(task_results.values()) == {"SUCCESS"} else "PAUSED"})
 
+
 @app.post("/thor-admin/tasks/start")
 async def start_task(task_identifier: TaskIdentifier):
     """ This endpoint is used to run a specific step in a release. """
+    # Identifying task
     release_name = task_identifier.release_name
     step_num = task_identifier.step_num
     release_name_list = [r.version for r in read_all_releases()]
@@ -371,6 +357,8 @@ async def start_task(task_identifier: TaskIdentifier):
     task_id = current_task.task_id
     release_id = current_task.release_id
 
+    # Running task
+
     update_release(release_id, "result", "RUNNING")
     log.info(f"Started release {release_name} to run single step {step_num}.")
     update_task(task_id, "status", "RUNNING")
@@ -379,6 +367,8 @@ async def start_task(task_identifier: TaskIdentifier):
     curr_job_manager = BashJobManager(release_name)
     os.environ["RELEASE_VERSION"] = release_name
     status_code = curr_job_manager.run_job(current_task.step_num)
+
+    # task status updating
 
     if status_code == 0:
         update_task(task_id, "status", "SUCCESS")
@@ -391,6 +381,8 @@ async def start_task(task_identifier: TaskIdentifier):
         update_release(release_id, "result", "PAUSED")
         log.info(f"Release {release_name} stopped on task #{step_num}.")
 
+    # Release status updating
+
     release_statuses = [str(s.status) for s in get_release_tasks(release_id)]
     if set(release_statuses) == {"SUCCESS"}:
         update_release(release_id, "result", "RELEASED")
@@ -402,6 +394,7 @@ async def start_task(task_identifier: TaskIdentifier):
         "step_num": step_num, 
         "status": "SUCCESS" if status_code == 0 else "FAILED"
         })
+
 
 @app.put("/thor-admin/clear")
 async def clear_all():

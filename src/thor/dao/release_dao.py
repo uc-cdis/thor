@@ -1,8 +1,7 @@
 import os
 import sqlalchemy as sa
 import psycopg2 as p2
-
-from sqlalchemy.sql.sqltypes import String
+import logging
 
 from thor.dao import config
 from thor.dao.models import Release
@@ -10,9 +9,6 @@ from thor.dao.models import Release
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
-import logging
-
-from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
@@ -21,6 +17,8 @@ Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 logging.getLogger("sqlalchemy.engine").setLevel(logging.ERROR)
+# Can use loglevel INFO, but it clutters up debug output. 
+# Future extension: Actually use different loglevels for different things
 log = logging.getLogger(__name__)
 
 
@@ -49,6 +47,8 @@ def manual_create_release(release_id, version, result):
 
     Throws errors if any input type is not as expected, 
     or if the given release_id is already present in the database. """
+    # Notes: Largely deprecated, as the automatic create_release
+    # should handle things. Note that create_test_data still depends on this though. 
 
     with session_scope() as session:
         current_release = None
@@ -85,13 +85,8 @@ def manual_create_release(release_id, version, result):
 def create_release(version, result):
     """ Given string version, and string result, creates a Release object, 
     and inserts it into the database provided by session_scope. 
-    Autonatically generates a release_id that will work based on the keys already in the table. 
-    Uses the minimum unused integer (min 0). 
-    Depends on get_release_keys. 
+    Automatically generates a release_id that autoincrements. 
     Throws errors if the given 'version' or 'result' are not Strings. """
-
-    curr_keys = get_release_keys()
-    curr_keys.sort()
 
     try:
         if not isinstance(version, str):
@@ -103,6 +98,9 @@ def create_release(version, result):
 
     else:
         # Insanity has led me to do this. 
+        # This whole manual rollbacking thing appears necessary
+        # to gracefully handle the UniqueViolation, but 
+        # a better solution probably exists. 
         create_session = Session()
         current_release = Release(version=version, result=result)
         try:
@@ -163,24 +161,13 @@ def read_release(release_id):
 
 
 def read_all_releases():
-    """ Returns a list of all Release objects in the Releases table of te database. 
+    """ Returns a list of all Release objects in the Releases table of the database. 
     Primarily to be used by main:app/releases, as it must call get_all_releases
     in a somewhat inefficient manner otherwise. """
 
     with session_scope() as session:
-
-        # There's something seriously screwed up here.
-        # Returning the list directly causes the test to fail,
-        # and the encoder outputs empty dicts instead of proper
-        # formatted objects. But if we go through a "temp" variable,
-        # everything works for some reason.
-        #
-        # The expunge is also necessary, but I *don't know how it works.*
-        # It has to be in this location, or the same error occurs.
-
-        temp = [release for release in session.query(Release)]
-        session.expunge_all()
-        return temp
+        q = session.query(Release)
+    return [r for r in q.all()]
 
 
 def update_release(release_id, property, new_value):
@@ -225,13 +212,12 @@ def delete_releases(input):
 
     Relies on delete_release for each operation.  """
 
-    with session_scope() as session:
-        if not isinstance(input, list):
-            raise TypeError(input)
-        else:
-            for i in input:
-                delete_release(i)
-            log.info(f"All entries in list {input} were deleted. ")
+    if not isinstance(input, list):
+        raise TypeError(input)
+    else:
+        for i in input:
+            delete_release(i)
+        log.info(f"All entries in list {input} were deleted. ")
 
 
 def get_release_keys():
@@ -262,11 +248,5 @@ class release_id_lookup_class:
 
 
 if __name__ == "__main__":
-    # print(read_all_releases())
-    # Deliberately introduced failing command:
-
-    # create_release("v5", "good")
-    # print(create_release("v12", "PENDING"))
-    # manual_create_release(release_id=2, version="arbitrary", result="PNDING")
 
     print(read_all_releases())
