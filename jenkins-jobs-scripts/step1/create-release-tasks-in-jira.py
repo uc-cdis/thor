@@ -4,6 +4,7 @@ import datetime
 import requests
 from requests.auth import HTTPBasicAuth
 import re
+import json
 
 # begin url
 url = "https://ctds-planx.atlassian.net//rest/api/3/version"
