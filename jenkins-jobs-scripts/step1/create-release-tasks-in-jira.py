@@ -125,6 +125,7 @@ story_dict = {
 }
 
 issue_create_res = requests.post(url=url, data=story_dict, headers=headers, auth=auth)
+print(issue_create_res)
 RELEASE_STORY = json.loads(issue_create_res.text)["key"]
 # new_story = jira.create_issue(fields=story_dict)
 # RELEASE_STORY = new_story.key
