@@ -25,3 +25,6 @@ admin_auth
 coverage.xml
 
 workspace/
+
+# Visual Studio Code
+.vscode/

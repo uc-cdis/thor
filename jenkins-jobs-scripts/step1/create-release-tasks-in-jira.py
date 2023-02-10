@@ -104,7 +104,7 @@ year = year_and_month.group(1)
 # get month string
 month = datetime.date(1900, int(year_and_month.group(2)), 1).strftime("%B")
 
-PROJECT_NAME = os.environ["JIRA_PROJECT_NAME"]
+PROJECT_NAME = os.environ["JIRA_PROJECT"]
 RELEASE_TITLE = "{} {} Gen3 Core Release".format(month, year)
 COMPONENTS = [
     {"name": "Team Catch(Err)"},
@@ -123,8 +123,8 @@ story_dict = {
     "assignee": {"accountId": team_members[team_member_index]["id"]},
 }
 
-issue_create_req = requests.post(url=url, fields=story_dict, headers=headers, auth=auth)
-RELEASE_STORY = issue_create_req.json()["key"]
+issue_create_res = requests.post(url=url, data=story_dict, headers=headers, auth=auth)
+RELEASE_STORY = json.loads(issue_create_res.text)["key"]
 # new_story = jira.create_issue(fields=story_dict)
 # RELEASE_STORY = new_story.key
 
@@ -132,7 +132,7 @@ print("start adding tasks to " + RELEASE_TITLE)
 
 
 def create_ticket(issue_dict, team_member_index):
-    new_issue_request = requests.post(url=url, fields=issue_dict, headers=headers, auth=auth)
+    new_issue_res = requests.post(url=url, data=issue_dict, headers=headers, auth=auth)
     # new_issue = jira.create_issue(fields=issue_dict)
     # jira.add_issues_to_epic(RELEASE_EPIC, [new_issue.key])
     print(
@@ -140,7 +140,7 @@ def create_ticket(issue_dict, team_member_index):
         + " has been assigned to "
         + task["title"]
     )
-    return new_issue_request.json()["key"]
+    return json.loads(new_issue_res.text)["key"]
 
 
 for task in tasks:
