@@ -11,6 +11,7 @@ This new tool should help us achieve a fully-automated hands-free Gen3 release. 
 
 Manual and repetitive work is boring and error-prone, as software engineers, we can do better than this.
 
+API documentation is available [here](https://raw.githubusercontent.com/uc-cdis/thor/master/docs/openapi.yaml)
 
 # Features
 

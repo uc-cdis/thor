@@ -23,12 +23,13 @@ jobs:
         key: ${{ runner.os }}-poetry-${{ hashFiles(format('{0}{1}', github.workspace, '/poetry.lock')) }}
         restore-keys: |
           ${{ runner.os }}-poetry-
-    - name: Install dependencies (allow "failures" and attempt to continue)
+    - name: Install dependencies
       run: |
-        curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python || true
-        $HOME/.poetry/bin/poetry install || true
+        pip install -U pip
+        pip install poetry
+        poetry install
     - name: Build docs
-      run: $HOME/.poetry/bin/poetry run python docs.py openapi
+      run: poetry run python docs.py openapi
 
     - uses: stefanzweifel/git-auto-commit-action@v4.1.2
       with:

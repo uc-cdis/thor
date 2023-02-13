@@ -1,29 +1,20 @@
+from jira import JIRA
+import re
 import os
 import sys
 import datetime
-import requests
-from requests.auth import HTTPBasicAuth
-import re
-
-# begin url
-url = "https://ctds-planx.atlassian.net//rest/api/3/version"
-auth = HTTPBasicAuth(
-    os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip()
-)
-headers = {"Accept": "application/json", "Content-Type": "application/json"}
-# end url
 
 release = os.environ["RELEASE_VERSION"]
 
 options = {"server": "https://ctds-planx.atlassian.net"}
-# jira = JIRA(
-#     options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"], os.environ["JIRA_API_TOKEN"])
-# )
+jira = JIRA(
+    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"], os.environ["JIRA_API_TOKEN"])
+)
 
 tasks = [
     {
         "title": "0. Create RELEASE {} in JIRA".format(release),
-        "description": "Kick off this job: https://jenkins.planx-pla.net/job/create-gen3-release-in-jira/",
+        "description": "Kick off this job: https://jenkins.planx-pla.net/job/create-gen3-release-in-jira/. Also to create release tasks in jira: https://jenkins.planx-pla.net/job/create-jiras-for-gen3-monthly-release/",
     },
     {
         "title": "1. Cut the integration branch integration{}".format(
@@ -85,12 +76,10 @@ tasks = [
     },
 ]
 
-
-user_ids = ["5bedb75065b6ad1237756b4d", "62bb0a4ffa171a27239d015e", "5dbe0c65c32caa0daa4715f5"] # pragma: allowlist secret
+user_ids = ["5bedb75065b6ad1237756b4d", "5dbe0c65c32caa0daa4715f5"] # pragma: allowlist secret
 
 team_members = [
-    {"name": "haraprasadj", "id": user_ids[2]},
-    {"name": "yogeshk", "id": user_ids[1]},
+    {"name": "haraprasadj", "id": user_ids[1]},
     {"name": "atharvar", "id": user_ids[0]},
 ]
 
@@ -104,7 +93,7 @@ year = year_and_month.group(1)
 # get month string
 month = datetime.date(1900, int(year_and_month.group(2)), 1).strftime("%B")
 
-PROJECT_NAME = os.environ["JIRA_PROJECT_NAME"]
+PROJECT_NAME = os.environ["JIRA_PROJECT"]
 RELEASE_TITLE = "{} {} Gen3 Core Release".format(month, year)
 COMPONENTS = [
     {"name": "Team Catch(Err)"},
@@ -123,24 +112,21 @@ story_dict = {
     "assignee": {"accountId": team_members[team_member_index]["id"]},
 }
 
-issue_create_req = requests.post(url=url, fields=story_dict, headers=headers, auth=auth)
-RELEASE_STORY = issue_create_req.json()["key"]
-# new_story = jira.create_issue(fields=story_dict)
-# RELEASE_STORY = new_story.key
+new_story = jira.create_issue(fields=story_dict)
+RELEASE_STORY = new_story.key
 
 print("start adding tasks to " + RELEASE_TITLE)
 
 
 def create_ticket(issue_dict, team_member_index):
-    new_issue_request = requests.post(url=url, fields=issue_dict, headers=headers, auth=auth)
-    # new_issue = jira.create_issue(fields=issue_dict)
+    new_issue = jira.create_issue(fields=issue_dict)
     # jira.add_issues_to_epic(RELEASE_EPIC, [new_issue.key])
     print(
         team_members[team_member_index]["name"]
         + " has been assigned to "
         + task["title"]
     )
-    return new_issue_request.json()["key"]
+    return new_issue.key
 
 
 for task in tasks:
