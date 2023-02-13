@@ -115,9 +115,9 @@ class BashJobManager(JobManager):
         for k, v in env_dict.items():
             if str(v).startswith("{{"):
                 param_keyword = v.strip("{ }")
-                if param_keyword == "release_version":
+                if param_keyword.lower() == "release_version":
                     os.environ[k] = release_version
-                elif param_keyword == "integration_branch":
+                elif param_keyword.lower() == "integration_branch":
                     os.environ[k] = "integration" + "".join(release_version.split("."))
             else:
                 os.environ[k] = str(v)
