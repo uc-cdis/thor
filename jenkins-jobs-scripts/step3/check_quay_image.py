@@ -23,7 +23,6 @@ def get_image():
             print(f"{release} of {services} exists")
             return
     failed_list.append(services)
-    raise Exception(f"{services} doesn't have up-to-date {release}")
 
 
 # here
@@ -67,4 +66,4 @@ print(f"List of repos that failed the check : {failed_list}")
 # if the failed_list contains any repo name
 # then the job should fail and print the list
 if len(failed_list) > 0:
-    sys.exit(1)
+    raise Exception(f"The following services do not have the quay image for {release}: {failed_list}")
