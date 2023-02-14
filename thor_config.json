@@ -39,13 +39,13 @@
     
     "step4": {  
         "step_num": 4,
-        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",
-        "job_description": "Pushing integration branch quay images to AWS ECR",   
+        "job_name":  "check-ecr-image",
+        "job_description": "Check if integration branch ECR images are successfully created",   
         "job_params": {
             "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
         },  
         "schedule": null,  
-        "script": "push-gen3-monthly-release-images-to-aws-ecr.sh",
+        "script": "check_ecr_image.sh",
         "run_next":  "step5"
     }, 
 
