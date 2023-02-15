@@ -1,5 +1,6 @@
 # #!/bin/bash
 GITHUB_USERNAME="PlanxCyborg"
+GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
 
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gitops-qa.git"
