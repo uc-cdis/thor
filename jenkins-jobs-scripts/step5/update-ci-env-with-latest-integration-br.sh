@@ -12,5 +12,5 @@ poetry install
 
 IFS=';' read -ra ENVS <<< "$TARGET_ENVIRONMENTS"
 for ENV in "${ENVS[@]}"; do
-  poetry run gen3release apply -v $INTEGRATION_BRANCH -e ../../gitops-qa/${ENV} -pr "${PR_TITLE} ${INTEGRATION_BRANCH} ${ENV} $(date +%s)"
+  GITHUB_USERNAME=$GITHUB_USERNAME GITHUB_TOKEN=$GITHUB_TOKEN poetry run gen3release apply -v $INTEGRATION_BRANCH -e ../../gitops-qa/${ENV} -pr "${PR_TITLE} ${INTEGRATION_BRANCH} ${ENV} $(date +%s)"
 done
