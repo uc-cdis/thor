@@ -71,6 +71,26 @@ tests = ["attrs[tests-no-zope]", "zope.interface"]
 tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy (>=0.971,<0.990)", "mypy (>=0.971,<0.990)", "pympler", "pympler", "pytest (>=4.3.0)", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-mypy-plugins", "pytest-xdist[psutil]", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "awscli"
+version = "1.27.75"
+description = "Universal Command Line Environment for AWS."
+category = "main"
+optional = false
+python-versions = ">= 3.7"
+files = [
+    {file = "awscli-1.27.75-py3-none-any.whl", hash = "sha256:c216b1fecaee8b7f12704cb48da3c798dea6f934e3d2ed6ec574f135abb22685"},
+    {file = "awscli-1.27.75.tar.gz", hash = "sha256:4ddceb061e6dbdc313cf2c9ff36e16324605f8a94c30fb334aef81a7a0766482"},
+]
+
+[package.dependencies]
+botocore = "1.29.75"
+colorama = ">=0.2.5,<0.4.5"
+docutils = ">=0.10,<0.17"
+PyYAML = ">=3.10,<5.5"
+rsa = ">=3.1.2,<4.8"
+s3transfer = ">=0.6.0,<0.7.0"
+
+[[package]]
 name = "backports-zoneinfo"
 version = "0.2.1"
 description = "Backport of the standard library zoneinfo module"
@@ -98,6 +118,26 @@ files = [
 
 [package.extras]
 tzdata = ["tzdata"]
+
+[[package]]
+name = "botocore"
+version = "1.29.75"
+description = "Low-level, data-driven core of boto 3."
+category = "main"
+optional = false
+python-versions = ">= 3.7"
+files = [
+    {file = "botocore-1.29.75-py3-none-any.whl", hash = "sha256:b6e50fc7aacdcc7fa345cc2c55f53e61db8165bdca4d8ca57323e22cac2671c6"},
+    {file = "botocore-1.29.75.tar.gz", hash = "sha256:eef47ca90d02dbc92296208e24ac5e02bdf5cfa45f10d160fdc19612e141bce2"},
+]
+
+[package.dependencies]
+jmespath = ">=0.7.1,<2.0.0"
+python-dateutil = ">=2.1,<3.0.0"
+urllib3 = ">=1.25.4,<1.27"
+
+[package.extras]
+crt = ["awscrt (==0.16.9)"]
 
 [[package]]
 name = "cdislogging"
@@ -480,6 +520,18 @@ wrapt = ">=1.10,<2"
 dev = ["PyTest", "PyTest (<5)", "PyTest-Cov", "PyTest-Cov (<2.6)", "bump2version (<1)", "configparser (<5)", "importlib-metadata (<3)", "importlib-resources (<4)", "sphinx (<2)", "sphinxcontrib-websupport (<2)", "tox", "zipp (<2)"]
 
 [[package]]
+name = "docutils"
+version = "0.16"
+description = "Docutils -- Python Documentation Utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+files = [
+    {file = "docutils-0.16-py2.py3-none-any.whl", hash = "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af"},
+    {file = "docutils-0.16.tar.gz", hash = "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"},
+]
+
+[[package]]
 name = "fastapi"
 version = "0.65.3"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -853,6 +905,18 @@ docs = ["Sphinx (>=2.2.0)", "sphinx-rtd-theme (>=0.4.3)"]
 opt = ["PyJWT", "filemagic (>=1.6)", "requests-jwt", "requests-kerberos"]
 
 [[package]]
+name = "jmespath"
+version = "1.0.1"
+description = "JSON Matching Expressions"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
+    {file = "jmespath-1.0.1.tar.gz", hash = "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe"},
+]
+
+[[package]]
 name = "jsontemplates"
 version = "0.1.0"
 description = "A small python module for populating json template files."
@@ -1011,6 +1075,18 @@ files = [
 ]
 
 [[package]]
+name = "pyasn1"
+version = "0.4.8"
+description = "ASN.1 types and codecs"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyasn1-0.4.8-py2.py3-none-any.whl", hash = "sha256:39c7e2ec30515947ff4e87fb6f456dfc6e84857d34be479c9d4a4ba4bf46aa5d"},
+    {file = "pyasn1-0.4.8.tar.gz", hash = "sha256:aef77c9fb94a3ac588e87841208bdec464471d9871bd5050a287cc9a475cd0ba"},
+]
+
+[[package]]
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
@@ -1074,50 +1150,6 @@ typing-extensions = ">=4.2.0"
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
-
-[[package]]
-name = "pygit2"
-version = "1.11.1"
-description = "Python bindings for libgit2."
-category = "main"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "pygit2-1.11.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:263e05ac655a4ce0a1083aaaedfd0a900b8dee2c3bb3ecf4f4e504a404467d1f"},
-    {file = "pygit2-1.11.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ee6b4a0e181c576cdb64b1568bfbff3d1c2cd7e99808f578c8b08875c0f43739"},
-    {file = "pygit2-1.11.1-cp310-cp310-manylinux_2_24_aarch64.whl", hash = "sha256:d1b5fcaac1f29337f2d1465fa095e2e375b76a06385bda9391cb418c7937fb54"},
-    {file = "pygit2-1.11.1-cp310-cp310-manylinux_2_24_x86_64.whl", hash = "sha256:96ff745d3199909d06cab5e419a6b953be99992414a08ec4dddb682f395de8f1"},
-    {file = "pygit2-1.11.1-cp310-cp310-win32.whl", hash = "sha256:b3c8726f0c9a2b0e04aac37b18027c58c2697b9c021d3458b28bc250b9b6aecf"},
-    {file = "pygit2-1.11.1-cp310-cp310-win_amd64.whl", hash = "sha256:f42409d25bbfc090fd1af1f5f47584d7e0c4212b037a7f86639a02c30420c6ee"},
-    {file = "pygit2-1.11.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:29f89d96bbb404ca1566418463521039903094fad2f81a76d7083810d2ea3aad"},
-    {file = "pygit2-1.11.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d5c158b9430c5e76ca728b1a214bf21d355af6ac6e2da86ed17775b870b6c6eb"},
-    {file = "pygit2-1.11.1-cp311-cp311-manylinux_2_24_aarch64.whl", hash = "sha256:6c3434b143e7570ec45cd1a0e344fe7a12e64b99e7155fa38b74f724c8fc243c"},
-    {file = "pygit2-1.11.1-cp311-cp311-manylinux_2_24_x86_64.whl", hash = "sha256:550aa503c86ef0061ce64d61c3672b15b500c2b1e4224c405acecfac2211b5d9"},
-    {file = "pygit2-1.11.1-cp311-cp311-win32.whl", hash = "sha256:f270f86a0185ca2064e1aa6b8db3bb677b1bf76ee35f48ca5ce28a921fad5632"},
-    {file = "pygit2-1.11.1-cp311-cp311-win_amd64.whl", hash = "sha256:56b9deeab214653805214f05337f5e9552b47bf268c285551f20ea51a6056c3e"},
-    {file = "pygit2-1.11.1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:3c5838e6516abc4384498f4b4c7f88578221596dc2ba8db2320ff2cfebe9787e"},
-    {file = "pygit2-1.11.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:a886aab5aae8d8db572e20b9f56c13cd506775265222ea7f35b2c781e4fa3a5e"},
-    {file = "pygit2-1.11.1-cp38-cp38-manylinux_2_24_aarch64.whl", hash = "sha256:3be4534180edd53e3e1da93c5b091975566bfdffdc73f21930d79fef096a25d2"},
-    {file = "pygit2-1.11.1-cp38-cp38-manylinux_2_24_x86_64.whl", hash = "sha256:4d6209c703764ae0ba57b17038482f3e54f432f80f88ccd490d7f8b70b167db6"},
-    {file = "pygit2-1.11.1-cp38-cp38-win32.whl", hash = "sha256:ddb032fa71d4b4a64bf101e37eaa21f5369f20a862b5e34bbc33854a3a35f641"},
-    {file = "pygit2-1.11.1-cp38-cp38-win_amd64.whl", hash = "sha256:f8de0091e5eeaea2004f63f7dcb4540780f2124f68c0bcb670ae0fa9ada8bf66"},
-    {file = "pygit2-1.11.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:9b44674e53efa9eca36e44f2f3d1a29e53e78649ba13105ae0b037d557f2c076"},
-    {file = "pygit2-1.11.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:0170f31c2efb15f6779689df328c05a8005ecb2b92784a37ff967d713cdafe82"},
-    {file = "pygit2-1.11.1-cp39-cp39-manylinux_2_24_aarch64.whl", hash = "sha256:960a55ff78f48887a7aa8ece952aad0f52f0a2ba1ad7bddd7064fbbefd85dfbb"},
-    {file = "pygit2-1.11.1-cp39-cp39-manylinux_2_24_x86_64.whl", hash = "sha256:df722c90fb54a42fa019dcf8d8f82961c3099c3024f1fda46c53e0886ff8f0f3"},
-    {file = "pygit2-1.11.1-cp39-cp39-win32.whl", hash = "sha256:3b091e7fd00dd2a2cd3a6b5e235b6cbfbc1c07f15ee83a5cb3f188e1d6d1bca1"},
-    {file = "pygit2-1.11.1-cp39-cp39-win_amd64.whl", hash = "sha256:da040dc28800831bcbefef0850466739f103bfc769d952bd10c449646d52ce8f"},
-    {file = "pygit2-1.11.1-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:585daa3956f1dc10d08e3459c20b57be42c7f9c0fbde21e797b3a00b5948f061"},
-    {file = "pygit2-1.11.1-pp38-pypy38_pp73-manylinux_2_24_aarch64.whl", hash = "sha256:273878adeced2aec7885745b73fffb91a8e67868c105bf881b61008d42497ad6"},
-    {file = "pygit2-1.11.1-pp38-pypy38_pp73-manylinux_2_24_x86_64.whl", hash = "sha256:48cfd72283a08a9226aca115870799ee92898d692699f541a3b3f519805108ec"},
-    {file = "pygit2-1.11.1-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:a9ca4cb2481d2df14d23c765facef325f717d9a3966a986b86e88d92eef11929"},
-    {file = "pygit2-1.11.1-pp39-pypy39_pp73-manylinux_2_24_aarch64.whl", hash = "sha256:d5f64a424d9123b047458b0107c5dd33559184b56a1f58b10056ea5cbac74360"},
-    {file = "pygit2-1.11.1-pp39-pypy39_pp73-manylinux_2_24_x86_64.whl", hash = "sha256:f13e190cc080bde093138e12bcb609500276227e3e8e8bd8765a2fd49ae2efb8"},
-    {file = "pygit2-1.11.1.tar.gz", hash = "sha256:793f583fd33620f0ac38376db0f57768ef2922b89b459e75b1ac440377eb64ec"},
-]
-
-[package.dependencies]
-cffi = ">=1.9.1"
 
 [[package]]
 name = "pygithub"
@@ -1382,6 +1414,39 @@ files = [
 
 [package.dependencies]
 requests = ">=2.0.1,<3.0.0"
+
+[[package]]
+name = "rsa"
+version = "4.7.2"
+description = "Pure-Python RSA implementation"
+category = "main"
+optional = false
+python-versions = ">=3.5, <4"
+files = [
+    {file = "rsa-4.7.2-py3-none-any.whl", hash = "sha256:78f9a9bf4e7be0c5ded4583326e7461e3a3c5aae24073648b4bdfa797d78c9d2"},
+    {file = "rsa-4.7.2.tar.gz", hash = "sha256:9d689e6ca1b3038bc82bf8d23e944b6b6037bc02301a574935b2dd946e0353b9"},
+]
+
+[package.dependencies]
+pyasn1 = ">=0.1.3"
+
+[[package]]
+name = "s3transfer"
+version = "0.6.0"
+description = "An Amazon S3 Transfer Manager"
+category = "main"
+optional = false
+python-versions = ">= 3.7"
+files = [
+    {file = "s3transfer-0.6.0-py3-none-any.whl", hash = "sha256:06176b74f3a15f61f1b4f25a1fc29a4429040b7647133a463da8fa5bd28d5ecd"},
+    {file = "s3transfer-0.6.0.tar.gz", hash = "sha256:2ed07d3866f523cc561bf4a00fc5535827981b117dd7876f036b0c1aca42c947"},
+]
+
+[package.dependencies]
+botocore = ">=1.12.36,<2.0a.0"
+
+[package.extras]
+crt = ["botocore[crt] (>=1.20.29,<2.0a.0)"]
 
 [[package]]
 name = "secretstorage"
@@ -1890,4 +1955,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "4f2effaf300114d46e9a74745ea5d17364767313519e7663e1b31b9faab5c5b3"
+content-hash = "182824cd0da99e9d96d1116626a75845cee841d0ee9527b41f83c5b0d33efca4"

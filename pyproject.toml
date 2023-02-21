@@ -24,7 +24,7 @@ nest-asyncio = "^1.5.1"
 jsontemplates = "^0.1.0"
 PyYAML = ">5.0"
 psycopg2 = "^2.9.5"
-pygit2 = "^1.11.1"
+awscli = "^1.27.75"
 
 [tool.poetry.dev-dependencies]
 
