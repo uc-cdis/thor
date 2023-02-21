@@ -1,15 +1,16 @@
-# #!/bin/bash -x  
-#################################################
-# Standing Issues:
-# No credentials for Github - pulling $GITHUB_USERNAME and $GITHUB_PASSWORD from env
-# General functionality of gen3release unknown - must test
-##################################################
+#!/bin/bash
+export GITHUB_USERNAME="PlanXCyborg"
+export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
 
-
-git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/uc-cdis/gen3-release-utils.git
-# Checkout manifest?
+git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
+git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gitops-qa.git"
 
 cd gen3-release-utils/gen3release-sdk
+pip install -U pip
+pip install poetry
 poetry install
-poetry run gen3release apply -v $INTEGRATION_BRANCH -e $(pwd)/${REPO_NAME}/${TARGET_ENVIRONMENT} -pr "${PR_TITLE} ${INTEGRATION_BRANCH} ${TARGET_ENVIRONMENT} $(date +%s)"
-# What to specify for $WORKSPACE?
+
+IFS=';' read -ra ENVS <<< "$TARGET_ENVIRONMENTS"
+for ENV in "${ENVS[@]}"; do
+  GITHUB_TOKEN="$GITHUB_TOKEN" poetry run gen3release apply -v $INTEGRATION_BRANCH -e ../../gitops-qa/${ENV} -pr "${PR_TITLE} ${INTEGRATION_BRANCH} ${ENV} $(date +%s)"
+done

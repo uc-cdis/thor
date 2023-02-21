@@ -57,7 +57,7 @@
             "REPO_NAME":"gitops-qa",
             "INTEGRATION_BRANCH":"{{ INTEGRATION_BRANCH }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
+            "TARGET_ENVIRONMENTS":"qa-dcp.planx-pla.net;qa-ibd.planx-pla.net"
         },  
         "schedule": null, 
         "script": "update-ci-env-with-latest-integration-br.sh",
