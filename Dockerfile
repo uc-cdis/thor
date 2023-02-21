@@ -4,7 +4,9 @@ FROM base as builder
 RUN pip install --upgrade pip poetry
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    gcc g++ musl-dev libffi-dev libgit2-dev libssl-dev make postgresql git curl
+    gcc g++ musl-dev libffi-dev libgit2-dev libssl-dev make postgresql git curl jq
+RUN python3.8 -m pip install awscli --upgrade
+
 
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
