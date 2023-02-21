@@ -570,7 +570,7 @@ python-dateutil = ">=2.7"
 
 [[package]]
 name = "gen3git"
-version = "0.3.10"
+version = "0.7.0"
 description = "Helps with release."
 category = "main"
 optional = false
@@ -1999,4 +1999,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "e351492fa6110cac103b1a8575addb01de5121630ecc0c64ca2b770a56172bbc"
+content-hash = "5a349522abb17c85dd0fbb08d473ceedb8793b3bebf10f6c76f3862d7167333e"
