@@ -1,4 +1,4 @@
-FROM quay.io/cdis/python:3.8-buster as base
+FROM quay.io/cdis/python:3.8-buster-slim as base
 
 FROM base as builder
 
