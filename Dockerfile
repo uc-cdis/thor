@@ -16,7 +16,7 @@ FROM quay.io/cdis/python:3.8-buster
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    postgresql git curl jq
+    postgresql git curl jq vim
 
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 ENV AWS_REGION=us-west-2
