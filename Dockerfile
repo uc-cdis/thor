@@ -26,4 +26,4 @@ ENV PATH="/env/bin/:${PATH}"
 
 WORKDIR /src
 
-CMD ["/env/bin/gunicorn", "thor.main:app", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker"]
+CMD ["/env/bin/gunicorn", "thor.main:app", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "--timeout-keep-alive", "120"]
