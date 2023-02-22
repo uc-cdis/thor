@@ -19,6 +19,7 @@ RUN apt-get update \
     postgresql git curl jq
 
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+ENV AWS_REGION=us-west-2
 COPY --from=builder /env /env
 COPY --from=builder /src /src
 ENV PATH="/env/bin/:${PATH}"
