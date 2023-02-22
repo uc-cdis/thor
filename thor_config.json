@@ -42,7 +42,7 @@
         "job_name":  "check-ecr-image",
         "job_description": "Check if integration branch ECR images are successfully created",   
         "job_params": {
-            "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
+            "RELEASE_VERSION": "{{ INTEGRATION_BRANCH }}"
         },  
         "schedule": null,  
         "script": "check_ecr_image.sh",
