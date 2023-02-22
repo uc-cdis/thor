@@ -19,10 +19,11 @@ RUN apt-get update \
     postgresql git curl jq vim
 
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
-ENV AWS_REGION=us-west-2
+
 COPY --from=builder /env /env
 COPY --from=builder /src /src
 ENV PATH="/env/bin/:${PATH}"
+
 WORKDIR /src
 
 CMD ["/env/bin/gunicorn", "thor.main:app", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker"]
