@@ -13,9 +13,7 @@ gunicorn = "^20.1.0"
 cdislogging = "^1.0.0"
 jira = "3.0.1"
 gen3git = {git = "https://github.com/uc-cdis/release-helper.git", rev = "gen3release"}
-pygit2 = "^1.6.1"
 SQLAlchemy = "^1.4.23"
-psycopg2 = "^2.9.1"
 pytest = "^6.2.4"
 pytest-cov = "^2.8"
 aiocron = "^1.7"
@@ -24,7 +22,9 @@ freezegun = "^1.1.0"
 python-dotenv = "^0.19.0"
 nest-asyncio = "^1.5.1"
 jsontemplates = "^0.1.0"
-PyYAML = "^6.0"
+PyYAML = ">5.0"
+psycopg2 = "^2.9.5"
+awscli = "^1.27.75"
 
 [tool.poetry.dev-dependencies]
 
