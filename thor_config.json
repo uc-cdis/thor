@@ -5,7 +5,7 @@
         "job_description": "Create gen3 release in jira",
         "job_params": {
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
-            "JIRA_PROJECT": "QAT"
+            "JIRA_PROJECT": "GRE"
         },  
         "schedule":  "null",  
         "script": "create-release-in-jira.sh",
@@ -183,7 +183,7 @@
         "job_description": "Mark the release as released",
         "job_params": {
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
-            "JIRA_PROJECT":"QAT" 
+            "JIRA_PROJECT":"GRE" 
         },  
         "schedule":  null,
         "script": "mark-gen3-release-as-released.sh",
