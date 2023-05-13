@@ -8,7 +8,7 @@ release = os.environ["RELEASE_VERSION"]
 
 options = {"server": "https://ctds-planx.atlassian.net"}
 jira = JIRA(
-    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"], os.environ["JIRA_API_TOKEN"])
+    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip())
 )
 
 tasks = [
@@ -99,7 +99,7 @@ COMPONENTS = [
     {"name": "Team Catch(Err)"},
 ]
 
-story_dict = {
+epic_dict = {
     "project": {
         "key": PROJECT_NAME,
     },
@@ -107,12 +107,12 @@ story_dict = {
     "description": "This story comprises all the tasks releated to {}".format(
         RELEASE_TITLE
     ),
-    "issuetype": {"name": "Story"},
+    "issuetype": {"name": "Epic"},
     "assignee": {"accountId": team_members[team_member_index]["id"]},
 }
 
-new_story = jira.create_issue(fields=story_dict)
-RELEASE_STORY = new_story.key
+new_story = jira.create_issue(fields=epic_dict)
+RELEASE_EPIC = new_story.key
 
 print("start adding tasks to " + RELEASE_TITLE)
 
@@ -135,11 +135,11 @@ for task in tasks:
             "key": PROJECT_NAME,
         },
         "parent": {
-            "key": RELEASE_STORY,
+            "key": RELEASE_EPIC,
         },
         "summary": summary,
         "description": task["description"],
-        "issuetype": {"name": "Sub-task"},
+        "issuetype": {"name": "Story"},
         "assignee": {"accountId": team_members[team_member_index]["id"]},
     }
     # Shared tasks required one ticket per team member
