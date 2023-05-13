@@ -100,7 +100,9 @@ COMPONENTS = [
 ]
 
 story_dict = {
-    "project": PROJECT_NAME,
+    "project": {
+        "key": PROJECT_NAME,
+    },
     "summary": RELEASE_TITLE,
     "description": "This story comprises all the tasks releated to {}".format(
         RELEASE_TITLE
@@ -129,7 +131,9 @@ def create_ticket(issue_dict, team_member_index):
 for task in tasks:
     summary = task["title"]
     issue_dict = {
-        "project": PROJECT_NAME,
+        "project": {
+            "key": PROJECT_NAME,
+        },
         "parent": {
             "key": RELEASE_STORY,
         },
