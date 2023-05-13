@@ -101,14 +101,11 @@ COMPONENTS = [
 
 story_dict = {
     "project": PROJECT_NAME,
-    "customfield_10014": "QAT-350",
-    "customfield_10067": {"id": "10055", "value": "Project Team"},
     "summary": RELEASE_TITLE,
     "description": "This story comprises all the tasks releated to {}".format(
         RELEASE_TITLE
     ),
     "issuetype": {"name": "Story"},
-    "components": COMPONENTS,
     "assignee": {"accountId": team_members[team_member_index]["id"]},
 }
 
@@ -138,9 +135,7 @@ for task in tasks:
         },
         "summary": summary,
         "description": task["description"],
-        "customfield_10067": {"id": "10055", "value": "Project Team"},
         "issuetype": {"name": "Sub-task"},
-        "components": COMPONENTS,
         "assignee": {"accountId": team_members[team_member_index]["id"]},
     }
     # Shared tasks required one ticket per team member
