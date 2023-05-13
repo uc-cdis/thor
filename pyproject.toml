@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "thor"
-version = "0.0.1"
+version = "0.1.1"
 description = "Gen3 Release Orchestrator"
 authors = ["CTDS UChicago <cdis@uchicago.edu>"]
 license = "Apache-2.0"
