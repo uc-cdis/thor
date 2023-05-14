@@ -20,6 +20,7 @@ class BashJobManager(JobManager):
         # use parent default
 
         self.release_name = release_name
+        self.workspace_abs_path = ""
 
     def run_job(self, step_num):
         """
@@ -45,7 +46,7 @@ class BashJobManager(JobManager):
             self.expose_env_vars(self.release_name, job_params)
             log.info("Env vars exposed for step {}".format(step_num))
 
-        self.make_clean_workspace(step_num)
+        self.workspace_path = self.make_clean_workspace(step_num)
         os.chdir("./workspace/" + str(step_num))
         status_code = self.run_shell(script_path)
         os.chdir("../..")
@@ -129,6 +130,7 @@ class BashJobManager(JobManager):
         If so, deletes and recreates it, otherwise, just creates it.
         """
         workspace_path = Path('./workspace')
+        self.workspace_abs_path = workspace_path.resolve()
         workspace_path.mkdir(exist_ok=True)
         for i in range(1, num_steps+1):
             (workspace_path / str(i)).mkdir(exist_ok=True)
@@ -141,7 +143,13 @@ class BashJobManager(JobManager):
         return None
 
     def check_result_of_job(self, job_name):
-        return super().check_result_of_job(job_name)
+        """
+        Tails the logs captured from the bash script
+        job_name is the step number
+        """
+        if self.workspace_abs_path:
+            with open(f"{self.workspace_abs_path}/{job_name}/logfile.txt", "r") as f:
+                return "".join(f.readlines()[-5:])
     
     def get_job_status(self, job_name):
         return super().get_job_status(job_name)

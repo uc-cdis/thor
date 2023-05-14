@@ -377,7 +377,13 @@ async def start_task(task_identifier: TaskIdentifier):
     else:
         update_task(task_id, "status", "FAILED")
         log.info(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
-        post_slack(f"Task #{step_num} of release {release_name} FAILED with code {status_code}.")
+        slack_response = (
+            f"Task #{step_num} of release {release_name} FAILED with code {status_code}.\n"
+            "The last 5 lines from the error logs are:\n"
+            f"{curr_job_manager.check_result_of_job(step_num)}"
+        )
+        print(slack_response)
+        post_slack(slack_response)
         update_release(release_id, "result", "PAUSED")
         log.info(f"Release {release_name} stopped on task #{step_num}.")
 
