@@ -1,0 +1,615 @@
+{
+	"info": {
+		"name": "Monthly Release Tasks",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Step 0 - Create release in Thor",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{ADMIN_URL}}/releases/{{RELEASE_NAME}}",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"releases",
+						"{{RELEASE_NAME}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 1 - Create release in jira",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 2 - Create release candidate branch",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 3 - Check quay image for integration branch",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"3\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 4 - Check ECR image for integration branch",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 5 - Update CI envs with integration branch",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"5\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 6 - Release Testing - DO NOTHING HERE",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 7 - Run load tests",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"7\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 8 - Merge and tag release version",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"8\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 9 - Check quay image for release tag",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"9\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 10 - Push release images to quay - DO NOTHING HERE",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 11 - Deploy release to CI envs",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"11\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 12 - Generate release notes",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"12\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 13 - Publish release on slack",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"13\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 14 - Delete integration branch image from ECR",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"14\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 15 - Mark release as RELEASED in Jira",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"15\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "RELEASE_NAME",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ACCESS_TOKEN",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "URL",
+			"value": "https://qa.planx-pla.net/thor",
+			"type": "string"
+		},
+		{
+			"key": "ADMIN_URL",
+			"value": "{{URL}}/thor-admin",
+			"type": "string"
+		}
+	]
+}
