@@ -5,7 +5,7 @@ import os
 
 DEVELOPMENT = os.getenv("DEVELOPMENT")
 
-if DEVELOPMENT:
+if DEVELOPMENT == "true":
     config = Config("thor.env")
 else:
     config = Config("/src/thor.env")
