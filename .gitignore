@@ -1,4 +1,5 @@
 __pycache__/
+*.pyc
 
 #SSL ( THe *.crt is optional ) 
 *.key 
