@@ -2,10 +2,8 @@
 from starlette.config import Config
 from starlette.datastructures import Secret
 import os
-
-DEVELOPMENT = os.getenv("DEVELOPMENT")
-
-if DEVELOPMENT == "true":
+print(f"Env var DEVELOPMENT is set to {os.environ('DEVELOPMENT')}")
+if os.getenv("DEVELOPMENT") == "true":
     config = Config("thor.env")
 else:
     config = Config("/src/thor.env")
