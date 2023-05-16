@@ -2,7 +2,7 @@
 from starlette.config import Config
 from starlette.datastructures import Secret
 
-config = Config("thor.env")
+config = Config("/src/thor.env")
 
 DB_HOST = config("DB_HOST", default=None)
 DB_PORT = config("DB_PORT", cast=int, default=None)

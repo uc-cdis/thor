@@ -15,8 +15,9 @@ jjm.run_job(job_name = "gen3-run-all-load-tests-for-release-testing", \
     })
 
 result_returned = False
-while not result_returned:
-    time.wait(1800)
+max_tries = 10
+retry_num = 0
+while not result_returned and retry_num < max_tries:
     try:
         job_result = jjm.check_result_of_job("gen3-run-all-load-tests-for-release-testing", os.environ["RELEASE_VERSION"])
     except Exception as e:
@@ -26,3 +27,5 @@ while not result_returned:
         # JJM throws the exceptions when the job is not yet complete, 
         # So now we can expect that the job is done. 
         result_returned = True
+    time.sleep(30)
+    retry_num += 1
