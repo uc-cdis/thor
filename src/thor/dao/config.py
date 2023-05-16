@@ -1,8 +1,12 @@
 # Scheme: "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>" pragma: allowlist secret
 from starlette.config import Config
 from starlette.datastructures import Secret
-
-config = Config("thor.env")
+import os
+print(f"Env var DEVELOPMENT is set to {os.getenv('DEVELOPMENT')}")
+if os.getenv("DEVELOPMENT") == "true":
+    config = Config("thor.env")
+else:
+    config = Config("/src/thor.env")
 
 DB_HOST = config("DB_HOST", default=None)
 DB_PORT = config("DB_PORT", cast=int, default=None)

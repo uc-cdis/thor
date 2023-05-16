@@ -80,7 +80,7 @@ class JenkinsJobManager(JobManager):
         release_version = "UNKNOWN"
         print(f"checking the results of the jenkins job {job_name}")
         log.info(f"Checking results of jenkins job {job_name}. ")
-        url = f"https://{self.base_jenkins_url}/job/{job_name}/lastBuild/api/json"
+        url = f"{self.base_jenkins_url}/{job_name}/lastBuild/api/json"
         jsonOutput = None
         try:
             jsonOutput = requests.get(
@@ -93,11 +93,11 @@ class JenkinsJobManager(JobManager):
                         if parameter["name"] == "RELEASE_VERSION":
                             release_version = parameter["value"]
             print(
-                f"### ##The release version for the lasted build is {release_version}"
+                f"### ##The release version for the last build is {release_version}"
             )
             # get result
             result = json.loads(jsonOutput)["result"]
-            print(f"### ##The result for the lasted build is {result}")
+            print(f"### ##The result for the last build is {result}")
             log.info(
                 f"Latest version of {job_name} is {release_version}, and the result is {result}. "
             )

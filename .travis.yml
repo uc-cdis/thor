@@ -16,9 +16,9 @@ install:
   - poetry install -vv
   - psql -c 'SELECT version();' -U postgres
   - psql -U postgres -c "create database thor_test_tmp"
-  - poetry run python src/thor/create_all_tables.py
+  - DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
   - pip list
 
 script:
   # - poetry run pytest -vv -s tests
-  - DEVELOPMENT="true" poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml -vv -s tests
+  - DEVELOPMENT=true poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml -vv -s tests
