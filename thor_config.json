@@ -42,7 +42,7 @@
         "job_name":  "check-ecr-image",
         "job_description": "Check if integration branch ECR images are successfully created",   
         "job_params": {
-            "RELEASE_VERSION": "{{ INTEGRATION_BRANCH }}"
+            "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
         },  
         "schedule": null,  
         "script": "check_ecr_image.sh",
@@ -119,13 +119,13 @@
     
     "step10": {  
         "step_num": 10,
-        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
-        "job_description": "Pushing monthly release quay images to AWS ECR (as a backup)",
+        "job_name":  "check-ecr-image",
+        "job_description": "Check if integration branch ECR images are successfully created",   
         "job_params": {
             "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
         },  
         "schedule": null,  
-        "script": "push-gen3-monthly-release-images-to-aws-ecr.sh",
+        "script": "check_ecr_image.sh",
         "run_next":  "step11"
     }, 
 
