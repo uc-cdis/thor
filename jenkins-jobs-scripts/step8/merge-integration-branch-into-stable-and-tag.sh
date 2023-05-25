@@ -3,7 +3,7 @@
 export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'}
 
-urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
+urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/"
 sourceBranchName=$INTEGRATION_BRANCH
 tagName=$RELEASE_VERSION
 targetBranchName="stable"
