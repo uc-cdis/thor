@@ -33,6 +33,7 @@ while IFS= read -r repo; do
     git checkout "${sourceBranchName}"
     git checkout -b "${targetBranchName}" "${sourceBranchName}"
   fi
+  git pull origin "${targetBranchName}"
   result=$(git pull origin "${sourceBranchName}" -s recursive -Xtheirs)
   RC=$?
   if [ $RC -ne 0 ]; then
