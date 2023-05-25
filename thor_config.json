@@ -98,6 +98,7 @@
         "job_name":  "merge-integration-branch-into-stable-and-tag",  
         "job_description": "Merge the integration branch into stable and tag the release", 
         "job_params": {
+            "INTEGRATION_BRANCH":"{{ INTEGRATION_BRANCH }}",
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}"
         },  
         "script": "merge-integration-branch-into-stable-and-tag.sh",

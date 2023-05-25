@@ -1,21 +1,10 @@
 #!/bin/bash
 
-BRANCH_NAME=""
-YEAR_STR=""
-BRANCH_NAME=""
-if [[ $RELEASE_VERSION =~ ([0-9]{4})\.([0-9]{2}) ]]; then
-  echo "match"
-  YEAR_STR="${BASH_REMATCH[1]}"
-  CONVERTED_MONTH_STR_TO_NUMBER=$(expr ${BASH_REMATCH[2]} + 0)
-  BRANCH_NAME=$(printf "%02d\n" $CONVERTED_MONTH_STR_TO_NUMBER)
-  echo "creating branch integration${YEAR_STR}${BRANCH_NAME}..."
-else
-  echo "not match. Skip branch creation."
-  exit 1
-fi
+export GITHUB_USERNAME="PlanXCyborg"
+export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'}
 
-urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/"
-sourceBranchName=$BRANCH_NAME
+urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
+sourceBranchName=$INTEGRATION_BRANCH
 tagName=$RELEASE_VERSION
 targetBranchName="stable"
 
