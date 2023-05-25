@@ -1,21 +1,8 @@
 #!/bin/bash
 
-set -x
-
-echo "### ## name_of_the_branch: $GIT_BRANCH"
-
-if [[ "$GIT_BRANCH" == "origin/master" ]]; then
-  echo "all good. proceed..."
-else
-  echo "ABORT\! Not a master branch!!! If you are running this locally, declare the GIT_BRANCH environment variable accordingly."
-  exit 1
-fi
-
-git config --global user.email "cdis@uchicago.edu"
-
-urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
-sourceBranchName="$BRANCH_NAME"
-tagName="$RELEASE_VERSION"
+urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/"
+sourceBranchName=$INTEGRATION_BRANCH
+tagName=$RELEASE_VERSION
 targetBranchName="stable"
 
 if find . -name "gen3-integration" -type d; then
@@ -33,17 +20,22 @@ repo_list="../repo_list.txt"
 while IFS= read -r repo; do
   echo "### Pulling ${targetBranchName} branch into the stable branch for repo ${repo} ###"
   git clone "${urlPrefix}${repo}"
-  repo_folder=$(echo $repo | awk -F'/' '{print $2}')
-  echo "### stepping into ${repo_folder}..."
-  cd "${repo_folder}" || exit 1
-  git checkout "${targetBranchName}"
+  cd "${repo}" || exit 1
+  git ls-remote --heads ${urlPrefix}${repo} ${targetBranchName} | grep ${BRANCH} >/dev/null
+  if [ "$?" == "0" ]; then
+    git checkout "${targetBranchName}"
+  else
+    git checkout "${sourceBranchName}"
+    git checkout -b "${targetBranchName}" "${sourceBranchName}"
+  fi
   git config user.name "${GITHUB_USERNAME}"
-  result=$(git pull origin "${sourceBranchName}")
+  result=$(git pull origin "${sourceBranchName}" -s recursive -Xtheirs)
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "$result"
     exit 1
   fi
+  git pull origin "${targetBranchName}"
   result=$(git push origin "${targetBranchName}")
   RC=$?
   if [ $RC -ne 0 ]; then
