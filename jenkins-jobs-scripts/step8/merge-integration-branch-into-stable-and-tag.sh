@@ -16,7 +16,7 @@ else
   exit 1
 fi
 
-repo_list="../repo_list.txt"
+repo_list="/src/repo_list.txt"
 while IFS= read -r repo; do
   echo "### Pulling ${targetBranchName} branch into the stable branch for repo ${repo} ###"
   git clone "${urlPrefix}${repo}"
