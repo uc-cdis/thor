@@ -19,6 +19,8 @@ else
   exit 1
 fi
 
+git config --global user.name "${GITHUB_USERNAME}"
+git config --global user.email "cdis@uchicago.edu"
 repo_list="/src/repo_list.txt"
 while IFS= read -r repo; do
   echo "### Pulling ${targetBranchName} branch into the stable branch for repo ${repo} ###"
@@ -31,14 +33,12 @@ while IFS= read -r repo; do
     git checkout "${sourceBranchName}"
     git checkout -b "${targetBranchName}" "${sourceBranchName}"
   fi
-  git config user.name "${GITHUB_USERNAME}"
   result=$(git pull origin "${sourceBranchName}" -s recursive -Xtheirs)
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "$result"
     exit 1
   fi
-  git pull origin "${targetBranchName}"
   result=$(git push origin "${targetBranchName}")
   RC=$?
   if [ $RC -ne 0 ]; then
