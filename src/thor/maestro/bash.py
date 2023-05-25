@@ -149,7 +149,7 @@ class BashJobManager(JobManager):
         """
         if self.workspace_abs_path:
             with open(f"{self.workspace_abs_path}/{job_name}/logfile.txt", "r") as f:
-                return "".join(f.readlines()[-5:])
+                return "".join(f.readlines()[-1:])
     
     def get_job_status(self, job_name):
         return super().get_job_status(job_name)
