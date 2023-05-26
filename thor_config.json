@@ -131,16 +131,16 @@
 
     "step11": {  
         "step_num": 11,
-        "job_name":  "update-ci-env-with-latest-integration-branch",  
+        "job_name":  "update-ci-env-with-release-version",  
         "job_description": "Sanity Check the release",  
         "job_params": {
             "REPO_NAME":"gitops-qa",
-            "INTEGRATION_BRANCH":"{{ RELEASE_VERSION }}",
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
+            "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net;qa-ibd.planx-pla.net"
         },  
         "schedule": null,  
-        "script": "update-ci-env-with-latest-integration-branch.sh",
+        "script": "update-ci-env-with-release-version.sh",
         "run_next":  "step12"
     },
 
