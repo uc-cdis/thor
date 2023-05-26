@@ -299,7 +299,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"8\"\n}",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"9\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -357,7 +357,7 @@
 			"response": []
 		},
 		{
-			"name": "Step 10 - Push release images to quay - DO NOTHING HERE",
+			"name": "Step 10 - Check ECR images for release tag",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -371,6 +371,15 @@
 				},
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"10\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{ADMIN_URL}}/tasks/start",
 					"host": [

@@ -10,13 +10,13 @@ git clone https://github.com/uc-cdis/cloud-automation.git
 source ./cloud-automation/gen3/gen3setup.sh
 
 check_image () {
-    gen3 ecr describe-image $ECR_REPO $INTEGRATION_BRANCH
+    gen3 ecr describe-image $ECR_REPO $RELEASE_VERSION
     RC=$?
     if [ $RC -ne 0 ]; then
-        echo "## Release image $INTEGRATION_BRANCH does not exit in repo gen3/$ECR_REPO."
+        echo "## Release image $RELEASE_VERSION does not exit in repo gen3/$ECR_REPO."
         FAILED="true"
     else
-        echo "## Release Image $INTEGRATION_BRANCH exists in repo gen3/$ECR_REPO."
+        echo "## Release Image $RELEASE_VERSION exists in repo gen3/$ECR_REPO."
     fi
 }
 

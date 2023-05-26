@@ -42,7 +42,7 @@
         "job_name":  "check-ecr-image",
         "job_description": "Check if integration branch ECR images are successfully created",   
         "job_params": {
-            "RELEASE_VERSION": "{{ INTEGRATION_BRANCH }}"
+            "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
         },  
         "schedule": null,  
         "script": "check_ecr_image.sh",
@@ -98,6 +98,7 @@
         "job_name":  "merge-integration-branch-into-stable-and-tag",  
         "job_description": "Merge the integration branch into stable and tag the release", 
         "job_params": {
+            "INTEGRATION_BRANCH":"{{ INTEGRATION_BRANCH }}",
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}"
         },  
         "script": "merge-integration-branch-into-stable-and-tag.sh",
@@ -118,28 +119,28 @@
     
     "step10": {  
         "step_num": 10,
-        "job_name":  "push-gen3-monthly-release-images-to-aws-ecr",  
-        "job_description": "Pushing monthly release quay images to AWS ECR (as a backup)",
+        "job_name":  "check-ecr-image",
+        "job_description": "Check if integration branch ECR images are successfully created",   
         "job_params": {
             "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
         },  
         "schedule": null,  
-        "script": "push-gen3-monthly-release-images-to-aws-ecr.sh",
+        "script": "check_ecr_image.sh",
         "run_next":  "step11"
     }, 
 
     "step11": {  
         "step_num": 11,
-        "job_name":  "update-ci-env-with-latest-integration-branch",  
+        "job_name":  "update-ci-env-with-release-version",  
         "job_description": "Sanity Check the release",  
         "job_params": {
             "REPO_NAME":"gitops-qa",
-            "INTEGRATION_BRANCH":"{{ RELEASE_VERSION }}",
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net"
+            "TARGET_ENVIRONMENT":"qa-dcp.planx-pla.net;qa-ibd.planx-pla.net"
         },  
         "schedule": null,  
-        "script": "update-ci-env-with-latest-integration-branch.sh",
+        "script": "update-ci-env-with-release-version.sh",
         "run_next":  "step12"
     },
 

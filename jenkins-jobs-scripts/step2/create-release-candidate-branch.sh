@@ -1,4 +1,6 @@
 #!/bin/bash
+export GITHUB_USERNAME="PlanXCyborg"
+export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
 
 BRANCH_NAME=""
 YEAR_STR=""
