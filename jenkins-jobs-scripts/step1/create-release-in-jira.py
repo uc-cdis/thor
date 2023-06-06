@@ -18,7 +18,7 @@ payload = json.dumps(
         "archived": False,
         "releaseDate": None,
         "name": os.environ["RELEASE_VERSION"],
-        "description": "[Thor] Gen3 Release - {}".format(month),
+        "description": "Gen3 Monthly Release - {}".format(month),
         "project": os.environ["JIRA_PROJECT"],
         "released": False,
     }
