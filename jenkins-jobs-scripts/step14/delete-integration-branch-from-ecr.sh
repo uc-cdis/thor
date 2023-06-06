@@ -1,18 +1,13 @@
 #!/bin/bash +x
-#################################################
-# Standing Issues: 
-# No $WORKSPACE specified
-#################################################
 
 set -e
 
-export KUBECTL_NAMESPACE="$TARGET_ENVIRONMENT"
+export KUBECTL_NAMESPACE="default"
 
 git clone https://github.com/uc-cdis/cloud-automation.git
 
 # setup gen3 CLI
-export GEN3_HOME=$WORKSPACE/cloud-automation
-source $GEN3_HOME/gen3/gen3setup.sh
+source ./cloud-automation/gen3/gen3setup.sh
 
 check_image () {
     gen3 ecr describe-image $ECR_REPO $INTEGRATION_BRANCH
@@ -35,7 +30,7 @@ delete_image () {
     fi
 }
 
-repo_list="repo_list.txt"
+repo_list="/src/repo_list.txt"
 while IFS= read -r repo; do
 	echo "---------------"
 	echo "##Looking for Image .."
