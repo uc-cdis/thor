@@ -139,8 +139,15 @@ for task in tasks:
         },
         "summary": summary,
         "description": task["description"],
-        "issuetype": {"name": "Story"},
-        "assignee": {"accountId": team_members[team_member_index]["id"]},
+        "issuetype": {
+            "name": "Story"
+        },
+        "assignee": {
+            "accountId": team_members[team_member_index]["id"]
+        },
+        "labels": [
+            "core-product"
+        ],
     }
     # Shared tasks required one ticket per team member
     if task["title"].split(":")[0] == "SHARED":
