@@ -11,7 +11,7 @@ jobs:
       postgres:
         image: postgres:9.6
         env:
-          POSTGRES_DB: localhost
+          POSTGRES_DB: thor_test_tmp
           POSTGRES_USER: username
           POSTGRES_PASSWORD: password
         ports:
@@ -36,7 +36,7 @@ jobs:
         pip install poetry
         poetry install -vv
 
-    - name: init postgres db
+    - name: Init postgres db
       run: |
         psql -c 'SELECT version();' -U postgres
         psql -U postgres -c "create database thor_test_tmp"
@@ -45,5 +45,5 @@ jobs:
     - name: pip list
       run: pip list
 
-    - name: run Tests
+    - name: Run Tests
       run: DEVELOPMENT=true poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml -vv -s tests
