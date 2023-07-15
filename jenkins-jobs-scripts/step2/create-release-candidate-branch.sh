@@ -21,9 +21,8 @@ repo_list="/src/repo_list.txt"
 while IFS= read -r repo; do
   echo "### Cutting ${targetBranchName} branch for repo ${repo} ###"
   git clone "${urlPrefix}${repo}"
-  repo_folder=$(echo $repo | awk -F'/' '{print $2}')
-  echo "### stepping into ${repo_folder}..."
-  cd "${repo_folder}" || exit 1
+  echo "### stepping into ${repo} directory ..."
+  cd ${repo} || exit 1
   git fetch
   git checkout "${sourceBranchName}"
   result=$(git checkout -b "${targetBranchName}")
