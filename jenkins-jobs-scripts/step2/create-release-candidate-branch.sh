@@ -38,6 +38,7 @@ while IFS= read -r repo; do
   repo_folder=$(echo $repo | awk -F'/' '{print $2}')
   echo "### stepping into ${repo_folder}..."
   cd "${repo_folder}" || exit 1
+  git fetch
   git checkout "${sourceBranchName}"
   result=$(git checkout -b "${targetBranchName}")
   RC=$?
