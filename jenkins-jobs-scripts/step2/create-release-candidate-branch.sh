@@ -16,7 +16,7 @@ else
   exit 1
 fi
 
-urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/"
+urlPrefix="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/"
 sourceBranchName="$FORK_FROM"
 targetBranchName="integration${YEAR_STR}${BRANCH_NAME}"
 
