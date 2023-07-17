@@ -17,8 +17,8 @@
         "job_name":  "create-gen3-release-candidate-branch",  
         "job_description": "Cut the integration branch integration",
         "job_params": {
-            "RELEASE_VERSION":"{{ RELEASE_VERSION }}", 
-            "FORK_FROM":"main"
+            "INTEGRATION_BRANCH":"{{ INTEGRATION_BRANCH }}",
+            "FORK_FROM":"master"
         },
         "schedule": null,
         "script": "create-release-candidate-branch.sh",
