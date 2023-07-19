@@ -12,8 +12,7 @@ jobs:
         image: postgres:9.6-bullseye
         env:
           POSTGRES_DB: thor_test_tmp
-          POSTGRES_USER: username
-          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
         ports:
           - 5432:5432
         options:
@@ -38,7 +37,7 @@ jobs:
 
     - name: Init postgres db
       run: |
-        psql -h localhost -U $POSTGRES_USER -p $POSTGRES_PASSWORD -c "create database $POSTGRES_DB"
+        psql -h localhost -U $POSTGRES_USER -c "create database $POSTGRES_DB"
         DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
 
     - name: pip list
