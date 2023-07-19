@@ -38,7 +38,7 @@ jobs:
 
     - name: Init postgres db
       run: |
-        psql -h localhost -U $POSTGRES_USER -p POSTGRES_PASSWORD -c "create database $POSTGRES_DB"
+        psql -h localhost -U $POSTGRES_USER -p $POSTGRES_PASSWORD -c "create database $POSTGRES_DB"
         DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
 
     - name: pip list
