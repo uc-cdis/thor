@@ -34,12 +34,17 @@ jobs:
         pip install poetry
         poetry install -vv
 
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+
     - name: Waiting for postgres to start
       run: sleep 100
 
     - name: Init postgres db
       run: |
-        psql -h localhost -p 5432 -U postgres -c "create database thor_test_tmp;"
+        psql -h localhost -p 5432 -U postgres -W postgres -c "create database thor_test_tmp;"
         DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
     
     - name: pip list
