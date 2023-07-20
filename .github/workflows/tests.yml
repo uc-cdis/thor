@@ -9,7 +9,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:9.6-bullseye
+        image: postgres:11-bullseye
         env:       
           POSTGRES_PASSWORD: postgres #pragma: allowlist secret
         ports:
@@ -34,13 +34,8 @@ jobs:
         pip install poetry
         poetry install -vv
 
-    - name: Start postgres service
-      run: docker-compose up -d
-
     - name: Init postgres db
       run: |
-        sudo systemctl start postgresql
-        
         psql -p 5432 -U postgres -c "create database thor_test_tmp;"
         DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
     - name: pip list
