@@ -10,9 +10,7 @@ jobs:
     services:
       postgres:
         image: postgres:9.6-bullseye
-        env:
-          POSTGRES_DB: thor_test_tmp
-          POSTGRES_USER: postgres
+        env:       
           POSTGRES_PASSWORD: postgres #pragma: allowlist secret
         ports:
           - 5432:5432
@@ -38,9 +36,8 @@ jobs:
 
     - name: Init postgres db
       run: |
-        psql -U $POSTGRES_USER -c "create database $POSTGRES_DB;"
+        psql -p 5432:5432 -U postgres -c "create database thor_test_tmp;"
         DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
-
     - name: pip list
       run: pip list
 
