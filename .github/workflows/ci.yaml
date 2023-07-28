@@ -18,6 +18,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        env:
+            POSTGRES_PASSWORD: postgres #pragma: allowlist secret
 
     steps:
         - name: Check out code
@@ -38,9 +40,9 @@ jobs:
             pip install poetry
             poetry install
         - name: Create and populate test database
-          run: |
-            psql -c 'SELECT version();' -U postgres
-            psql -U postgres -c "create database thor_test_tmp"
+          run: | #pragma: allowlist secret
+            PGPASSWORD=postgres psql -U postgres -c 'SELECT version();'
+            PGPASSWORD=postgres psql -U postgres -c "create database thor_test_tmp"
             DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
         - name: Run tests
           run: DEVELOPMENT=true poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml -vv -s tests
