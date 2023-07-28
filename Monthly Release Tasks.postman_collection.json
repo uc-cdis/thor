@@ -299,7 +299,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"9\"\n}",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"8\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
