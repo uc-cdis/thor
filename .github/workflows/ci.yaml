@@ -37,10 +37,8 @@ jobs:
         poetry install -vv
     - name: Create test database
       run: |
-        psql -U postgres -c "CREATE DATABASE thor_test_tmp;"
+        psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE thor_test_tmp;"
       env:
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
         PGPASSWORD: postgres #pragma: allowlist secret
     - name: Run migrations
       env:
