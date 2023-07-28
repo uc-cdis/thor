@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  build:
+  unit_test:
 
     runs-on: ubuntu-latest
 
