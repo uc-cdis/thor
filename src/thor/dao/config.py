@@ -11,7 +11,7 @@ else:
 DB_HOST = config("DB_HOST", default=None)
 DB_PORT = config("DB_PORT", cast=int, default=None)
 DB_USER = config("DB_USER", default=None)
-DB_PASSWORD = config("DB_PASSWORD", cast=Secret, default="")
+DB_PASSWORD = config("DB_PASSWORD", cast=Secret, default="").split(" ")[0]
 DB_DATABASE = config("DB_DATABASE", default=None)
 
 DATABASE_URL = (
