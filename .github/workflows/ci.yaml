@@ -42,7 +42,7 @@ jobs:
         PGPASSWORD: postgres #pragma: allowlist secret
     - name: Run migrations
       env:
-        DEVELOPMENT: true  
+        DEVELOPMENT: true
       run: poetry run python src/thor/create_all_tables.py
     - name: List installed packages
       run: pip list
