@@ -1,0 +1,43 @@
+name: Tests
+
+on: pull_request
+
+jobs:
+  unit_tests:
+    name: Run unit Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - uses: actions/cache@preview
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles(format('{0}{1}', github.workspace, '/poetry.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+      - name: Install dependencies
+        run: |
+          pip install -U pip
+          pip install poetry
+          poetry install
+      - name: Create and populate test database
+        run: |
+          psql -c 'SELECT version();' -U postgres
+          psql -U postgres -c "create database thor_test_tmp"
+          DEVELOPMENT=true poetry run python src/thor/create_all_tables.py
+      - name: Run tests
+        run: DEVELOPMENT=true poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml -vv -s tests
