@@ -10,6 +10,19 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    services:
+        postgres:
+          image: postgres
+          env:
+            POSTGRES_PASSWORD: postgres #pragma: allowlist secret
+          ports:
+            - 5432:5432
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
     
     steps:
     - uses: actions/checkout@v2
@@ -22,14 +35,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install -vv
-    - name: Set up Postgres
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '9.6' 
-        postgresql db: test_db
     - name: Create test database
       run: |
         psql -U postgres -c "CREATE DATABASE thor_test_tmp;"
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        PGPASSWORD: postgres #pragma: allowlist secret
     - name: Run migrations
       env:
         DEVELOPMENT: true  
