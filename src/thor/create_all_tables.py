@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 print('#########################')
+print(config.DB_PASSWORD)
 print(config.DATABASE_URL)
 print('#########################')
 
