@@ -9,11 +9,11 @@ if os.getenv("DEVELOPMENT") == "true":
 else:
     config = dotenv_values("/src/thor.env")
 
-DB_HOST = config("DB_HOST", default=None)
-DB_PORT = config("DB_PORT", cast=int, default=None)
-DB_USER = config("DB_USER", default=None)
-DB_PASSWORD = config("DB_PASSWORD", cast=Secret, default="")
-DB_DATABASE = config("DB_DATABASE", default=None)
+DB_HOST = config.get("DB_HOST", None)
+DB_PORT = config.get("DB_PORT", None)
+DB_USER = config.get("DB_USER", None)
+DB_PASSWORD = config.get("DB_PASSWORD", "")
+DB_DATABASE = config.get("DB_DATABASE", None)
 
 DATABASE_URL = (
     "postgresql+psycopg2://"  # pragma: allowlist secret
