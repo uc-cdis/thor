@@ -5,6 +5,11 @@ from dao import config
 from thor.dao import models
 from sqlalchemy.orm import sessionmaker
 
+
+print('#########################')
+print(config.DATABASE_URL)
+print('#########################')
+
 engine = sa.create_engine(config.DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
