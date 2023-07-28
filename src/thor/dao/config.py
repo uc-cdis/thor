@@ -4,9 +4,9 @@ from starlette.datastructures import Secret
 import os
 print(f"Env var DEVELOPMENT is set to {os.getenv('DEVELOPMENT')}")
 if os.getenv("DEVELOPMENT") == "true":
-    config = Config("thor.env", keep_comments=False)
+    config = Config("thor.env")
 else:
-    config = Config("/src/thor.env", keep_comments=False)
+    config = Config("/src/thor.env")
 
 DB_HOST = config("DB_HOST", default=None)
 DB_PORT = config("DB_PORT", cast=int, default=None)
