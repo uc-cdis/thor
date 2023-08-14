@@ -1,26 +1,16 @@
 #!/bin/bash
 
+export GITHUB_USERNAME="PlanXCyborg"
+export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
+
+git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
+
 echo "------------------------------------------------------------------------------"
 echo "Figuring out the time frame that comprises the CODE FREEZE dates"
 echo "------------------------------------------------------------------------------"
 
-#--from-date and --to-tag of gen3git are inclusive
-
-# Currently, the start date is the 2nd Saturday of last month
-# Currently, the end date is the 2nd Friday of this month
-# TODO: Refactor this to facilitate the change of the release frequency
-
-FIRST_DAY_OF_LAST_MONTH=$(date --date="$(date +'%Y-%m-01') -1 month" +%Y-%m-%d)
-LAST_DAY_OF_LAST_MONTH=$(date --date="$(date +'%Y-%m-01') -1 day" +%Y-%m-%d)
-echo START_DATE=`python3.7 -c "import pandas as pd; import datetime; first=\"$FIRST_DAY_OF_LAST_MONTH\"; last=\"$LAST_DAY_OF_LAST_MONTH\"; second_saturday_timestamp=pd.date_range(first, last,freq='WOM-2SAT'); print(second_saturday_timestamp[0])" | cut -d " " -f 1` > var.STARTDATE
-
-FIRST_DAY_OF_THE_CURRENT_MONTH=$(date --date="$(date +'%Y-%m-01')" +%Y-%m-%d)
-LAST_DAY_OF_THE_CURRENT_MONTH=$(date --date="$(date +'%Y-%m-01') +1 month -1 day" +%Y-%m-%d)
-
-echo END_DATE=`python3.7 -c "import pandas as pd; import datetime; first=\"$FIRST_DAY_OF_THE_CURRENT_MONTH\"; last=\"$LAST_DAY_OF_THE_CURRENT_MONTH\"; second_saturday_current_month_timestamp=pd.date_range(first, last,freq='WOM-2SAT'); print(second_saturday_current_month_timestamp[0])" | cut -d " " -f 1`
-
-echo RELEASE_VERSION=`date --date="$END_DATE +1 month" +%Y.%m` > var.RELEASEVERSION
-echo RELEASE_NAME="Core Gen3 Release $RELEASE_VERSION" > var.RELEASENAME
+START_DATE=${date -d "$(date +'%Y-%m-01') -1 month +2 Saturdays" +%Y-%m-%d}
+END_DATE=${date -d "$(date +'%Y-%m-01') +2 Fridays" +%Y-%m-%d}
 
 echo "------------------------------------------------------------------------------"
 echo " Iterating through repos in repos_list.txt and fetch release notes"
@@ -32,21 +22,28 @@ startDate="$START_DATE"
 echo "### startDate is ${startDate} ###"
 endDate="$END_DATE"
 echo "### endDate is ${endDate} ###"
-githubAccessToken=$GITHUB_TOKEN
+
 
 if find . -name "release_notes.md" -type f; then
   echo "Deleting existing release notes"
   rm -f gen3_release_notes.md
 fi
 
+# Get release name
+release_names="../../release_names.csv"
+name=`cat release_names | awk -F "," -v release="$RELEASE_VERSION" '$1 == release { print $2 }'`
+echo "# Release name : $name"
+
+RELEASE="Core Gen3 Release $RELEASE_VERSION ($name)"
+
 touch gen3_release_notes.md
-echo "# $RELEASE_NAME" >> gen3_release_notes.md
+echo "# $RELEASE" >> gen3_release_notes.md
 echo >> gen3_release_notes.md
 
-repo_list="repo_list.txt"
+repo_list="../../repo_list.txt"
 while IFS= read -r repo; do
   echo "### Getting the release notes for repo ${repo} ###"
-  result=$(gen3git --repo "${repo}" --github-access-token "${githubAccessToken}" --from-date "${startDate}" gen --to-date "${endDate}" --markdown)
+  result=$(gen3git --repo "${repo}" --github-access-token "${GITHUB_TOKEN}" --from-date "${startDate}" gen --to-date "${endDate}" --markdown)
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "$result"
@@ -59,9 +56,29 @@ while IFS= read -r repo; do
 done < "$repo_list"
 
 echo "------------------------------------------------------------------------------"
-echo " Create a pull request to publish all release notes"
+echo " Replacing the manifest.json file with the latest release versions "
 echo "------------------------------------------------------------------------------"
 
-# TODO: Make gen3release-sdk parameterizable so it will create the experimental release notes in gitops-qa-v2 instead of cdis-manifest
+YEAR=$(echo $RELEASE_VERSION | cut -d"." -f 1)
+MONTH=$(echo $RELEASE_VERSION | cut -d"." -f 2)
+CURR_YEAR=$(date +%Y)
+CURR_MONTH=$(date +%m)
+
+# Get the manifest from the previous monthly release
+curl "https://raw.githubusercontent.com/uc-cdis/cdis-manifest/master/releases/${CURR_YEAR}/${CURR_MONTH}/manifest.json" -o manifest.json
+
+# replace versions
+sed -i "s/${CURR_YEAR}.${CURR_MONTH}/${YEAR}.${MONTH}/" manifest.json
+
+echo "------------------------------------------------------------------------------"
+echo " Create a pull request to publish all release notes and manifest json file"
+echo "------------------------------------------------------------------------------"
+
+cd gen3-release-utils/gen3release-sdk
+pip install -U pip
+pip install poetry
+poetry install
+
+GITHUB_TOKEN="$GITHUB_TOKEN" poetry run gen3release notes -v ${RELEASE_VERSION} -f gen3-release_notes.md manifest.json
 
 echo "done"
