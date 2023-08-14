@@ -9,8 +9,10 @@ echo "--------------------------------------------------------------------------
 echo "Figuring out the time frame that comprises the CODE FREEZE dates"
 echo "------------------------------------------------------------------------------"
 
-START_DATE=${date -d "$(date +'%Y-%m-01') -1 month +2 Saturdays" +%Y-%m-%d}
-END_DATE=${date -d "$(date +'%Y-%m-01') +2 Fridays" +%Y-%m-%d}
+# START_DATE=${date -d "$(date +'%Y-%m-01') -1 month +2 Saturdays" +%Y-%m-%d}
+# END_DATE=${date -d "$(date +'%Y-%m-01') +2 Fridays" +%Y-%m-%d}
+START_DATE=`date --date="41 day ago" +%Y-%m-%d`
+END_DATE=`date --date="14 day ago" +%Y-%m-%d`
 
 echo "------------------------------------------------------------------------------"
 echo " Iterating through repos in repos_list.txt and fetch release notes"
