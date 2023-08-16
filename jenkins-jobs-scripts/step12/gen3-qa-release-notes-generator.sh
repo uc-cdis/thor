@@ -2,6 +2,7 @@
 
 export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
+org="uc-cdis"
 
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
 
@@ -45,7 +46,7 @@ echo >> gen3_release_notes.md
 repo_list="../../repo_list.txt"
 while IFS= read -r repo; do
   echo "### Getting the release notes for repo ${repo} ###"
-  result=$(gen3git --repo "${repo}" --github-access-token "${GITHUB_TOKEN}" --from-date "${startDate}" gen --to-date "${endDate}" --file-name "${repo}_release_notes" --markdown)
+  result=$(gen3git --repo "${org}/${repo}" --github-access-token "${GITHUB_TOKEN}" --from-date "${startDate}" gen --to-date "${endDate}" --file-name "${repo}_release_notes" --markdown)
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "$result"

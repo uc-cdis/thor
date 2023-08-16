@@ -148,7 +148,9 @@
         "step_num": 12,
         "job_name":  "gen3-qa-release-notes-generator",  
         "job_description": "Generate release notes and publish release manifest",
-        "job_params": {},  
+        "job_params": {
+            "RELEASE_VERSION": "{{ RELEASE_VERSION }}"
+        },  
         "schedule": null,  
         "script": "gen3-qa-release-notes-generator.sh",
         "run_next":  "step13"
