@@ -7,7 +7,7 @@ org="uc-cdis"
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
 
 pip3 install -U pip --user
-pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@gen3release#egg=gen3git --user
+pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@master#egg=gen3git --user
 
 echo "------------------------------------------------------------------------------"
 echo "Figuring out the time frame that comprises the CODE FREEZE dates"
@@ -17,6 +17,8 @@ echo "--------------------------------------------------------------------------
 # END_DATE=${date -d "$(date +'%Y-%m-01') +2 Fridays" +%Y-%m-%d}
 START_DATE=`date --date="2023-07-28 41 day ago" +%Y-%m-%d`
 END_DATE=`date --date="2023-07-28 14 day ago" +%Y-%m-%d`
+# START_DATE=`date --date="41 day ago" +%Y-%m-%d`
+# END_DATE=`date --date="14 day ago" +%Y-%m-%d`
 
 echo "------------------------------------------------------------------------------"
 echo " Iterating through repos in repos_list.txt and fetch release notes"
