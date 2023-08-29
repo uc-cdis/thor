@@ -7,7 +7,7 @@ org="uc-cdis"
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
 
 pip3 install -U pip
-pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@master#egg=gen3git
+pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@test/tz_aware_test#egg=gen3git
 
 echo "------------------------------------------------------------------------------"
 echo "Figuring out the time frame that comprises the CODE FREEZE dates"
