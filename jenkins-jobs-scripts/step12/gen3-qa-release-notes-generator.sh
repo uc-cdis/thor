@@ -7,7 +7,7 @@ org="uc-cdis"
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
 
 pip3 install -U pip
-pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@test/tz_aware_test#egg=gen3git
+pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@master#egg=gen3git
 
 echo "------------------------------------------------------------------------------"
 echo "Figuring out the time frame that comprises the CODE FREEZE dates"
@@ -15,10 +15,31 @@ echo "--------------------------------------------------------------------------
 
 # START_DATE=${date -d "$(date +'%Y-%m-01') -1 month +2 Saturdays" +%Y-%m-%d}
 # END_DATE=${date -d "$(date +'%Y-%m-01') +2 Fridays" +%Y-%m-%d}
-# START_DATE=`date --date="2023-07-28 41 day ago" +%Y-%m-%d`
-# END_DATE=`date --date="2023-07-28 14 day ago" +%Y-%m-%d`
-START_DATE=`date --date="41 day ago" +%Y-%m-%d`
-END_DATE=`date --date="14 day ago" +%Y-%m-%d`
+# START_DATE=`date --date="2023-08-28 41 day ago" +%Y-%m-%d`
+# END_DATE=`date --date="2023-08-28 14 day ago" +%Y-%m-%d`
+
+curr_month=$(date +%m)
+curr_year=$(date +%y)
+
+prev_month=$((curr_month - 1))
+prev_year=$curr_year
+if [[ $prev_month -eq 0 ]]; then
+  prev_month=12
+  curr_year=$((curr_year - 1))
+fi
+
+# calculate second friday , as some of the month might have first day as Saturday
+# if we calculate with second Saturday method, then the it would collect notes from previous week
+# so we will calculate second friday and add one day later to get correct notes after integration branch is cut
+cal_prev_friday=$((13 - $(date -d "$prev_year-$prev_month-01" +'%u') + 5))
+prev_second_friday="$prev_year-$prev_month-$cal_prev_friday"
+# calculating Saturday after the integration branch cut off date
+START_DATE=$(date -d "$prev_second_friday + 1 day" +'%Y-%m-%d')
+
+# calculate second friday of current month 
+cal_curr_friday=$((13 - $(date -d "$curr_year-$curr_month-01" +'%u') + 5))
+curr_second_friday="$curr_year-$curr_month-$cal_curr_friday"
+END_DATE=$curr_second_friday
 
 startDate="$START_DATE"
 echo "### startDate is ${startDate} ###"
@@ -86,6 +107,6 @@ pip install -U pip
 pip install poetry
 poetry install
 
-GITHUB_TOKEN="$GITHUB_TOKEN" poetry run gen3release notes -v ${RELEASE_VERSION} -f gen3-release_notes.md manifest.json
+GITHUB_TOKEN="$GITHUB_TOKEN" poetry run gen3release notes -v ${RELEASE_VERSION} -f gen3_release_notes.md manifest.json
 
 echo "done"
