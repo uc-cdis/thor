@@ -1,4 +1,5 @@
 #!/bin/bash
+set +e
 
 export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
@@ -21,11 +22,11 @@ echo "--------------------------------------------------------------------------
 curr_month=$(date +%m)
 curr_year=$(date +%Y)
 
-prev_month=$((curr_month - 1))
+prev_month=$(curr_month - 1)
 prev_year=$curr_year
 if [[ $prev_month -eq 0 ]]; then
   prev_month=12
-  curr_year=$((curr_year - 1))
+  curr_year=$(curr_year - 1)
 fi
 
 # calculate second friday , as some of the month might have first day as Saturday
