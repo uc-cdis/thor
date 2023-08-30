@@ -19,7 +19,7 @@ echo "--------------------------------------------------------------------------
 # END_DATE=`date --date="2023-08-28 14 day ago" +%Y-%m-%d`
 
 curr_month=$(date +%m)
-curr_year=$(date +%y)
+curr_year=$(date +%Y)
 
 prev_month=$((curr_month - 1))
 prev_year=$curr_year
