@@ -137,7 +137,7 @@
             "REPO_NAME":"gitops-qa",
             "RELEASE_VERSION":"{{ RELEASE_VERSION }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENTS":"qa-dcp.planx-pla.net;qa-ibd.planx-pla.net"
+            "TARGET_ENVIRONMENTS":"qa-dcp.planx-pla.net;qa-ibd.planx-pla.net;qa.planx-pla.net"
         },  
         "schedule": null,  
         "script": "update-ci-env-with-release-version.sh",
