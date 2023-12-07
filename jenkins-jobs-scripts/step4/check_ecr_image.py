@@ -1,10 +1,9 @@
-import requests
-import json
 import os
 import subprocess
 
-release = os.environ("INTEGRATION_BRANCH")
+release = os.environ.get("INTEGRATION_BRANCH")
 failed_list = []
+
 
 def get_ecr_image():
     # command to run gen3 ecr check
