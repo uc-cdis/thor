@@ -5,6 +5,11 @@ import subprocess
 release = os.environ.get("RELEASE_VERSION")
 failed_list = []
 
+subprocess.run(['git', 'clone', 'https://github.com/uc-cdis/cloud-automation.git'])
+
+# Source gen3setup.sh script
+subprocess.run(['source', './cloud-automation/gen3/gen3setup.sh'], shell=True, executable='/bin/bash')
+
 # ecr = boto3.client('ecr')
 
 def get_ecr_image(services):
@@ -22,7 +27,7 @@ def get_ecr_image(services):
         failed_list.append(services)
     # try:
     #     response = ecr.describe_images(
-    #         repositoryName='gen3/{services}', ## cant accept / only accepts - or _
+    #         repositoryName='gen3/{services}', ## cant accept '/' only accepts '-' or '_'
     #         imageIds=[{'imageTag': release}]
     #     )
     #     image_info = response['imageDetails'][0]
