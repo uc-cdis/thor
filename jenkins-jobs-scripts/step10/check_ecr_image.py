@@ -20,7 +20,7 @@ def get_ecr_image():
     #     failed_list.append(services)
     try:
         response = ecr.describe_images(
-            repositoryName="gen3/{services}",
+            repositoryName='gen3/{services}',
             imageIds=[{'imageTag': release}]
         )
         image_info = response['imageDetails'][0]
