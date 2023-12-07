@@ -1,22 +1,36 @@
 import os
 import subprocess
+import boto3
 
 release = os.environ.get("RELEASE_VERSION")
 failed_list = []
 
+ecr = boto3.client('ecr')
 
 def get_ecr_image():
     # command to run gen3 ecr check
     print(f"Checking ECR image for {services}...")
-    get_image_command = ['gen3', 'ecr', 'describe-image', 'services', 'release']
-    try: 
-        image = subprocess.run(get_image_command, shell=True, check=True)
-        if 'imageDetails' in image.stdout:
-            return
-    except subprocess.CalledProcessError:
-        print(f"ECR image with tag '{release}' does not exist in ECR repository '{services}'")
-        failed_list.append(services)
-
+    # get_image_command = ['gen3', 'ecr', 'describe-image', 'services', 'release']
+    # try: 
+    #     image = subprocess.run(get_image_command, shell=True, check=True)
+    #     if 'imageDetails' in image.stdout:
+    #         return
+    # except subprocess.CalledProcessError:
+    #     print(f"ECR image with tag '{release}' does not exist in ECR repository '{services}'")
+    #     failed_list.append(services)
+    try:
+        response = ecr.describe_images(
+            repositoryName=services,
+            imageIds=[{'imageTag': release}]
+        )
+        image_info = response['imageDetails'][0]
+        print(f"ECR image with tag '{release}' exists in repository '{services}")
+        print(f"Image Tag: (image_info['imageTags'])")
+        return True
+    except ecr.ImageNotFoundException:
+        print(f"ECR image with tag '{release}' does not exist in repository '{services}")
+        return False
+        
 # here
 # key : github repo name
 # value : quay image build name

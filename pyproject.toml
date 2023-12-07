@@ -25,6 +25,7 @@ jsontemplates = "^0.1.0"
 PyYAML = ">5.0"
 psycopg2 = "^2.9.5"
 awscli = "^1.27.75"
+boto3 = "^1.18.17"
 
 [tool.poetry.dev-dependencies]
 
