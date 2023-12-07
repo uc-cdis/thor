@@ -27,10 +27,10 @@ def get_ecr_image():
         print(f"ECR image with tag '{release}' exists in repository '{services}")
         print(f"Image Tag: (image_info['imageTags'])")
         return True
-    except ecr.ImageNotFoundException:
+    except ecr.exceptions.ImageNotFoundException:
         print(f"ECR image with tag '{release}' does not exist in repository '{services}")
         return False
-        
+
 # here
 # key : github repo name
 # value : quay image build name
