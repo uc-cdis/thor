@@ -20,15 +20,15 @@ def get_ecr_image():
     #     failed_list.append(services)
     try:
         response = ecr.describe_images(
-            repositoryName=services,
+            repositoryName="gen3/{services}",
             imageIds=[{'imageTag': release}]
         )
         image_info = response['imageDetails'][0]
-        print(f"ECR image with tag '{release}' exists in repository '{services}")
+        print(f"ECR image with tag '{release}' exists in repository 'gen3/{services}")
         print(f"Image Tag: (image_info['imageTags'])")
         return True
     except ecr.exceptions.ImageNotFoundException:
-        print(f"ECR image with tag '{release}' does not exist in repository '{services}")
+        print(f"ECR image with tag '{release}' does not exist in repository 'gen3/{services}")
         return False
 
 # here
