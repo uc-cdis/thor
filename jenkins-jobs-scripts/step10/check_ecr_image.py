@@ -15,11 +15,10 @@ def get_ecr_image(services):
         )
         image_info = response['imageDetails'][0]
         print(f"ECR image with tag '{release}' exists in repository 'gen3/{services}")
-        print(f"Image Tag: '{image_info}") 
-        return True
+        print(f"Image Tag: '{image_info['imageTags']}") 
     except ecr.exceptions.ImageNotFoundException:
         print(f"ECR image with tag '{release}' does not exist in repository 'gen3/{services}")
-        return False
+        failed_list.append(services)
 
 # here
 # key : github repo name
@@ -54,7 +53,9 @@ with open("../../repo_list.txt") as repoList:
                 services = sower_job.strip()
                 get_ecr_image(services)
                 continue
-        get_ecr_image(services)
+        else:
+            services = repo
+            get_ecr_image(services)
 
 print(f"List of repos that failed the check : {failed_list}")
 # if the failed_list contains any repo name
