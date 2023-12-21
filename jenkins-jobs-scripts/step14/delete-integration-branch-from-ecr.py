@@ -9,6 +9,8 @@ ecr = boto3.client('ecr')
 def delete_ecr_image(services):
     try:
         # check if the image exists in ECR
+        print("--------------------------------")
+        print(f"Checking branch {release} for repository gen3/{services} ...")
         check_image = ecr.describe_images(
             repositoryName=f'gen3/{services}',
             imageIds=[{'imageTag': release}]
@@ -16,16 +18,17 @@ def delete_ecr_image(services):
         image = check_image['imageDetails'][0]
         print(f"Image '{release}' exists in repository 'gen3/{services}")
         # if the image is present, delete the image
-        print("Deleting the image {release} ...")
+        print(f"Deleting the image '{release}' ...")
         ecr.batch_delete_image(
             repositoryName=f'gen3/{services}',
             imageIds=[{'imageTag': release}]
         )
+        print(f"Image {release} has been deleted from repository gen3/{services}")
     except ecr.exceptions.ImageNotFoundException:
-        print(f"Image '{release}' doesn't not exist in repository 'gen3/{services}, so cannot delete the image '{release}'")
+        print(f"Image '{release}' doesn't not exist in repository 'gen3/{services}', so cannot delete the image '{release}'")
         failed_list.append(services)
     except Exception as e:
-        print(f"Error: {e.message}")
+        print(f"Error: {e}")
 
 # here
 # key : github repo name
@@ -39,7 +42,6 @@ repo_dict = {
     "cdis-data-client": "gen3-client",
 }
 
-print("Check if the Quay Images are ready")
 with open("../../repo_list.txt") as repoList:
     for repo in repoList:
         repo = repo.strip()
@@ -68,4 +70,4 @@ print(f"List of repos that failed the check : {failed_list}")
 # if the failed_list contains any repo name
 # then the job should fail and print the list
 if failed_list:
-    raise Exception(f"The following services do not have the ECR image for {release}: {failed_list}")
+    raise Exception(f"Couldn't delete Image {release} for repository: {failed_list}")
