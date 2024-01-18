@@ -27,7 +27,7 @@ tasks = [
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/check-quay-image/.",
     },
     {
-        "title": "3. Pushing integration branch quay images to AWS ECR",
+        "title": "3. Check if integration branch images are pushed to ECR repositories",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/push-gen3-monthly-release-images-to-aws-ecr. Also double-check if the repos_list.txt is up-to-date.",
     },
     {
@@ -39,7 +39,7 @@ tasks = [
         "description": 'Full list of tests tracked in the "Test Plan - Gen3 Releases" spreadsheet',
     },
     {
-        "title": "6. Run load tests on qa-dcp and store json files with results for benchmarking purposes",
+        "title": "6. Run load tests on jenkins-perf and store json files with results for benchmarking purposes",
         "description": "Run the following load scenarios: fence-presigned-url, sheepdog-import-clinical-metada, metadata-service-create-and-query and metadata-service-filter-large-database. Just kick off this job https://jenkins.planx-pla.net/job/gen3-run-load-tests/ and store the result.json files accordingly.",
     },
     {
