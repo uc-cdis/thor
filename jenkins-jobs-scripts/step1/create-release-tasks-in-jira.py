@@ -27,20 +27,20 @@ tasks = [
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/check-quay-image/.",
     },
     {
-        "title": "3. Pushing integration branch quay images to AWS ECR",
+        "title": "3. Check if integration branch images are successfully created in AWS ECR",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/push-gen3-monthly-release-images-to-aws-ecr. Also double-check if the repos_list.txt is up-to-date.",
     },
     {
         "title": "4. Create gitops-qa PRs to deploy the integration branch to QA environments",
-        "description": "Run the folling command to apply the integration branch images against the target QA environment: python gen3release/env_cli.py apply -v integration2020<nn> -e ~/workspace/gitops-qa/qa-<environment>.planx-pla.net",
+        "description": "Run the following command to apply the integration branch images against the target QA environment: python gen3release/env_cli.py apply -v integration2020<nn> -e ~/workspace/gitops-qa/qa-<environment>.planx-pla.net",
     },
     {
         "title": "SHARED: 5. Release testing round: automated tests and manual tests against qa envs",
         "description": 'Full list of tests tracked in the "Test Plan - Gen3 Releases" spreadsheet',
     },
     {
-        "title": "6. Run load tests on qa-dcp and store json files with results for benchmarking purposes",
-        "description": "Run the following load scenarios: fence-presigned-url, sheepdog-import-clinical-metada, metadata-service-create-and-query and metadata-service-filter-large-database. Just kick off this job https://jenkins.planx-pla.net/job/gen3-run-load-tests/ and store the result.json files accordingly.",
+        "title": "6. Run load tests on jenkins-perf and store json files with results for benchmarking purposes",
+        "description": "Run the following load scenarios: fence-presigned-url, sheepdog-import-clinical-metadata, metadata-service-create-and-query and metadata-service-filter-large-database. Just kick off this job https://jenkins.planx-pla.net/job/gen3-run-load-tests/ and store the result.json files accordingly.",
     },
     {
         "title": "7. Merge the integration branch into stable and tag the release",
@@ -51,7 +51,7 @@ tasks = [
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/check-quay-image/.",
     },
     {
-        "title": "9. Pushing monthly release quay images to AWS ECR (as a backup)",
+        "title": "9. Check if monthly release images are created in AWS ECR",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/push-gen3-monthly-release-images-to-aws-ecr. Also double-check if the repos_list.txt is up-to-date.",
     },
     {
