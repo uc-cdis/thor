@@ -146,7 +146,7 @@
 
     "step12": {
         "step_num": 12,
-        "job_name":  "generate-release-notes",  
+        "job_name":  "generate_release_notes",  
         "job_description": "Generate release notes and publish release manifest",
         "job_params": {},  
         "schedule": null,  
