@@ -20,5 +20,5 @@ pip install poetry
 poetry install
 
 echo "---- Publishing the release notes ----"
-GITHUB_TOKEN="$GITHUB_TOKEN" poetry run gen3release notes -v ${RELEASE_VERSION} -f ../gen3-release-notes.md ../manifest.json
+GITHUB_TOKEN="$GITHUB_TOKEN" poetry run gen3release notes -v ${RELEASE_VERSION} -f ../../gen3-release-notes.md ../../manifest.json
 echo "---- Done ----"

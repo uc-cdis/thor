@@ -1,7 +1,6 @@
 import calendar
 import csv
 import datetime
-import fileinput
 import glob
 import os
 import requests
@@ -87,7 +86,7 @@ def generate_release_notes(release_version):
             pass
 
     print("---- Combining repo release notes ----")
-    files = sorted(glob.glob(f"{Path(__file__).parent.absolute()}/*.md"))
+    files = sorted(glob.glob("/src/workspace/12/*.md"))
     all_notes = ""
     for file in files:
         with open(file, "r") as f:
