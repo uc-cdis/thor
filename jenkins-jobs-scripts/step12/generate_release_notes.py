@@ -93,8 +93,10 @@ def generate_release_notes(release_version):
         with open(file, "r") as f:
             notes = f.read()
             if "####" in notes:
+                print("---- ----- Getting notes from {file} ----")
                 all_notes += notes
     with open('gen3-release-notes.md', 'w') as f:
+        print(all_notes)
         f.write(all_notes)
 
 
