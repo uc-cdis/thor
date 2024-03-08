@@ -5,10 +5,6 @@ export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
 org="uc-cdis"
 
-# git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
-# pip3 install -U pip --user
-# pip3 install --editable git+https://github.com/uc-cdis/release-helper.git@gen3release#egg=gen3git --user
-
 /env/bin/python /src/jenkins-jobs-scripts/step12/gen3_release_notes.py
 
 if [ -d gen3-release-utils ]; then

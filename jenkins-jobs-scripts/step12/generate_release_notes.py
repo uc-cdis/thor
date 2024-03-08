@@ -86,13 +86,17 @@ def generate_release_notes(release_version):
         except Exception:
             pass
 
-    # print("---- Combining repo release notes ----")
-    # files = glob.glob(f"{Path(__file__).parent.absolute()}/*.md")
-    # print(files)
-    # with open('gen3-release-notes.md', 'w') as f:
-    #     for line in sorted(fileinput.input(files)):
-    #         f.write(line)
+    print("---- Combining repo release notes ----")
+    files = sorted(glob.glob(f"{Path(__file__).parent.absolute()}/*.md"))
+    all_notes = ""
+    for file in files:
+        with open(file, "r") as f:
+            notes = f.read()
+            if "####" in notes:
+                all_notes += notes
+    with open('gen3-release-notes.md', 'w') as f:
+        f.write(all_notes)
 
 
 if __name__ == "__main__":
-    generate_release_notes("2024.03")
+    generate_release_notes(os.environ.get("RELEASE_VERSION"))

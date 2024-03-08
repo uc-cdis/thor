@@ -146,11 +146,11 @@
 
     "step12": {
         "step_num": 12,
-        "job_name":  "gen3-qa-release-notes-generator",  
+        "job_name":  "generate-release-notes",  
         "job_description": "Generate release notes and publish release manifest",
         "job_params": {},  
         "schedule": null,  
-        "script": "gen3-qa-release-notes-generator.sh",
+        "script": "generate_release_notes.sh",
         "run_next":  "step13"
     },
 
