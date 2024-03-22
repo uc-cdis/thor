@@ -70,7 +70,8 @@ def generate_release_notes(release_version):
 
     print("---- Compute start and end date ----")
     start_date = str(get_second_friday(prev_prev_year, prev_prev_month))
-    end_date = str(get_second_friday(prev_year, prev_month))
+    # use Saturday's date (12am) to include all commits of Friday
+    end_date = str(get_second_friday(prev_year, prev_month) + datetime.timedelta(days=1))
     print(f"Start date - {start_date}")
     print(f"End date - {end_date}")
 
