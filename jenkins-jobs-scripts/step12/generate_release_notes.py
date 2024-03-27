@@ -89,7 +89,7 @@ def generate_release_notes(release_version):
 
     print("---- Combining repo release notes ----")
     files = sorted(glob.glob("/src/workspace/12/*.md"))
-    all_notes = ""
+    all_notes = f"# {release}\n"
     for file in files:
         with open(file, "r") as f:
             notes = f.read()
