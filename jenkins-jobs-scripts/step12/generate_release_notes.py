@@ -69,8 +69,10 @@ def generate_release_notes(release_version):
         f.write(prev_manifest.replace(f"{prev_year}.{str(prev_month).zfill(2)}", release_version))
 
     print("---- Compute start and end date ----")
-    start_date = str(get_second_friday(prev_prev_year, prev_prev_month))
-    end_date = str(get_second_friday(prev_year, prev_month))
+    # use Saturday's date (12am) to exclude all commits of Friday, they are in the previous month's notes
+    start_date = str(get_second_friday(prev_prev_year, prev_prev_month) + datetime.timedelta(days=1))
+    # use Saturday's date (12am) to include all commits of Friday
+    end_date = str(get_second_friday(prev_year, prev_month) + datetime.timedelta(days=1))
     print(f"Start date - {start_date}")
     print(f"End date - {end_date}")
 
@@ -87,7 +89,7 @@ def generate_release_notes(release_version):
 
     print("---- Combining repo release notes ----")
     files = sorted(glob.glob("/src/workspace/12/*.md"))
-    all_notes = ""
+    all_notes = f"# {release}\n"
     for file in files:
         with open(file, "r") as f:
             notes = f.read()
