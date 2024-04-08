@@ -149,6 +149,9 @@ for task in tasks:
         "labels": [
             "core-product"
         ],
+        "fixVersions": [
+            {"name": release}
+        ],
     }
     # Shared tasks required one ticket per team member
     if task["title"].split(":")[0] == "SHARED":
