@@ -34,3 +34,5 @@ data = {
 response = requests.post(url=github_url,
                          headers=headers,
                          json=data)
+
+assert response.status_code == 204, f"Expected status code 204, but got {response.status_code}.\n{response.content}"
