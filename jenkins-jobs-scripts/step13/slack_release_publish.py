@@ -16,7 +16,7 @@ with open(csv_file_path, 'r') as infile:
 # Headers for API Call
 headers = {
     "Accept": "application/vnd.github+json",
-    "Authorization": f"Bearer {os.environ["GITHUB_TOKEN"]}",
+    "Authorization": f'Bearer {os.environ["GITHUB_TOKEN"].strip()}',
     "X-GitHub-Api-Version": "2022-11-28",
 }
 
@@ -24,7 +24,6 @@ headers = {
 data = {
     "ref": "master",
     "inputs": {
-        "slack_urls": "https://hooks.slack.com/services/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",
         "title": f":tada: Gen3 Release {release_version} ({release_title}) is out :tada:",
         "message": f"Please find the release notes here - {release_url}"
     }
@@ -34,3 +33,5 @@ data = {
 response = requests.post(url=github_url,
                          headers=headers,
                          json=data)
+
+assert response.status_code == 204, f"Expected status code 204, but got {response.status_code}.\n{response.content}"
