@@ -24,7 +24,7 @@ headers = {
 data = {
     "ref": "master",
     "inputs": {
-        "slack_urls": "https://hooks.slack.com/services/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",
+        "slack_urls": "https://hooks.slack.com/services/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",
         "title": f":tada: Gen3 Release {release_version} ({release_title}) is out :tada:",
         "message": f"Please find the release notes here - {release_url}"
     }
