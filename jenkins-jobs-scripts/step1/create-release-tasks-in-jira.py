@@ -76,12 +76,11 @@ tasks = [
     },
 ]
 
-user_ids = ["5bedb75065b6ad1237756b4d", "5dbe0c65c32caa0daa4715f5", "712020:6bd84963-a4d5-4a67-95da-2e76641322b5"] # pragma: allowlist secret
+user_ids = ["5dbe0c65c32caa0daa4715f5", "712020:6bd84963-a4d5-4a67-95da-2e76641322b5"] # pragma: allowlist secret
 
 team_members = [
-    {"name": "krishnaa05", "id": user_ids[2]},
-    {"name": "haraprasadj", "id": user_ids[1]},
-    {"name": "atharvar", "id": user_ids[0]},
+    {"name": "krishnaa05", "id": user_ids[1]},
+    {"name": "haraprasadj", "id": user_ids[0]},
 ]
 
 # set initial team member index based on the number of the month
