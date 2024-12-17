@@ -133,7 +133,7 @@ class BashJobManager(JobManager):
         workspace_path = Path('./workspace')
         self.workspace_abs_path = workspace_path.resolve()
         workspace_path.mkdir(exist_ok=True)
-        # Delete folder if exists else create a new folder
+        # Delete folder if exists and create a new folder
         folder_path = (workspace_path / str(num_step))
         if os.path.exists(folder_path) and os.path.isdir(folder_path):
             shutil.rmtree(folder_path)
