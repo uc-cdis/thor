@@ -4,6 +4,7 @@ import requests
 import json
 from pathlib import Path
 import subprocess
+import shutil
 
 from thor.maestro.baton import JobManager
 
@@ -124,7 +125,7 @@ class BashJobManager(JobManager):
                 os.environ[k] = str(v)
         return None
 
-    def make_clean_workspace(self, num_steps:int):
+    def make_clean_workspace(self, num_step: int):
         """
         Checks to see if there's a valid 'workspace' dir in the cwd. 
         If so, deletes and recreates it, otherwise, just creates it.
@@ -132,8 +133,11 @@ class BashJobManager(JobManager):
         workspace_path = Path('./workspace')
         self.workspace_abs_path = workspace_path.resolve()
         workspace_path.mkdir(exist_ok=True)
-        for i in range(1, num_steps+1):
-            (workspace_path / str(i)).mkdir(exist_ok=True)
+        # Delete folder if exists and create a new folder
+        folder_path = (workspace_path / str(num_step))
+        if os.path.exists(folder_path) and os.path.isdir(folder_path):
+            shutil.rmtree(folder_path)
+        folder_path.mkdir()
         if DEVELOPMENT == "true":
             script_target_file_name = "workspace/shell_script_target.txt"
             target_absolute_path = os.path.join(os.getcwd(), script_target_file_name)
