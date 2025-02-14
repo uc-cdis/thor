@@ -1,7 +1,6 @@
 from jira import JIRA
 import re
 import os
-import sys
 import datetime
 
 release = os.environ["RELEASE_VERSION"]
@@ -13,75 +12,74 @@ jira = JIRA(
 
 tasks = [
     {
-        "title": "0. Create RELEASE {} in JIRA".format(release),
+        "title": "1. Create RELEASE {} in JIRA".format(release),
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/create-gen3-release-in-jira/. Also to create release tasks in jira: https://jenkins.planx-pla.net/job/create-jiras-for-gen3-monthly-release/",
     },
     {
-        "title": "1. Cut the integration branch integration{}".format(
+        "title": "2. Cut the integration branch integration{}".format(
             release.replace(".", "")
         ),
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/create-gen3-release-candidate-branch/",
     },
     {
-        "title": "2. Check if integration branch quay images are successfully created",
+        "title": "3. Check if integration branch quay images are successfully created",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/check-quay-image/.",
     },
     {
-        "title": "3. Check if integration branch images are successfully created in AWS ECR",
+        "title": "4. Check if integration branch images are successfully created in AWS ECR",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/push-gen3-monthly-release-images-to-aws-ecr. Also double-check if the repos_list.txt is up-to-date.",
     },
     {
-        "title": "4. Create gitops-qa PRs to deploy the integration branch to QA environments",
+        "title": "5. Create gitops-qa PRs to deploy the integration branch to QA environments",
         "description": "Run the following command to apply the integration branch images against the target QA environment: python gen3release/env_cli.py apply -v integration2020<nn> -e ~/workspace/gitops-qa/qa-<environment>.planx-pla.net",
     },
     {
-        "title": "SHARED: 5. Release testing round: automated tests and manual tests against qa envs",
+        "title": "6. Release testing round: automated tests and manual tests against qa envs",
         "description": 'Full list of tests tracked in the "Test Plan - Gen3 Releases" spreadsheet',
     },
     {
-        "title": "6. Run load tests on jenkins-perf and store json files with results for benchmarking purposes",
+        "title": "7. Run load tests on jenkins-perf and store json files with results for benchmarking purposes",
         "description": "Run the following load scenarios: fence-presigned-url, sheepdog-import-clinical-metadata, metadata-service-create-and-query and metadata-service-filter-large-database. Just kick off this job https://jenkins.planx-pla.net/job/gen3-run-load-tests/ and store the result.json files accordingly.",
     },
     {
-        "title": "7. Merge the integration branch into stable and tag the release",
+        "title": "8. Merge the integration branch into stable and tag the release",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/merge-integration-branch-into-stable-and-tag/. Once the tag-based images are built in Quay, sanity check the images by creating a `gitops-qa` PR to deploy them against one of the QA environments.",
     },
     {
-        "title": "8. Check if monthly release quay images are successfully created",
+        "title": "9. Check if monthly release quay images are successfully created",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/check-quay-image/.",
     },
     {
-        "title": "9. Check if monthly release images are created in AWS ECR",
+        "title": "10. Check if monthly release images are created in AWS ECR",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/push-gen3-monthly-release-images-to-aws-ecr. Also double-check if the repos_list.txt is up-to-date.",
     },
     {
-        "title": "10. Sanity Check the release ",
+        "title": "11. Sanity Check the release ",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/update-ci-env-with-latest-integration-branch/ with release version and the environment as parameters.",
     },
     {
-        "title": "11. Generate release notes and publish release manifest into `cdis-manifest/<year>/<month>` folder",
+        "title": "12. Generate release notes and publish release manifest into `cdis-manifest/<year>/<month>` folder",
         "description": "Generate the release notes with this Jenkins job: https://jenkins.planx-pla.net/job/gen3-qa-monthly-release-notes-generator. The cdis-manifest PR is tailored manually and it should include release notes and known bugs files (the PR must be labeled with `doc-only`).",
     },
     {
-        "title": "SHARED: 12. Follow up with PMs to merge the PRs of respective commons",
-        "description": "The `automerge` label is applied automatically to all PRs, once the PM approves it, the changes will be automatically merged and deployed to the environment. The QA engineers should monitor the PRs in case of any CI check failures.",
+        "title": "13. Announce the release through slack bot",
+        "description": "Announce the release on slack using https://api.github.com/repos/uc-cdis/gen3-summary/actions/workflows/send_message.yaml/dispatches.",
     },
     {
-        "title": "13. Delete the integration-branch from ECR",
+        "title": "14. Delete the integration-branch from ECR",
         "description": "Deleting the integration-branch will help lower the cost on the AWS",
     },
     {
-        "title": "14. Mark the release as released",
+        "title": "15. Mark the release as released",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/mark-gen3-monthly-release-as-released.",
     },
 ]
 
-user_ids = ["5bedb75065b6ad1237756b4d", "5dbe0c65c32caa0daa4715f5", "712020:6bd84963-a4d5-4a67-95da-2e76641322b5"] # pragma: allowlist secret
+user_ids = ["5dbe0c65c32caa0daa4715f5", "712020:6bd84963-a4d5-4a67-95da-2e76641322b5"] # pragma: allowlist secret
 
 team_members = [
-    {"name": "krishnaa05", "id": user_ids[2]},
-    {"name": "haraprasadj", "id": user_ids[1]},
-    {"name": "atharvar", "id": user_ids[0]},
+    {"name": "krishnaa05", "id": user_ids[1]},
+    {"name": "haraprasadj", "id": user_ids[0]},
 ]
 
 # set initial team member index based on the number of the month

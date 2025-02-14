@@ -1,3 +1,2 @@
-curl -X POST $SLACK_WEBHOOK \
-    -H 'Content-Type: application/json'\
-    -d "{'text':'Release $RELEASE_VERSION was successfully published. '}"
+#!/bin/bash
+/env/bin/python /src/jenkins-jobs-scripts/step13/slack_release_publish.py
