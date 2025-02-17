@@ -10,7 +10,7 @@ ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
 COPY . /src/
 WORKDIR /src
-RUN python -m venv /env && . /env/bin/activate && poetry install --no-interaction --no-dev
+RUN python -m venv /env && . /env/bin/activate && poetry install --no-interaction --without dev
 
 FROM quay.io/cdis/python:3.9-buster
 
