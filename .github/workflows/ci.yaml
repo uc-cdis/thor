@@ -6,11 +6,8 @@ on:
     types: [opened, reopened]
 
 jobs:
-
   unit_test:
-
     runs-on: ubuntu-latest
-
     services:
         postgres:
           image: postgres
@@ -22,8 +19,7 @@ jobs:
             --health-cmd pg_isready
             --health-interval 10s
             --health-timeout 5s
-            --health-retries 5
-    
+            --health-retries 5   
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -52,3 +48,16 @@ jobs:
         DEVELOPMENT: true
       run: |
         poetry run pytest --cov=src --cov-fail-under=60 --cov-report xml -vv -s tests
+
+  image_build_push:
+    name: Build Image and Push
+    # TODO Uncomment after PXP-9212
+    # needs: Security
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    with:
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
