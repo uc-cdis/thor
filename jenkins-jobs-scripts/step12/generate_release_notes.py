@@ -74,6 +74,7 @@ def generate_release_notes(release_version):
     start_date = "2024-12-14"
     # use Saturday's date (12am) to include all commits of Friday
     # end_date = str(get_second_friday(prev_year, prev_month) + datetime.timedelta(days=1))
+    prev_year, prev_month = 2025, 2
     end_date = str(get_second_friday(prev_year, prev_month) + datetime.timedelta(days=1))
     print(f"Start date - {start_date}")
     print(f"End date - {end_date}")
