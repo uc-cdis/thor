@@ -61,7 +61,7 @@ def generate_release_notes(release_version):
     curr_year = int(release_version.split(".")[0])
     curr_month = int(release_version.split(".")[1])
     prev_year, prev_month = get_previous_year_month(curr_year, curr_month)
-    prev_year, prev_month = "2025", "01"
+    prev_year, prev_month = 2025, 1
     prev_prev_year, prev_prev_month = get_previous_year_month(prev_year, prev_month)
     prev_manifest = get_release_manifest(prev_year, prev_month)
 
