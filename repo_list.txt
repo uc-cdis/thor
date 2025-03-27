@@ -1,6 +1,5 @@
 ACCESS-backend
 arborist
-audit-service
 cdis-data-client
 cloud-automation
 data-portal
@@ -15,7 +14,6 @@ hatchery
 indexd
 indexs3client
 manifestservice
-metadata-service
 pelican
 peregrine
 requestor
