@@ -59,7 +59,7 @@ tasks = [
     },
     {
         "title": "12. Generate release notes and publish release manifest into `cdis-manifest/<year>/<month>` folder",
-        "description": "Generate the release notes with this Jenkins job: https://jenkins.planx-pla.net/job/gen3-qa-monthly-release-notes-generator. The cdis-manifest PR is tailored manually and it should include release notes and known bugs files (the PR must be labeled with `doc-only`).",
+        "description": "Generate the release notes with this Jenkins job: https://jenkins.planx-pla.net/job/gen3-qa-monthly-release-notes-generator. The cdis-manifest PR is tailored manually and it should include release notes and known bugs files (the PR must be labeled with `release-notes`).",
     },
     {
         "title": "13. Announce the release through slack bot",
