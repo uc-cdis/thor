@@ -28,7 +28,7 @@ def ensure_shell_script_integrity():
         config = json.load(read_config_file)
     for i in range(1, len(config) + 1):
         script_name = "dummy" + str(i) + ".sh"
-        script_path = os.path.join(os.getcwd(), f"jenkins-jobs-scripts/step{i}/", script_name)
+        script_path = os.path.join(os.getcwd(), f"release-task-scripts/step{i}/", script_name)
         # print(script_path)
         with open(script_path, "w") as write_script_file:
             write_script_file.write(f"echo dummy step {i} >> ../shell_script_target.txt")
@@ -99,7 +99,7 @@ def test_failing_release_cycle(release_name):
     clear_shell_script_target()
 
     # IMPORTANT: REWRITES SHELL SCRIPT 7 TO FAIL
-    shell_script_fail_file_name = "jenkins-jobs-scripts/step7/dummy7.sh"
+    shell_script_fail_file_name = "release-task-scripts/step7/dummy7.sh"
     shell_script_fail_absolute_path = os.path.join(os.getcwd(), shell_script_fail_file_name)
     with open(shell_script_fail_absolute_path, "w") as shell_script_fail_file:
         shell_script_fail_file.write("INVALID COMMAND")

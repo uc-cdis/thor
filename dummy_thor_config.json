@@ -76,7 +76,7 @@
 
     "step7": {  
         "step_num": 7,
-        "job_name":  "gen3-run-load-tests",  
+        "job_name":  "run_load_tests",  
         "job_description": "Run load tests on qa-dcp", 
         "job_params": {
             "TARGET_ENVIRONMENT":"ci-env-1",

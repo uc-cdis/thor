@@ -75,21 +75,13 @@
 
     "step7": {  
         "step_num": 7,
-        "job_name":  "gen3-run-load-tests",  
-        "job_description": "Run load tests on qa-dcp", 
+        "job_name":  "run_load_tests",  
+        "job_description": "Run load tests on jenkins-perf", 
         "job_params": {
-            "TARGET_ENVIRONMENT":"qa-dcp",
-            "LOAD_TEST_DESCRIPTOR":"str", 
-            "PRESIGNED_URL_ACL_FILTER":"QA", 
-            "SHEEPDOG_NUM_OF_RECORDS_TO_IMPORT":100,
-            "DESIRED_NUMBER_OF_FENCE_PODS":10,
-            "RELEASE_VERSION":"{{ RELEASE_VERSION }}",
-            "INDEXD_NUM_OF_RECORDS_TO_CREATE":100,
-            "SIGNED_URL_PROTOCOL":"s3",
-            "SQS_URL":"https://sqs.us-east-1.amazonaws.com/707767160287/qaplanetv2--qa-niaid--audit-sqs"
+            "RELEASE_VERSION":"{{ RELEASE_VERSION }}"
         },  
         "schedule": null,  
-        "script": "gen3-run-load-tests.sh",
+        "script": "run_load_tests.sh",
         "run_next":  "step8"
     },   
 
