@@ -84,7 +84,7 @@ class BashJobManager(JobManager):
         if script_name == None:
             return None
         top_level_dir = os.getcwd() # Assumes this is being run from top-level /thor. 
-        script_path = os.path.join(top_level_dir, "jenkins-jobs-scripts", \
+        script_path = os.path.join(top_level_dir, "release-task-scripts", \
             "step" + str(step_num), script_name)
         return script_path
 
