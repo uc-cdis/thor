@@ -12,6 +12,6 @@ FROM base AS builder
 
 USER gen3
 
-RUN poetry install --no-interaction --without dev
+RUN poetry install --no-interaction
 
 CMD ["/env/bin/gunicorn", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
