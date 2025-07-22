@@ -27,8 +27,6 @@ boto3 = "^1.18.17"
 psycopg2-binary = "^2.9.9"
 gen3git = {git = "https://github.com/uc-cdis/release-helper.git", rev = "gen3release"}
 
-[tool.poetry.dev-dependencies]
-
 [tool.poetry.plugins."thor.modules"]
 "dao" = "thor.dao"
 "maestro" = "thor.maestro"
