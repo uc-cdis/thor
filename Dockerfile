@@ -1,16 +1,17 @@
 ARG AZLINUX_BASE_VERSION=master
 
-FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION}
+# ------ Base stage ------
+FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS base
 
-ENV appname=thor
+COPY --chown=gen3:gen3 . /src
+
+WORKDIR /src
+
+# ------ Builder stage ------
+FROM base AS builder
 
 USER gen3
 
-WORKDIR /${appname}
-
-COPY --chown=gen3:gen3 . /$appname
-
-RUN pip install --upgrade pip poetry \
-    && poetry install -vv --no-root --only main --no-interaction
+RUN poetry install --no-interaction --only main
 
 CMD ["poetry", "run", "gunicorn", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
