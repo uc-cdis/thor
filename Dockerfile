@@ -19,6 +19,6 @@ RUN pip install --upgrade pip poetry \
     && poetry install -vv --no-root --only main --no-interaction
 
 COPY --chown=gen3:gen3 . /$appname
-RUN poetry install --without dev --no-interaction
+RUN poetry install --only main --no-interaction
 
 CMD ["gunicorn", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
