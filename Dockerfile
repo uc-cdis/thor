@@ -1,5 +1,7 @@
 FROM quay.io/cdis/python:python3.9-buster-2.0.0 as builder
 
+RUN deb http://deb.debian.org/debian buster/security main contrib non-free
+
 RUN apt update -y && apt upgrade -y \
     && apt-get install -y --no-install-recommends \
     gcc g++ musl-dev libffi-dev libgit2-dev libssl-dev make
@@ -13,6 +15,8 @@ WORKDIR /src
 RUN python -m venv /env && . /env/bin/activate && poetry install --no-interaction --without dev
 
 FROM quay.io/cdis/python:python3.9-buster-2.0.0
+
+RUN deb http://deb.debian.org/debian buster/security main contrib non-free
 
 RUN apt update -y && apt upgrade -y \
     && apt-get install -y --no-install-recommends \
