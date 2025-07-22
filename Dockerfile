@@ -1,12 +1,12 @@
-FROM quay.io/cdis/python:python3.9-buster-2.0.0 as builder
+FROM quay.io/cdis/python:python3.9-buster-2.0.0
 
-RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
-    echo "deb http://deb.debian.org/debian buster-security main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb http://deb.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list
-
-RUN apt update -y && apt upgrade -y \
-    && apt-get install -y --no-install-recommends \
-    gcc g++ musl-dev libffi-dev libgit2-dev libssl-dev make
+RUN apt-get update \
+     && apt-get install -y --no-install-recommends\
+     ca-certificates \
+     gcc \
+     curl bash git vim \
+     musl-dev \
+     libffi-dev
 
 RUN pip install --upgrade pip poetry
 
@@ -18,13 +18,13 @@ RUN python -m venv /env && . /env/bin/activate && poetry install --no-interactio
 
 FROM quay.io/cdis/python:python3.9-buster-2.0.0
 
-RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
-    echo "deb http://deb.debian.org/debian buster-security main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb http://deb.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list
-
-RUN apt update -y && apt upgrade -y \
-    && apt-get install -y --no-install-recommends \
-    postgresql git curl jq vim less
+RUN apt-get update \
+     && apt-get install -y --no-install-recommends\
+     ca-certificates \
+     gcc \
+     curl bash git vim \
+     musl-dev \
+     libffi-dev
 
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
