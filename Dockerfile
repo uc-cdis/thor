@@ -1,4 +1,4 @@
-FROM quay.io/cdis/python:3.9-buster as builder
+FROM quay.io/cdis/python:python3.9-buster-2.0.0 as builder
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -12,7 +12,7 @@ COPY . /src/
 WORKDIR /src
 RUN python -m venv /env && . /env/bin/activate && poetry install --no-interaction --without dev
 
-FROM quay.io/cdis/python:3.9-buster
+FROM quay.io/cdis/python:python3.9-buster-2.0.0
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
