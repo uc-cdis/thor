@@ -1,4 +1,4 @@
-FROM quay.io/cdis/python:python3.9-buster-2.0.0
+FROM quay.io/cdis/python:python3.9-buster-2.0.0 as builder
 
 RUN apt-get update \
      && apt-get install -y --no-install-recommends\
