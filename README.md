@@ -98,7 +98,7 @@ docker exec -it postgres psql -U postgres -c "create database thor_test_tmp"
 ## Create tables and test data
 
 ```
-docker exec -it thor /env/bin/python src/thor/create_all_tables.py
+docker exec -it thor poetry run python src/thor/create_all_tables.py
 ```
 
 Thor API is then available at http://localhost:8001

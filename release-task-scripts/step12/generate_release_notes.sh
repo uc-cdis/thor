@@ -5,7 +5,7 @@ export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
 org="uc-cdis"
 
-/env/bin/python /src/release-task-scripts/step12/generate_release_notes.py
+poetry run python /src/release-task-scripts/step12/generate_release_notes.py
 
 if [ -d gen3-release-utils ]; then
   echo "Removing exisitng gen3-release-utils directory ..."
