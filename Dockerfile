@@ -1,6 +1,8 @@
 FROM quay.io/cdis/python:python3.9-buster-2.0.0 as builder
 
-RUN deb http://deb.debian.org/debian buster/security main contrib non-free
+RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian buster-security main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list
 
 RUN apt update -y && apt upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -16,7 +18,9 @@ RUN python -m venv /env && . /env/bin/activate && poetry install --no-interactio
 
 FROM quay.io/cdis/python:python3.9-buster-2.0.0
 
-RUN deb http://deb.debian.org/debian buster/security main contrib non-free
+RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian buster-security main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list
 
 RUN apt update -y && apt upgrade -y \
     && apt-get install -y --no-install-recommends \
