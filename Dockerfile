@@ -1,14 +1,13 @@
 ARG AZLINUX_BASE_VERSION=master
 
-# ------ Base stage ------
 FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS base
+
+# Install vim and findutils (which provides `find`)
+RUN dnf install -y vim findutils && dnf clean all
 
 COPY --chown=gen3:gen3 . /src
 
 WORKDIR /src
-
-# ------ Builder stage ------
-FROM base AS builder
 
 USER gen3
 
