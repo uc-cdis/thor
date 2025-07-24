@@ -1,29 +1,19 @@
-FROM quay.io/cdis/python:3.9-buster as builder
+ARG AZLINUX_BASE_VERSION=master
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    gcc g++ musl-dev libffi-dev libgit2-dev libssl-dev make
+FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS base
 
-RUN pip install --upgrade pip poetry
+# Install vim and findutils (which provides `find`)
+RUN dnf install -y vim findutils && \
+    dnf install -y openssl && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
-
-COPY . /src/
-WORKDIR /src
-RUN python -m venv /env && . /env/bin/activate && poetry install --no-interaction --without dev
-
-FROM quay.io/cdis/python:3.9-buster
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    postgresql git curl jq vim less
-
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
-
-COPY --from=builder /env /env
-COPY --from=builder /src /src
-ENV PATH="/env/bin/:${PATH}"
+COPY --chown=gen3:gen3 . /src
 
 WORKDIR /src
 
-CMD ["/env/bin/gunicorn", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
+USER gen3
+
+RUN poetry install --no-interaction --only main
+
+CMD ["poetry", "run", "gunicorn", "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]

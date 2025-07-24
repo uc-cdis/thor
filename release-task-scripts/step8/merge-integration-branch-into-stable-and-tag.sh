@@ -26,15 +26,17 @@ while IFS= read -r repo; do
   echo "### Pulling ${targetBranchName} branch into the stable branch for repo ${repo} ###"
   git clone "${urlPrefix}${repo}"
   cd "${repo}" || exit 1
-  git ls-remote --heads ${urlPrefix}${repo} ${targetBranchName} | grep ${BRANCH} >/dev/null
+  git ls-remote --heads ${urlPrefix}${repo} ${targetBranchName} | grep ${targetBranchName} > /dev/null
   if [ "$?" == "0" ]; then
-    git checkout "${targetBranchName}"
+    echo "Remote stable branch exists, checking it out"
+    git checkout -b "${targetBranchName}" "origin/${targetBranchName}"
   else
+    echo "Remote stable branch does not exist, creating a branch out of integration branch"
     git checkout "${sourceBranchName}"
     git checkout -b "${targetBranchName}" "${sourceBranchName}"
   fi
   git pull origin "${targetBranchName}"
-  result=$(git pull origin "${sourceBranchName}" -s recursive -Xtheirs)
+  result=$(result=$(git pull --no-rebase -s recursive -Xtheirs origin "${sourceBranchName}"))
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "$result"
