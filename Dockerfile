@@ -3,9 +3,8 @@ ARG AZLINUX_BASE_VERSION=master
 FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS base
 
 # Install vim and findutils (which provides `find`)
-RUN dnf install -y vim findutils && \
-    dnf install -y openssl && \
-    dnf install -y curl bash && \
+RUN dnf -y update && \
+    dnf install -y vim findutils openssl curl bash && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
