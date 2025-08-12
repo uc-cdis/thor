@@ -28,11 +28,13 @@ for ENV in "${ENVS[@]}"; do
 
   # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
   cd $GEN3_GITOPS_PATH
+  echo $GEN3_GITOPS_PATH
   git switch master
   git fetch origin
   git checkout -b "$BRANCH_NAME"
   cd "${TARGET_ENV}/values/"
 
+  echo "${ls -ltr}"
   # CHECK each file under values folder to check service block and update the image with TARGET_VERSION
   while IFS= read -r service_name || [[ -n "$service_name" ]]; do
     # Skip empty lines
