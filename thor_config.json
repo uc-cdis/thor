@@ -57,7 +57,7 @@
             "REPO_NAME":"gitops-qa",
             "INTEGRATION_BRANCH":"{{ INTEGRATION_BRANCH }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENTS":"qa-dcp.planx-pla.net;jenkins-perf.planx-pla.net;qa-heal.planx-pla.net"
+            "TARGET_ENVIRONMENTS":"ci/default;bdcatprod/gen3.biodatacatalyst.nhlbi.nih.gov;healprod/healdata.org"
         },  
         "schedule": null, 
         "script": "update-ci-env-with-latest-integration-br.sh",
