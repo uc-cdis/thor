@@ -15,7 +15,6 @@ for ENV in "${ENVS[@]}"; do
   TARGET_VERSION=$INTEGRATION_BRANCH
   TARGET_ENV=$ENV
   PR_NAME="${PR_TITLE} ${INTEGRATION_BRANCH} ${ENV} $(date +%s)"
-  LABEL="gen3-release"
   repo_list="/src/repo_list.txt"
   values_yaml="values.yaml"
   svcs_to_slip_list="/src/svcs_to_skip_list.txt"
