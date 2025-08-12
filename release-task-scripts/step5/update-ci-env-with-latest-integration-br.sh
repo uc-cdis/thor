@@ -41,7 +41,7 @@ for ENV in "${ENVS[@]}"; do
     # Skip empty lines
     [[ -z "$service_name" ]] && continue
     # Skip services in the skip list
-    if grep -Fxq "$service_name" "$skip_list"; then
+    if grep -Fx "$service_name" "$skip_list"; then
       echo "Skipping $service_name (in skip list)"
       continue
     fi
