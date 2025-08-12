@@ -1,6 +1,8 @@
 #!/bin/bash
 export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
+git config --global user.name "${GITHUB_USERNAME}"
+git config --global user.email "cdis@uchicago.edu"
 
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-gitops.git"
 
@@ -34,7 +36,6 @@ for ENV in "${ENVS[@]}"; do
   git checkout -b "$BRANCH_NAME"
   cd "${TARGET_ENV}/values/"
 
-  echo "${ls -ltr}"
   # CHECK each file under values folder to check service block and update the image with TARGET_VERSION
   while IFS= read -r service_name || [[ -n "$service_name" ]]; do
     # Skip empty lines
@@ -47,10 +48,10 @@ for ENV in "${ENVS[@]}"; do
     service_file="${service_name}.yaml"
     if [[ -f "$service_file" ]]; then
       echo "Updating $service_file for $service_name"
-      yq eval ".${service_name}.image.tag = \"${TARGET_VERSION}\"" -i "$service_file"
+      yq '.' "$service_file" | jq ".${service_name}.image.tag = \"${TARGET_VERSION}\"" | yq -y > tmp.yaml && mv tmp.yaml "$service_file"
     else
       echo "Updating $values_yaml for $service_name"
-      yq eval ".${service_name}.image.tag = \"${TARGET_VERSION}\"" -i "$values_yaml"
+      yq '.' "$values_yaml" | jq ".${service_name}.image.tag = \"${TARGET_VERSION}\"" | yq -y > tmp.yaml && mv tmp.yaml "$values_yaml"
     fi
   done < "$repo_list"
 
