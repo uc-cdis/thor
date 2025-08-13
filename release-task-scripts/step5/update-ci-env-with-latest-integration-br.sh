@@ -37,27 +37,72 @@ for ENV in "${ENVS[@]}"; do
   cd "${TARGET_ENV}/values/"
 
   # CHECK each file under values folder to check service block and update the image with TARGET_VERSION
-  while IFS= read -r service_name || [[ -n "$service_name" ]]; do
-    # Skip empty lines
-    [[ -z "$service_name" ]] && continue
-    # Skip services in the skip list
-    if grep -Fx "$service_name" "$svcs_to_slip_list"; then
+  # Mapping for service name normalization
+  normalize_service_name() {
+    case "$1" in
+      audit-service) echo "audit" ;;
+      metadata-service) echo "metadata" ;;
+      data-portal) echo "portal" ;;
+      *) echo "$1" ;;
+    esac
+  }
+
+  # Check if a service is in the skip list
+  is_skipped() {
+    grep -Fxq "$1" "$svcs_to_slip_list"
+  }
+
+  # Update service YAML file
+  update_service_file() {
+    local name="$1"
+    local file="${name}.yaml"
+    if [[ -f "$file" ]]; then
+      echo "Updating $file for $name"
+      yq '.' "$file" | jq --arg tag "$TARGET_VERSION" --arg name "$name" \
+        '.[$name].image.tag = $tag' | yq -y > tmp.yaml && mv tmp.yaml "$file"
+      return 0
+    fi
+    return 1
+  }
+
+  # Update values.yaml
+  update_values_yaml() {
+    local name="$1"
+    local tag="$2"
+    if yq '.' "$values_yaml" | jq -e --arg name "$name" 'has($name)' > /dev/null; then
+      echo "Updating $values_yaml for $name"
+      yq '.' "$values_yaml" | jq --arg name "$name" --arg tag "$tag" \
+        '.[$name].image.tag = $tag' | yq -y > tmp.yaml && mv tmp.yaml "$values_yaml"
+    else
+      echo "$name not found in $values_yaml, skipping...."
+    fi
+  }
+
+  # Special handler for indexs3client
+  handle_indexs3client() {
+    local full_tag="quay.io/cdis/indexs3client:$TARGET_VERSION"
+    if [[ -f "ssjdispatcher.yaml" ]]; then
+      echo "Updating ssjdispatcher.yaml for indexs3client"
+      yq '.' ssjdispatcher.yaml | jq --arg tag "$full_tag" \
+        '.ssjdispatcher.indexing = $tag' | yq -y > tmp.yaml && mv tmp.yaml ssjdispatcher.yaml
+    else
+      update_values_yaml "ssjdispatcher" "$full_tag"
+    fi
+  }
+
+  while IFS= read -r raw_name || [[ -n "$raw_name" ]]; do
+    [[ -z "$raw_name" ]] && continue
+    service_name=$(normalize_service_name "$raw_name")
+    if is_skipped "$service_name"; then
       echo "Skipping $service_name (in skip list)"
       continue
     fi
-    service_file="${service_name}.yaml"
-    # Check if a service_file exists and update it
-    if [[ -f "$service_file" ]]; then
-      echo "Updating $service_file for $service_name"
-      yq '.' "$service_file" | jq ".${service_name}.image.tag = \"${TARGET_VERSION}\"" | yq -y > tmp.yaml && mv tmp.yaml "$service_file"
-    else
-      # Check if a service block is available in values.yaml
-      if yq '.' "$values_yaml" | jq -e --arg name "$service_name" 'has($name)' > /dev/null; then
-        echo "Updating $values_yaml for $service_name"
-        yq '.' "$values_yaml" | jq ".${service_name}.image.tag = \"${TARGET_VERSION}\"" | yq -y > tmp.yaml && mv tmp.yaml "$values_yaml"
-      else
-        echo "$service_name not found in values.yaml, skipping...."
-      fi
+    if [[ "$service_name" == "indexs3client" ]]; then
+      handle_indexs3client
+      continue
+    fi
+    if ! update_service_file "$service_name"; then
+      update_values_yaml "$service_name" "$TARGET_VERSION"
     fi
   done < "$repo_list"
 
