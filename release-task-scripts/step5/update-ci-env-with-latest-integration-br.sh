@@ -41,17 +41,23 @@ for ENV in "${ENVS[@]}"; do
     # Skip empty lines
     [[ -z "$service_name" ]] && continue
     # Skip services in the skip list
-    if grep -Fx "$service_name" "$skip_list"; then
+    if grep -Fx "$service_name" "$svcs_to_slip_list"; then
       echo "Skipping $service_name (in skip list)"
       continue
     fi
     service_file="${service_name}.yaml"
+    # Check if a service_file exists and update it
     if [[ -f "$service_file" ]]; then
       echo "Updating $service_file for $service_name"
       yq '.' "$service_file" | jq ".${service_name}.image.tag = \"${TARGET_VERSION}\"" | yq -y > tmp.yaml && mv tmp.yaml "$service_file"
     else
-      echo "Updating $values_yaml for $service_name"
-      yq '.' "$values_yaml" | jq ".${service_name}.image.tag = \"${TARGET_VERSION}\"" | yq -y > tmp.yaml && mv tmp.yaml "$values_yaml"
+      # Check if a service block is available in values.yaml
+      if yq '.' "$values_yaml" | jq -e --arg name "$service_name" 'has($name)' > /dev/null; then
+        echo "Updating $values_yaml for $service_name"
+        yq '.' "$values_yaml" | jq ".${service_name}.image.tag = \"${TARGET_VERSION}\"" | yq -y > tmp.yaml && mv tmp.yaml "$values_yaml"
+      else
+        echo "$service_name not found in values.yaml, skipping...."
+      fi
     fi
   done < "$repo_list"
 
@@ -61,15 +67,14 @@ for ENV in "${ENVS[@]}"; do
   git push origin "$BRANCH_NAME"
 
   curl -u "$GITHUB_USERNAME:$GITHUB_TOKEN" \
-    -X POST \
-    -H "Accept: application/vnd.github+json" \
-    "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls" \
-    -d @- <<EOF
-{
-  "title": "$PR_NAME",
-  "head": "$BRANCH_NAME",
-  "base": "$BASE_BRANCH",
-}
-EOF
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Content-Type: application/json" \
+  "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls" \
+  -d "$(jq -n \
+    --arg title "$PR_NAME" \
+    --arg head "$BRANCH_NAME" \
+    --arg base "$BASE_BRANCH" \
+    '{title: $title, head: $head, base: $base}')"
 
 done
