@@ -60,6 +60,9 @@ for ENV in "${ENVS[@]}"; do
       echo "Updating $file for $name"
       yq '.' "$file" | jq --arg tag "$TARGET_VERSION" --arg name "$name" \
         '.[$name].image.tag = $tag' | yq -y > tmp.yaml && mv tmp.yaml "$file"
+      if [[ "$name" == "sower" ]]; then
+        handle_sower_sowerConfig_update "$file"
+      fi
       return 0
     fi
     return 1
@@ -73,6 +76,9 @@ for ENV in "${ENVS[@]}"; do
       echo "Updating $values_yaml for $name"
       yq '.' "$values_yaml" | jq --arg name "$name" --arg tag "$tag" \
         '.[$name].image.tag = $tag' | yq -y > tmp.yaml && mv tmp.yaml "$values_yaml"
+      if [[ "$name" == "sower" ]]; then
+        handle_sower_sowerConfig_update "$values_yaml"
+      fi
     else
       echo "$name not found in $values_yaml, skipping...."
     fi
@@ -88,6 +94,22 @@ for ENV in "${ENVS[@]}"; do
     else
       update_values_yaml "ssjdispatcher" "$full_tag"
     fi
+  }
+
+  handle_sower_sowerConfig_update() {
+    local file="$1"
+
+    echo "Updating sowerConfig in $file to use tag $TARGET_VERSION"
+
+    yq '.' "$file" | jq --arg ver "$TARGET_VERSION" '
+      .sower.sowerConfig |= map(
+        if (.container.image // empty) != "" and (.container.image | test(":")) then
+          .container.image = (.container.image | split(":")[0] + ":" + $ver)
+        else
+          .
+        end
+      )
+    ' | yq -y > tmp.yaml && mv tmp.yaml "$file"
   }
 
   while IFS= read -r raw_name || [[ -n "$raw_name" ]]; do
