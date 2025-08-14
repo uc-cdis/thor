@@ -57,7 +57,7 @@
             "REPO_NAME":"gen3-gitops",
             "IMAGE_TAG_VERSION":"{{ INTEGRATION_BRANCH }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENTS":"ci/default;bdcatprod/gen3.biodatacatalyst.nhlbi.nih.gov;healprod/healdata.org"
+            "TARGET_ENVIRONMENTS":"ci/default;bdcatprod/gen3.biodatacatalyst.nhlbi.nih.gov;healprod/healdata.org;midrcprod/data.midrc.org"
         },  
         "schedule": null, 
         "script": "update-ci-env-with-latest-integration-br.sh",
@@ -129,7 +129,7 @@
             "REPO_NAME":"gen3-gitops",
             "IMAGE_TAG_VERSION":"{{ RELEASE_VERSION }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENTS":"ci/default;bdcatprod/gen3.biodatacatalyst.nhlbi.nih.gov;healprod/healdata.org"
+            "TARGET_ENVIRONMENTS":"ci/default;bdcatprod/gen3.biodatacatalyst.nhlbi.nih.gov;healprod/healdata.org;midrcprod/data.midrc.org"
         },  
         "schedule": null,  
         "script": "update-ci-env-with-release-version.sh",

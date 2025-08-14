@@ -67,7 +67,7 @@ for service_name in REPO_LIST:
             values_config = yaml.safe_load(f)
         # Check if {service_name} in values.yaml
         if service_name in values_config:
-            print(f"Found {service_name} in values.yaml and is enabled")
+            print(f"Found {service_name} in values.yaml")
             update_version_for_service(service_name, values_file)
         else:
             print(f"Skipping update for {service_name}")

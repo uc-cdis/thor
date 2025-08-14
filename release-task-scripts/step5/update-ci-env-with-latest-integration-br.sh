@@ -24,7 +24,7 @@ for ENV in "${ENVS[@]}"; do
 
   # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
   cd $GEN3_GITOPS_PATH
-  echo $GEN3_GITOPS_PATH
+  pwd
   git switch master
   git fetch origin
   git checkout -b "$BRANCH_NAME"
