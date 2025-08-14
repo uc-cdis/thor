@@ -5,8 +5,10 @@ import yaml
 TARGET_ENV = os.getenv("TARGET_ENV")
 RELEASE_VERSION = os.getenv("IMAGE_TAG_VERSION")
 GEN3_GITOPS_PATH = os.getenv("GEN3_GITOPS_PATH")
+GEN3_HELM_PATH = os.getenv("GEN3_HELM_PATH")
 REPO_LIST_PATH = "/src/repo_list.txt"
 TARGET_ENV_PATH = f"{GEN3_GITOPS_PATH}/{TARGET_ENV}"
+GEN3_DEFAULT_VALUES_PATH = f"{GEN3_HELM_PATH}/helm/gen3/values.yaml"
 REPO_LIST = []
 REPO_DICT = {
     "pelican": "pelican-export",
@@ -25,25 +27,27 @@ REPO_DICT = {
 
 def update_version_for_service(service_name, target_file):
     with open(target_file, "r") as f:
-        config = yaml.safe_load(f)
-    if config[service_name].get('enabled'):
+        target_file_config = yaml.safe_load(f)
+    with open(GEN3_DEFAULT_VALUES_PATH, 'r') as gen3_f:
+        gen3_file_config = yaml.safe_load(gen3_f)
+    if target_file_config[service_name].get('enabled') or gen3_file_config[service_name].get('enabled'):
         # Handle update for tube and spark
         if service_name == "etl":
-            image = config[service_name].get('image')
+            image = target_file_config[service_name].get('image')
             if image and image.get('tube'):
-                config[service_name]['image']['tube']['tag'] = RELEASE_VERSION
+                target_file_config[service_name]['image']['tube']['tag'] = RELEASE_VERSION
             if image and image.get('spark'):
-                config[service_name]['image']['spark']['tag'] = RELEASE_VERSION
+                target_file_config[service_name]['image']['spark']['tag'] = RELEASE_VERSION
         else:
-            config[service_name]['image']['tag'] = RELEASE_VERSION
+            target_file_config[service_name]['image']['tag'] = RELEASE_VERSION
         # Handle indexs3client update
         if service_name == "ssjdispatcher":
             print("Updating ssjdispatcher['indexing']")
-            config[service_name]['indexing'] = f"quay.io/cdis/indexs3client:{RELEASE_VERSION}"
+            target_file_config[service_name]['indexing'] = f"quay.io/cdis/indexs3client:{RELEASE_VERSION}"
         # Handle sowerConfig update
         if service_name == "sower":
             print("Updating sowerConfig")
-            sower_config = config.get("sower", {}).get("sowerConfig", [])
+            sower_config = target_file_config.get("sower", {}).get("sowerConfig", [])
             for job in sower_config:
                 container = job.get("container")
                 if container and "image" in container:
@@ -51,7 +55,7 @@ def update_version_for_service(service_name, target_file):
                     container["image"] = f"{quay_link}:{RELEASE_VERSION}"
         # write the updates back to yaml file
         with open(target_file, "w") as f:
-            yaml.dump(config, f, default_flow_style=False)
+            yaml.dump(target_file_config, f, default_flow_style=False)
 
 
 # Read the REPO_LIST_PATH and add it to a list

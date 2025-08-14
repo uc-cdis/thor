@@ -2,10 +2,12 @@
 export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
 export GEN3_GITOPS_PATH="$(pwd)/$REPO_NAME"
+export GEN3_HELM_PATH="$(pwd)/gen3-helm"
 
 git config --global user.name "${GITHUB_USERNAME}"
 git config --global user.email "cdis@uchicago.edu"
 git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/${REPO_NAME}"
+git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-helm"
 
 pip install -U pip
 pip install poetry
