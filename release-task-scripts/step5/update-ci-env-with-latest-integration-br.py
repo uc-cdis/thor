@@ -2,7 +2,7 @@ import os
 import yaml
 
 # Get all environment variables
-TARGET_ENV = os.getenv("TARGET_ENV_NAME")
+TARGET_ENV = os.getenv("TARGET_ENV")
 RELEASE_VERSION = os.getenv("IMAGE_TAG_VERSION")
 GEN3_GITOPS_PATH = os.getenv("GEN3_GITOPS_PATH")
 REPO_LIST_PATH = "/src/repo_list.txt"
@@ -10,7 +10,7 @@ TARGET_ENV_PATH = f"{GEN3_GITOPS_PATH}/{TARGET_ENV}"
 REPO_LIST = []
 REPO_DICT = {
     "pelican": "pelican-export",
-    "docker-nginx": "nginx",
+    "docker-nginx": "revproxy",
     "gen3-fuse": "gen3fuse-sidecar",
     "cloud-automation": "awshelper",
     "ACCESS-backend": "access-backend",
@@ -18,6 +18,8 @@ REPO_DICT = {
     "data-portal": "portal",
     "audit-service": "audit",
     "metadata-service": "metadata",
+    "gen3-spark": "etl",
+    "tube": "etl",
 }
 
 
@@ -25,12 +27,22 @@ def update_version_for_service(service_name, target_file):
     with open(target_file, "r") as f:
         config = yaml.safe_load(f)
     if config[service_name].get('enabled'):
-        config[service_name]['image']['tag'] = RELEASE_VERSION
+        # Handle update for tube and spark
+        if service_name == "etl":
+            image = config[service_name].get('image')
+            if image and image.get('tube'):
+                config[service_name]['image']['tube']['tag'] = RELEASE_VERSION
+            if image and image.get('spark'):
+                config[service_name]['image']['spark']['tag'] = RELEASE_VERSION
+        else:
+            config[service_name]['image']['tag'] = RELEASE_VERSION
         # Handle indexs3client update
         if service_name == "ssjdispatcher":
+            print("Updating ssjdispatcher['indexing']")
             config[service_name]['indexing'] = f"quay.io/cdis/indexs3client:{RELEASE_VERSION}"
         # Handle sowerConfig update
         if service_name == "sower":
+            print("Updating sowerConfig")
             sower_config = config.get("sower", {}).get("sowerConfig", [])
             for job in sower_config:
                 container = job.get("container")
