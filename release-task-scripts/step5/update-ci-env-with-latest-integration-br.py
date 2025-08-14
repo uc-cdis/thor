@@ -22,6 +22,7 @@ REPO_DICT = {
     "metadata-service": "metadata",
     "gen3-spark": "etl",
     "tube": "etl",
+    "workspace-token-service": "wts",
 }
 
 

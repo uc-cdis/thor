@@ -20,7 +20,7 @@ for ENV in "${ENVS[@]}"; do
   PR_NAME="${PR_TITLE} ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
   SANITIZED_ENV="${TARGET_ENV//\//_}"
   BRANCH_NAME="chore/apply_${IMAGE_TAG_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
-  COMMIT_MSG="Applying version {$IMAGE_TAG_VERSION} to {$TARGET_ENV}"
+  COMMIT_MSG="Updating $TARGET_ENV with $IMAGE_TAG_VERSION"
   REPO_OWNER="uc-cdis"
   BASE_BRANCH="master"
 
@@ -37,7 +37,7 @@ for ENV in "${ENVS[@]}"; do
 
   # PUSH in the branch and create a PR
   git add .
-  git commit -m "${COMMIT_MSG} for $ENV"
+  git commit -m "${COMMIT_MSG}"
   git push origin "$BRANCH_NAME"
 
   curl -u "$GITHUB_USERNAME:$GITHUB_TOKEN" \
