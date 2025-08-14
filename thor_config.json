@@ -54,10 +54,10 @@
         "job_name":  "update-ci-env-with-latest-integration-branch",  
         "job_description": " Create gitops-qa PRs to deploy the integration branch to QA environments",  
         "job_params": {
-            "REPO_NAME":"gitops-qa",
-            "INTEGRATION_BRANCH":"{{ INTEGRATION_BRANCH }}",
+            "REPO_NAME":"gen3-gitops",
+            "IMAGE_TAG_VERSION":"{{ INTEGRATION_BRANCH }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENTS":"qa-dcp.planx-pla.net;jenkins-perf.planx-pla.net;qa-heal.planx-pla.net"
+            "TARGET_ENVIRONMENTS":"ci/default;bdcatprod/gen3.biodatacatalyst.nhlbi.nih.gov;healprod/healdata.org"
         },  
         "schedule": null, 
         "script": "update-ci-env-with-latest-integration-br.sh",
@@ -126,10 +126,10 @@
         "job_name":  "update-ci-env-with-release-version",  
         "job_description": "Sanity Check the release",  
         "job_params": {
-            "REPO_NAME":"gitops-qa",
-            "RELEASE_VERSION":"{{ RELEASE_VERSION }}",
+            "REPO_NAME":"gen3-gitops",
+            "IMAGE_TAG_VERSION":"{{ RELEASE_VERSION }}",
             "PR_TITLE":"Updating CI env with",
-            "TARGET_ENVIRONMENTS":"qa-dcp.planx-pla.net;jenkins-perf.planx-pla.net;qa-heal.planx-pla.net"
+            "TARGET_ENVIRONMENTS":"ci/default;bdcatprod/gen3.biodatacatalyst.nhlbi.nih.gov;healprod/healdata.org"
         },  
         "schedule": null,  
         "script": "update-ci-env-with-release-version.sh",

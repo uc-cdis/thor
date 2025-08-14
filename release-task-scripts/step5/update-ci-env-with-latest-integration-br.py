@@ -1,0 +1,73 @@
+import os
+import yaml
+
+# Get all environment variables
+TARGET_ENV = os.getenv("TARGET_ENV_NAME")
+RELEASE_VERSION = os.getenv("IMAGE_TAG_VERSION")
+GEN3_GITOPS_PATH = os.getenv("GEN3_GITOPS_PATH")
+REPO_LIST_PATH = "/src/repo_list.txt"
+TARGET_ENV_PATH = f"{GEN3_GITOPS_PATH}/{TARGET_ENV}"
+REPO_LIST = []
+REPO_DICT = {
+    "pelican": "pelican-export",
+    "docker-nginx": "nginx",
+    "gen3-fuse": "gen3fuse-sidecar",
+    "cloud-automation": "awshelper",
+    "ACCESS-backend": "access-backend",
+    "cdis-data-client": "gen3-client",
+    "data-portal": "portal",
+    "audit-service": "audit",
+    "metadata-service": "metadata",
+}
+
+
+def update_version_for_service(service_name, target_file):
+    with open(target_file, "r") as f:
+        config = yaml.safe_load(f)
+    if config[service_name].get('enabled'):
+        config[service_name]['image']['tag'] = RELEASE_VERSION
+        # Handle indexs3client update
+        if service_name == "ssjdispatcher":
+            config[service_name]['indexing'] = f"quay.io/cdis/indexs3client:{RELEASE_VERSION}"
+        # Handle sowerConfig update
+        if service_name == "sower":
+            sower_config = config.get("sower", {}).get("sowerConfig", [])
+            for job in sower_config:
+                container = job.get("container")
+                if container and "image" in container:
+                    quay_link = container["image"].split(":")[0]
+                    container["image"] = f"{quay_link}:{RELEASE_VERSION}"
+        # write the updates back to yaml file
+        with open(target_file, "w") as f:
+            yaml.dump(config, f, default_flow_style=False)
+
+
+# Read the REPO_LIST_PATH and add it to a list
+with open(REPO_LIST_PATH, 'r') as f:
+    for line in f:
+        stripped = line.strip()
+        if stripped:
+            REPO_LIST.append(stripped)
+
+# Update version for each service from REPO_LIST
+for service_name in REPO_LIST:
+    # Check if {service_name} in REPO_DICT and change the service name
+    if service_name in REPO_DICT:
+        service_name = REPO_DICT[service_name]
+
+    service_file = f"{TARGET_ENV_PATH}/values/{service_name}.yaml"
+    values_file = f"{TARGET_ENV_PATH}/values/values.yaml"
+
+    # Check if {service_name}.yaml exists
+    if os.path.exists(service_file):
+        print(f"Found {service_name}.yaml")
+        update_version_for_service(service_name, service_file)
+    else:
+        with open("values.yaml", "r") as f:
+            values_config = yaml.safe_load(f)
+        # Check if {service_name} in values.yaml
+        if service_name in values_config:
+            print(f"Found {service_name} in values.yaml and is enabled")
+            update_version_for_service(service_name, values_file)
+        else:
+            print(f"Skipping update for {service_name}")

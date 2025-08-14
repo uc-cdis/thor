@@ -1,16 +1,51 @@
 #!/bin/bash
 export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
+export GEN3_GITOPS_PATH="$(pwd)/$REPO_NAME"
 
-git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gen3-release-utils.git"
-git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/gitops-qa.git"
+git config --global user.name "${GITHUB_USERNAME}"
+git config --global user.email "cdis@uchicago.edu"
+git clone "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/${REPO_NAME}"
 
-cd gen3-release-utils/gen3release-sdk
 pip install -U pip
 pip install poetry
 poetry install
 
 IFS=';' read -ra ENVS <<< "$TARGET_ENVIRONMENTS"
 for ENV in "${ENVS[@]}"; do
-  GITHUB_TOKEN="$GITHUB_TOKEN" poetry run gen3release apply -v $INTEGRATION_BRANCH -e ../../gitops-qa/${ENV} -pr "${PR_TITLE} ${INTEGRATION_BRANCH} ${ENV} $(date +%s)" -l "gen3-release"
+  export TARGET_ENV=$ENV
+  TIMESTAMP=$(date +%s)
+  PR_NAME="${PR_TITLE} ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
+  SANITIZED_ENV="${TARGET_ENV//\//_}"
+  BRANCH_NAME="chore/apply_${IMAGE_TAG_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
+  COMMIT_MSG="Applying version {$IMAGE_TAG_VERSION} to {$TARGET_ENV}"
+  REPO_OWNER="uc-cdis"
+  BASE_BRANCH="master"
+
+  # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
+  cd $GEN3_GITOPS_PATH
+  echo $GEN3_GITOPS_PATH
+  git switch master
+  git fetch origin
+  git checkout -b "$BRANCH_NAME"
+  cd "${TARGET_ENV}/values/"
+
+  # Update the yaml files
+  poetry run python /src/release-task-scripts/step5/update-ci-env-with-latest-integration-br.py
+
+  # PUSH in the branch and create a PR
+  git add .
+  git commit -m "${COMMIT_MSG} for $ENV"
+  git push origin "$BRANCH_NAME"
+
+  curl -u "$GITHUB_USERNAME:$GITHUB_TOKEN" \
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Content-Type: application/json" \
+  "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls" \
+  -d "$(jq -n \
+    --arg title "$PR_NAME" \
+    --arg head "$BRANCH_NAME" \
+    --arg base "$BASE_BRANCH" \
+    '{title: $title, head: $head, base: $base}')"
 done
