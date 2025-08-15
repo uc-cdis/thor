@@ -32,13 +32,13 @@ def update_version_for_service(service_name, target_file):
     with open(target_file, "r") as f:
         target_file_config = yaml.safe_load(f)
     with open(GEN3_DEFAULT_VALUES_PATH, 'r') as gen3_f:
-        gen3_file_config = yaml.safe_load(gen3_f)
+        gen3_helm_config = yaml.safe_load(gen3_f)
     # If service is disabled in incoming manifest, don't update anything
-    if 'enabled' in target_file_config[service_name] and target_file_config[service_name]['enabled'] is False:
+    if target_file_config[service_name].get('enabled') is False:
         print(f"{service_name} enabled is set to False")
         return
     # If service is enabled in incoming or default manifest then update
-    if target_file_config[service_name].get('enabled') or gen3_file_config[service_name].get('enabled'):
+    if target_file_config[service_name].get('enabled') or gen3_helm_config[service_name].get('enabled'):
         print(f"Updated {CURRENT_REPO_DICT_KEY} in {target_file}")
         # Handle update for tube and spark
         if service_name == "etl":
