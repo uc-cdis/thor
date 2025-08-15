@@ -34,11 +34,12 @@ def update_version_for_service(service_name, target_file):
     with open(GEN3_DEFAULT_VALUES_PATH, 'r') as gen3_f:
         gen3_file_config = yaml.safe_load(gen3_f)
     # If service is disabled in incoming manifest, don't update anything
-    if target_file_config[service_name].get('enabled') is False:
-        print(f"{service_name} enabled is set to False or not present")
+    if 'enabled' in target_file_config[service_name] and target_file_config[service_name]['enabled'] is False:
+        print(f"{service_name} enabled is set to False")
         return
     # If service is enabled in incoming or default manifest then update
     if target_file_config[service_name].get('enabled') or gen3_file_config[service_name].get('enabled'):
+        print(f"Updated {CURRENT_REPO_DICT_KEY} in {target_file}")
         # Handle update for tube and spark
         if service_name == "etl":
             if 'image' not in target_file_config[service_name]:
@@ -67,7 +68,6 @@ def update_version_for_service(service_name, target_file):
         # write the updates back to yaml file
         with open(target_file, "w") as f:
             yaml.dump(target_file_config, f, default_flow_style=False)
-        print(f"Updated {service_name} in {target_file}")
 
 
 # Read the REPO_LIST_PATH and add it to a list
@@ -79,9 +79,10 @@ with open(REPO_LIST_PATH, 'r') as f:
 
 # Update version for each service from REPO_LIST
 for service_name in REPO_LIST:
+    # Set this to use for printing purposes
+    CURRENT_REPO_DICT_KEY = service_name
     # Check if {service_name} in REPO_DICT and change the service name
     if service_name in REPO_DICT:
-        CURRENT_REPO_DICT_KEY = service_name
         service_name = REPO_DICT[service_name]
 
     service_file = f"{TARGET_ENV_PATH}/values/{service_name}.yaml"
