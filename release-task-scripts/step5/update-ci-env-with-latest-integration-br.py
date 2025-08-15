@@ -45,6 +45,8 @@ def update_version_for_service(service_name, target_file):
             if image and image.get('spark'):
                 target_file_config[service_name]['image']['spark']['tag'] = RELEASE_VERSION
         else:
+            if 'image' not in target_file_config[service_name]:
+                target_file_config[service_name]['image'] = {}
             target_file_config[service_name]['image']['tag'] = RELEASE_VERSION
         # Handle indexs3client update
         if service_name == "ssjdispatcher":
