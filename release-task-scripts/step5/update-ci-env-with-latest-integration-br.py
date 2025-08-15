@@ -39,6 +39,8 @@ def update_version_for_service(service_name, target_file):
     if target_file_config[service_name].get('enabled') or gen3_file_config[service_name].get('enabled'):
         # Handle update for tube and spark
         if service_name == "etl":
+            if 'image' not in target_file_config[service_name]:
+                target_file_config[service_name]['image'] = {}
             image = target_file_config[service_name].get('image')
             if image and image.get('tube'):
                 target_file_config[service_name]['image']['tube']['tag'] = RELEASE_VERSION
@@ -64,6 +66,7 @@ def update_version_for_service(service_name, target_file):
         # write the updates back to yaml file
         with open(target_file, "w") as f:
             yaml.dump(target_file_config, f, default_flow_style=False)
+        print(f"Updated {service_name} in {service_file}")
 
 
 # Read the REPO_LIST_PATH and add it to a list
