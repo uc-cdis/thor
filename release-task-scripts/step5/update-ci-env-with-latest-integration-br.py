@@ -23,7 +23,9 @@ REPO_DICT = {
     "gen3-spark": "etl",
     "tube": "etl",
     "workspace-token-service": "wts",
+    "indexs3client": "ssjdispatcher"
 }
+CURRENT_REPO_DICT_KEY = ""
 
 
 def update_version_for_service(service_name, target_file):
@@ -41,11 +43,10 @@ def update_version_for_service(service_name, target_file):
         if service_name == "etl":
             if 'image' not in target_file_config[service_name]:
                 target_file_config[service_name]['image'] = {}
-            image = target_file_config[service_name].get('image')
-            if image and image.get('tube'):
-                target_file_config[service_name]['image']['tube']['tag'] = RELEASE_VERSION
-            if image and image.get('spark'):
-                target_file_config[service_name]['image']['spark']['tag'] = RELEASE_VERSION
+                target_file_config[service_name]['image']["tube"] = {}
+                target_file_config[service_name]['image']["spark"] = {}
+            target_file_config[service_name]['image']['tube']['tag'] = RELEASE_VERSION
+            target_file_config[service_name]['image']['spark']['tag'] = RELEASE_VERSION
         else:
             if 'image' not in target_file_config[service_name]:
                 target_file_config[service_name]['image'] = {}
@@ -66,7 +67,7 @@ def update_version_for_service(service_name, target_file):
         # write the updates back to yaml file
         with open(target_file, "w") as f:
             yaml.dump(target_file_config, f, default_flow_style=False)
-        print(f"Updated {service_name} in {service_file}")
+        print(f"Updated {service_name} in {target_file}")
 
 
 # Read the REPO_LIST_PATH and add it to a list
@@ -80,6 +81,7 @@ with open(REPO_LIST_PATH, 'r') as f:
 for service_name in REPO_LIST:
     # Check if {service_name} in REPO_DICT and change the service name
     if service_name in REPO_DICT:
+        CURRENT_REPO_DICT_KEY = service_name
         service_name = REPO_DICT[service_name]
 
     service_file = f"{TARGET_ENV_PATH}/values/{service_name}.yaml"
