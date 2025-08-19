@@ -1,10 +1,6 @@
 import os
 import yaml
 
-class MyDumper(yaml.Dumper):
-    def increase_indent(self, flow=False, indentless=False):
-        return super(MyDumper, self).increase_indent(flow, False)
-
 # Get all environment variables
 TARGET_ENV = os.getenv("TARGET_ENV")
 RELEASE_VERSION = os.getenv("IMAGE_TAG_VERSION")
@@ -31,6 +27,9 @@ REPO_DICT = {
 }
 CURRENT_REPO_DICT_KEY = ""
 
+class MyDumper(yaml.Dumper):
+    def increase_indent(self, flow=False, indentless=False):
+        return super(MyDumper, self).increase_indent(flow, False)
 
 def update_version_for_service(service_name, target_file):
     with open(target_file, "r") as f:
