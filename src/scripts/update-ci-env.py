@@ -67,7 +67,7 @@ def update_version_for_service(service_name, target_file):
                     container["image"] = f"{quay_link}:{RELEASE_VERSION}"
         # write the updates back to yaml file
         with open(target_file, "w") as f:
-            yaml.dump(target_file_config, f, default_flow_style=False)
+            yaml.dump(target_file_config, f, default_flow_style=True, sort_keys=False, default_style='\"')
 
 
 # Read the REPO_LIST_PATH and add it to a list
