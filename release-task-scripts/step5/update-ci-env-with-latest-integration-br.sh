@@ -33,7 +33,7 @@ for ENV in "${ENVS[@]}"; do
   cd "${TARGET_ENV}/values/"
 
   # Update the yaml files
-  poetry run python /src/src/release/update-ci-env-with-latest-integration-br.py
+  poetry run python /src/src/scripts/update-ci-env.py
 
   # PUSH in the branch and create a PR
   git add .
