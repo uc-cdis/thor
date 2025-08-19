@@ -17,7 +17,7 @@ IFS=';' read -ra ENVS <<< "$TARGET_ENVIRONMENTS"
 for ENV in "${ENVS[@]}"; do
   export TARGET_ENV=$ENV
   TIMESTAMP=$(date +%s)
-  PR_NAME="${PR_TITLE} ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
+  PR_NAME="${PR_TITLE} ${IMAGE_TAG_VERSION} ${ENV} ${TIMESTAMP}"
   SANITIZED_ENV="${TARGET_ENV//\//_}"
   BRANCH_NAME="chore/apply_${IMAGE_TAG_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
   COMMIT_MSG="Updating $TARGET_ENV with $IMAGE_TAG_VERSION"
@@ -33,7 +33,7 @@ for ENV in "${ENVS[@]}"; do
   cd "${TARGET_ENV}/values/"
 
   # Update the yaml files
-  poetry run python /src/release-task-scripts/step5/update-ci-env-with-latest-integration-br.py
+  poetry run python /src/src/release/update-ci-env-with-latest-integration-br.py
 
   # PUSH in the branch and create a PR
   git add .
