@@ -98,7 +98,7 @@ jobs:
                 # Set variables needed by $THOR_REPO_PATH/gen3_ci/scripts/deploy_monthly_release.py
                 export TARGET_ENV=$folder
                 export IMAGE_TAG_VERSION=$RELEASE_VERSION
-                export REPO_LIST_PATH="$THOR_REPO_PATH/src/repo_list.txt"
+                export REPO_LIST_PATH="$THOR_REPO_PATH/repo_list.txt"
                 TIMESTAMP=$(date +%s)
                 PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
                 SANITIZED_ENV="${TARGET_ENV//\//_}"
