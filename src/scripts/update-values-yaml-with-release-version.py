@@ -6,7 +6,7 @@ TARGET_ENV = os.getenv("TARGET_ENV")
 RELEASE_VERSION = os.getenv("IMAGE_TAG_VERSION")
 GEN3_GITOPS_PATH = os.getenv("GEN3_GITOPS_PATH")
 GEN3_HELM_PATH = os.getenv("GEN3_HELM_PATH")
-REPO_LIST_PATH = "/src/repo_list.txt"
+REPO_LIST_PATH = os.getenv("REPO_LIST_PATH")
 TARGET_ENV_PATH = f"{GEN3_GITOPS_PATH}/{TARGET_ENV}"
 GEN3_DEFAULT_VALUES_PATH = f"{GEN3_HELM_PATH}/helm/gen3/values.yaml"
 REPO_LIST = []
@@ -27,9 +27,11 @@ REPO_DICT = {
 }
 CURRENT_REPO_DICT_KEY = ""
 
+
 class MyDumper(yaml.Dumper):
     def increase_indent(self, flow=False, indentless=False):
         return super(MyDumper, self).increase_indent(flow, False)
+
 
 def update_version_for_service(service_name, target_file):
     with open(target_file, "r") as f:
