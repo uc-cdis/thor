@@ -16,6 +16,7 @@ poetry install
 IFS=';' read -ra ENVS <<< "$TARGET_ENVIRONMENTS"
 for ENV in "${ENVS[@]}"; do
   export TARGET_ENV=$ENV
+  export REPO_LIST_PATH="/src/repo_list.txt"
   TIMESTAMP=$(date +%s)
   PR_NAME="${PR_TITLE} ${IMAGE_TAG_VERSION} ${ENV} ${TIMESTAMP}"
   SANITIZED_ENV="${TARGET_ENV//\//_}"
@@ -33,7 +34,7 @@ for ENV in "${ENVS[@]}"; do
   cd "${TARGET_ENV}/values/"
 
   # Update the yaml files
-  poetry run python /src/src/scripts/update-ci-env.py
+  poetry run python /src/src/scripts/update-values-yaml-with-release-version.py
 
   # PUSH in the branch and create a PR
   git add .
