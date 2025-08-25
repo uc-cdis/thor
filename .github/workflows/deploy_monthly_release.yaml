@@ -1,21 +1,18 @@
-name: Monthly Release
+name: Deploy Monthly Release
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       RELEASE_VERSION:
-        required: true
+        description: 'RELEASE VERSION to apply to incoming list of environments'
         type: string
       LIST_OF_ENVIRONMENTS:
-        required: true
+        description: 'List of environments to deploy monthly release'
         type: string
       TARGET_REPO_NAME:
-        required: false
+        description: 'GITHUB Repository where the enviornments reside'
         type: string
-        default: gen3-gitops
-    secrets:
-      PLANXCYBORG_PAT:
-        required: true
+        default: "gen3-gitops"
 
 permissions:
   id-token: write
