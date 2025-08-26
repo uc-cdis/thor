@@ -69,6 +69,7 @@ jobs:
               echo "FOLDERS=$(echo '${{ env.LIST_OF_ENVIRONMENTS }}' | tr ',' ' ')" >> $GITHUB_ENV
 
           - name: Loop through folders and create PRs
+            continue-on-error: true
             run: |
               # Install dependencies
               pip install -U pip
@@ -81,6 +82,7 @@ jobs:
               export THOR_REPO_PATH="$(pwd)"
               export GH_TOKEN=${GH_TOKEN//$'\n'/}
               export PR_URLS=""
+              export FAILED_ENVS=""
 
               # Clean up if already cloned
               rm -rf "$GEN3_GITOPS_PATH"
@@ -91,49 +93,74 @@ jobs:
 
               for folder in $FOLDERS; do
                 echo "Processing folder: $folder"
-                cd $GEN3_GITOPS_PATH
+                {
+                  cd $GEN3_GITOPS_PATH
 
-                # Needed for committing or pushing changes
-                git config --global user.name $GITHUB_USERNAME
-                git config --global user.email "cdis@uchicago.edu"
-                git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/gen3-gitops.git
+                  # Needed for committing or pushing changes
+                  git config --global user.name $GITHUB_USERNAME
+                  git config --global user.email "cdis@uchicago.edu"
+                  git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/gen3-gitops.git
 
-                # Set variables needed by $THOR_REPO_PATH/gen3_ci/scripts/deploy_monthly_release.py
-                export TARGET_ENV=$folder
-                export IMAGE_TAG_VERSION=$RELEASE_VERSION
-                export REPO_LIST_PATH="$THOR_REPO_PATH/repo_list.txt"
-                TIMESTAMP=$(date +%s)
-                PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
-                SANITIZED_ENV="${TARGET_ENV//\//_}"
-                BRANCH_NAME="chore/apply_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
-                COMMIT_MSG="Updating $TARGET_ENV with $RELEASE_VERSION"
-                REPO_OWNER="uc-cdis"
-                BASE_BRANCH="master"
+                  # Set variables needed by $THOR_REPO_PATH/gen3_ci/scripts/deploy_monthly_release.py
+                  export TARGET_ENV=$folder
+                  export IMAGE_TAG_VERSION=$RELEASE_VERSION
+                  export REPO_LIST_PATH="$THOR_REPO_PATH/repo_list.txt"
+                  TIMESTAMP=$(date +%s)
+                  PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
+                  SANITIZED_ENV="${TARGET_ENV//\//_}"
+                  BRANCH_NAME="chore/apply_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
+                  COMMIT_MSG="Updating $TARGET_ENV with $RELEASE_VERSION"
+                  REPO_OWNER="uc-cdis"
+                  BASE_BRANCH="master"
 
-                # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
-                git switch master
-                git fetch origin
-                git checkout -b "$BRANCH_NAME"
-                cd "${TARGET_ENV}/values/"
+                  # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
+                  git switch master
+                  git fetch origin
+                  git checkout -b "$BRANCH_NAME"
+                  cd "${TARGET_ENV}/values/"
 
-                # Update the yaml files
-                poetry run python $THOR_REPO_PATH/src/scripts/update-values-yaml-with-release-version.py
+                  # Update the yaml files
+                  poetry run python $THOR_REPO_PATH/src/scripts/update-values-yaml-with-release-version.py
 
-                # PUSH in the branch and create a PR
-                git add .
-                git commit -m "${COMMIT_MSG}"
-                git push --set-upstream origin "$BRANCH_NAME"
+                  # PUSH in the branch and create a PR
+                  git add .
+                  git commit -m "${COMMIT_MSG}"
+                  git push --set-upstream origin "$BRANCH_NAME"
 
-                # Create a PR on $TARGET_REPO_NAME
-                echo "Perform PR creation"
-                PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME")
-                PR_URLS+="$PR_URL"$'\n'
+                  # Create a PR on $TARGET_REPO_NAME
+                  echo "Perform PR creation"
+                  PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME")
+                  PR_URLS+="$PR_URL"$'\n'
+                } || {
+                  echo "Failed processing $folder"
+                  FAILED_ENVS+="$folder"$'\n'
+                  git reset --hard
+                  git checkout main
+                }
               done
               echo "PR_URLS=$PR_URLS" >> $GITHUB_ENV
 
               {
                 echo "PR_URLS<<EOF"
                 echo "$PR_URLS"
+                echo "EOF"
+                echo "FAILED_ENVS<<EOF"
+                echo "$FAILED_ENVS"
+                echo "EOF"
+              } >> "$GITHUB_ENV"
+
+          - name: Construct Slack message
+            run: |
+              message="Deploy Monthly Release Workflow Information triggered by ${{ env.TRIGGERED_BY_USER }}\n"
+              if [ -n "$PR_URLS" ]; then
+                message+="\nThe following PRs were created on self-service-release by $TRIGGERED_BY_USER:\n$PR_URLS"
+              fi
+              if [ -n "$FAILED_ENVS" ]; then
+                message+="\nList of envs where PR creation failed (if any):\n$FAILED_ENVS"
+              fi
+              {
+                echo "FINAL_SLACK_MESSAGE<<EOF"
+                echo -e "$message"
                 echo "EOF"
               } >> "$GITHUB_ENV"
 
@@ -145,5 +172,5 @@ jobs:
               payload: |
                 {
                   "channel": "#qa-bot-runs",
-                  "text": "The following PRs were created on self-service-release by ${{ env.TRIGGERED_BY_USER }}:\n${{ env.PR_URLS }}"
+                  "text": ${{ env.FINAL_SLACK_MESSAGE }}
                 }
