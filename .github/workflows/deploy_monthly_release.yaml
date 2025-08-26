@@ -152,10 +152,10 @@ jobs:
           - name: Construct Slack message
             run: |
               message="Deploy Monthly Release Workflow Information triggered by ${{ env.TRIGGERED_BY_USER }}\n"
-              if [ -n "$PR_URLS" ]; then
+              if [ -n ${{ env.PR_URLS }} ]; then
                 message+="\nThe following PRs were created on self-service-release by $TRIGGERED_BY_USER:\n$PR_URLS"
               fi
-              if [ -n "$FAILED_ENVS" ]; then
+              if [ -n ${{ env.FAILED_ENVS }} ]; then
                 message+="\nList of envs where PR creation failed (if any):\n$FAILED_ENVS"
               fi
               {
