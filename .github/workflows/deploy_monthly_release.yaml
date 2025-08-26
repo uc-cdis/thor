@@ -13,6 +13,9 @@ on:
         description: 'GITHUB Repository where the enviornments reside'
         type: string
         default: "gen3-gitops"
+      TRIGGERED_BY_USER:
+        description: 'Github handle of user triggering monthly release deployment'
+        type: string
 
 permissions:
   id-token: write
@@ -43,6 +46,8 @@ jobs:
           RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
           LIST_OF_ENVIRONMENTS: ${{ inputs.LIST_OF_ENVIRONMENTS }}
           TARGET_REPO_NAME: ${{ inputs.TARGET_REPO_NAME }}
+          TRIGGERED_BY_USER: ${{ inputs.TRIGGERED_BY_USER }}
+          CI_SLACK_BOT_TOKEN: ${{ secrets.CI_SLACK_BOT_TOKEN }}
 
         steps:
           # Ensure the PR is run under the same org as an Internal PR
@@ -75,6 +80,7 @@ jobs:
               export GEN3_HELM_PATH="$(pwd)/gen3-helm"
               export THOR_REPO_PATH="$(pwd)"
               export GH_TOKEN=${GH_TOKEN//$'\n'/}
+              export PR_URLS=""
 
               # Clean up if already cloned
               rm -rf "$GEN3_GITOPS_PATH"
@@ -120,5 +126,24 @@ jobs:
 
                 # Create a PR on $TARGET_REPO_NAME
                 echo "Perform PR creation"
-                gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME"
+                PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME")
+                PR_URLS+="$PR_URL"$'\n'
               done
+              echo "PR_URLS=$PR_URLS" >> $GITHUB_ENV
+
+              {
+                echo "PR_URLS<<EOF"
+                echo "$PR_URLS"
+                echo "EOF"
+              } >> "$GITHUB_ENV"
+
+          - name: Send Slack message with PR URLs
+            uses: slackapi/slack-github-action@v2.0.0
+            with:
+              token: ${{ env.CI_SLACK_BOT_TOKEN }}
+              method: chat.postMessage
+              payload: |
+                {
+                  "channel": "#qa-bot-runs",
+                  "text": "The following PRs were created on self-service-release by ${{ env.TRIGGERED_BY_USER }}:\n${{ env.PR_URLS }}"
+                }
