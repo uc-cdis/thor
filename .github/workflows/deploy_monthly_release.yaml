@@ -94,7 +94,7 @@ jobs:
               for folder in $FOLDERS; do
                 echo "Processing folder: $folder"
                 {
-                  set -e
+                  set -eo pipefail
                   cd $GEN3_GITOPS_PATH
 
                   # Needed for committing or pushing changes
