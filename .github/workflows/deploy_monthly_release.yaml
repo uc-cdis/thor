@@ -13,6 +13,9 @@ on:
         description: 'GITHUB Repository where the enviornments reside'
         type: string
         default: "gen3-gitops"
+      TRIGGERED_BY_USER:
+        description: 'Github handle of user triggering monthly release deployment'
+        type: string
 
 permissions:
   id-token: write
@@ -43,6 +46,8 @@ jobs:
           RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
           LIST_OF_ENVIRONMENTS: ${{ inputs.LIST_OF_ENVIRONMENTS }}
           TARGET_REPO_NAME: ${{ inputs.TARGET_REPO_NAME }}
+          TRIGGERED_BY_USER: ${{ inputs.TRIGGERED_BY_USER }}
+          CI_SLACK_BOT_TOKEN: ${{ secrets.CI_SLACK_BOT_TOKEN }}
 
         steps:
           # Ensure the PR is run under the same org as an Internal PR
@@ -64,6 +69,7 @@ jobs:
               echo "FOLDERS=$(echo '${{ env.LIST_OF_ENVIRONMENTS }}' | tr ',' ' ')" >> $GITHUB_ENV
 
           - name: Loop through folders and create PRs
+            continue-on-error: true
             run: |
               # Install dependencies
               pip install -U pip
@@ -75,6 +81,8 @@ jobs:
               export GEN3_HELM_PATH="$(pwd)/gen3-helm"
               export THOR_REPO_PATH="$(pwd)"
               export GH_TOKEN=${GH_TOKEN//$'\n'/}
+              export PR_URLS=""
+              export FAILED_ENVS=""
 
               # Clean up if already cloned
               rm -rf "$GEN3_GITOPS_PATH"
@@ -87,38 +95,101 @@ jobs:
                 echo "Processing folder: $folder"
                 cd $GEN3_GITOPS_PATH
 
-                # Needed for committing or pushing changes
-                git config --global user.name $GITHUB_USERNAME
-                git config --global user.email "cdis@uchicago.edu"
-                git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/gen3-gitops.git
+                process_folder() {
 
-                # Set variables needed by $THOR_REPO_PATH/gen3_ci/scripts/deploy_monthly_release.py
-                export TARGET_ENV=$folder
-                export IMAGE_TAG_VERSION=$RELEASE_VERSION
-                export REPO_LIST_PATH="$THOR_REPO_PATH/repo_list.txt"
-                TIMESTAMP=$(date +%s)
-                PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
-                SANITIZED_ENV="${TARGET_ENV//\//_}"
-                BRANCH_NAME="chore/apply_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
-                COMMIT_MSG="Updating $TARGET_ENV with $RELEASE_VERSION"
-                REPO_OWNER="uc-cdis"
-                BASE_BRANCH="master"
+                  # Needed for committing or pushing changes
+                  git config --global user.name $GITHUB_USERNAME
+                  git config --global user.email "cdis@uchicago.edu"
+                  git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/gen3-gitops.git
 
-                # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
-                git switch master
-                git fetch origin
-                git checkout -b "$BRANCH_NAME"
-                cd "${TARGET_ENV}/values/"
+                  # Set variables needed by $THOR_REPO_PATH/gen3_ci/scripts/deploy_monthly_release.py
+                  export TARGET_ENV=$folder
+                  export IMAGE_TAG_VERSION=$RELEASE_VERSION
+                  export REPO_LIST_PATH="$THOR_REPO_PATH/repo_list.txt"
+                  TIMESTAMP=$(date +%s)
+                  PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
+                  SANITIZED_ENV="${TARGET_ENV//\//_}"
+                  BRANCH_NAME="chore/apply_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
+                  COMMIT_MSG="Updating $TARGET_ENV with $RELEASE_VERSION"
+                  REPO_OWNER="uc-cdis"
+                  BASE_BRANCH="master"
 
-                # Update the yaml files
-                poetry run python $THOR_REPO_PATH/src/scripts/update-values-yaml-with-release-version.py
+                  # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
+                  git switch master
+                  git fetch origin
+                  git checkout -b "$BRANCH_NAME"
+                  cd "${TARGET_ENV}/values/"
 
-                # PUSH in the branch and create a PR
-                git add .
-                git commit -m "${COMMIT_MSG}"
-                git push --set-upstream origin "$BRANCH_NAME"
+                  # Update the yaml files
+                  poetry run python $THOR_REPO_PATH/src/scripts/update-values-yaml-with-release-version.py
 
-                # Create a PR on $TARGET_REPO_NAME
-                echo "Perform PR creation"
-                gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME"
+                  # PUSH in the branch and create a PR
+                  git add .
+                  git commit -m "${COMMIT_MSG}"
+                  git push --set-upstream origin "$BRANCH_NAME"
+
+                  # Create a PR on $TARGET_REPO_NAME
+                  echo "Perform PR creation"
+                  PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME" 2>&1)
+                   echo "$PR_URL" | grep -q "http" || return 1
+                  PR_URLS+="$PR_URL"$'\n'
+                }
+                if ! process_folder; then
+                  echo "Failed processing $folder"
+                  FAILED_ENVS+="$folder"$'\n'
+                  git push origin --delete "$BRANCH_NAME" || echo "Warning: Remote branch may not exist"
+                  git reset --hard
+                  git checkout master
+                else
+                  echo "Successfully created PR for $folder"
+                fi
               done
+
+              {
+                echo "PR_URLS<<EOF"
+                echo "$PR_URLS"
+                echo "EOF"
+                echo "FAILED_ENVS<<EOF"
+                echo "$FAILED_ENVS"
+                echo "EOF"
+              } >> "$GITHUB_ENV"
+
+          - name: Construct Slack message 
+            run: | 
+              {
+                echo "FINAL_SLACK_MESSAGE<<EOF"
+                echo ":rocket: *Monthly Release Deployment triggered by \`$TRIGGERED_BY_USER\`*"
+                echo ""
+                
+                if [ -n "$PR_URLS" ]; then
+                  echo -e "\n"
+                  echo "*:white_check_mark: PRs Created:*"
+                  echo '```'
+                  printf '%s\n' "$PR_URLS"
+                  echo '```'
+                  echo ""
+                fi
+
+                if [ -n "$FAILED_ENVS" ]; then
+                  echo -e "\n"
+                  echo "*:x: Failed Environments:*"
+                  echo '```'
+                  printf '%s\n' "$FAILED_ENVS"
+                  echo '```'
+                  echo ""
+                fi
+
+                echo "EOF"
+              } >> "$GITHUB_ENV"
+
+          - name: Send Slack message with PR URLs
+            uses: slackapi/slack-github-action@v2.0.0
+            with:
+              token: ${{ env.CI_SLACK_BOT_TOKEN }}
+              method: chat.postMessage
+              payload: |
+                {
+                  "channel": "#qa-bot-runs",
+                  "text": "${{ env.FINAL_SLACK_MESSAGE }}",
+                  "mrkdwn": true
+                }
