@@ -162,6 +162,7 @@ jobs:
                 echo ""
                 
                 if [ -n "$PR_URLS" ]; then
+                  echo -e "\n"
                   echo "*:white_check_mark: PRs Created:*"
                   echo '```'
                   printf '%s\n' "$PR_URLS"
@@ -170,6 +171,7 @@ jobs:
                 fi
 
                 if [ -n "$FAILED_ENVS" ]; then
+                  echo -e "\n"
                   echo "*:x: Failed Environments:*"
                   echo '```'
                   printf '%s\n' "$FAILED_ENVS"
