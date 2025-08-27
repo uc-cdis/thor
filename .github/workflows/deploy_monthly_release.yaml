@@ -93,55 +93,52 @@ jobs:
 
               for folder in $FOLDERS; do
                 echo "Processing folder: $folder"
-                {
-                  cd $GEN3_GITOPS_PATH
+                cd $GEN3_GITOPS_PATH
 
-                  # Needed for committing or pushing changes
-                  git config --global user.name $GITHUB_USERNAME
-                  git config --global user.email "cdis@uchicago.edu"
-                  git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/gen3-gitops.git
+                # Needed for committing or pushing changes
+                git config --global user.name $GITHUB_USERNAME
+                git config --global user.email "cdis@uchicago.edu"
+                git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/gen3-gitops.git
 
-                  # Set variables needed by $THOR_REPO_PATH/gen3_ci/scripts/deploy_monthly_release.py
-                  export TARGET_ENV=$folder
-                  export IMAGE_TAG_VERSION=$RELEASE_VERSION
-                  export REPO_LIST_PATH="$THOR_REPO_PATH/repo_list.txt"
-                  TIMESTAMP=$(date +%s)
-                  PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
-                  SANITIZED_ENV="${TARGET_ENV//\//_}"
-                  BRANCH_NAME="chore/apply_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
-                  COMMIT_MSG="Updating $TARGET_ENV with $RELEASE_VERSION"
-                  REPO_OWNER="uc-cdis"
-                  BASE_BRANCH="master"
+                # Set variables needed by $THOR_REPO_PATH/gen3_ci/scripts/deploy_monthly_release.py
+                export TARGET_ENV=$folder
+                export IMAGE_TAG_VERSION=$RELEASE_VERSION
+                export REPO_LIST_PATH="$THOR_REPO_PATH/repo_list.txt"
+                TIMESTAMP=$(date +%s)
+                PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${ENV} ${TIMESTAMP}"
+                SANITIZED_ENV="${TARGET_ENV//\//_}"
+                BRANCH_NAME="chore/apply_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
+                COMMIT_MSG="Updating $TARGET_ENV with $RELEASE_VERSION"
+                REPO_OWNER="uc-cdis"
+                BASE_BRANCH="master"
 
-                  # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
-                  git switch master
-                  git fetch origin
-                  git checkout -b "$BRANCH_NAME"
-                  cd "${TARGET_ENV}/values/"
+                # PERFORM GIT OPERATIONS TO SWITCH TO NEW BRANCH and navigate to target env folder
+                git switch master
+                git fetch origin
+                git checkout -b "$BRANCH_NAME"
+                cd "${TARGET_ENV}/values/"
 
-                  # Update the yaml files
-                  poetry run python $THOR_REPO_PATH/src/scripts/update-values-yaml-with-release-version.py
+                # Update the yaml files
+                poetry run python $THOR_REPO_PATH/src/scripts/update-values-yaml-with-release-version.py
 
-                  # PUSH in the branch and create a PR
-                  git add .
-                  git commit -m "${COMMIT_MSG}"
-                  git push --set-upstream origin "$BRANCH_NAME"
+                # PUSH in the branch and create a PR
+                git add .
+                git commit -m "${COMMIT_MSG}"
+                git push --set-upstream origin "$BRANCH_NAME"
 
-                  # Create a PR on $TARGET_REPO_NAME
-                  echo "Perform PR creation"
-                  PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME" 2>&1)
-                  echo "$PR_URL"
-                  echo "$PR_URL" | grep -q "http"
-                  if [ $? -ne 0 ]; then
-                    return 1  # or exit 1
-                  fi
-                  PR_URLS+="$PR_URL"$'\n'
-                } || {
+                # Create a PR on $TARGET_REPO_NAME
+                echo "Perform PR creation"
+                PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME" 2>&1)
+                echo "$PR_URL"
+                echo "$PR_URL" | grep -q "http"
+                if [ $? -ne 0 ]; then
                   echo "Failed processing $folder"
                   FAILED_ENVS+="$folder"$'\n'
                   git reset --hard
                   git checkout main
-                }
+                else
+                  PR_URLS+="$PR_URL"$'\n'
+                fi
               done
 
               {
