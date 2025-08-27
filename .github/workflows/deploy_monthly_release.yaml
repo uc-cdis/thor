@@ -138,7 +138,7 @@ jobs:
                   echo "Failed processing $folder"
                   FAILED_ENVS+="$folder"$'\n'
                   git reset --hard
-                  git checkout main
+                  git checkout master
                 else
                   echo "Successfully created PR for $folder"
                 fi
