@@ -137,6 +137,7 @@ jobs:
                 if ! process_folder; then
                   echo "Failed processing $folder"
                   FAILED_ENVS+="$folder"$'\n'
+                  git push origin --delete "$BRANCH_NAME" || echo "Warning: Remote branch may not exist"
                   git reset --hard
                   git checkout master
                 else
