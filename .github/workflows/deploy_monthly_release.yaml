@@ -158,7 +158,7 @@ jobs:
             run: | 
               { 
                 echo "FINAL_SLACK_MESSAGE<<EOF"
-                echo ":rocket: *Monthly Release Deployment triggered by $TRIGGERED_BY_USER*"
+                echo ":rocket: *Monthly Release Deployment triggered by `$TRIGGERED_BY_USER`*"
                 echo ""
                 if [ -n "$PR_URLS" ]; then
                   echo "*:white_check_mark: PRs Created:*"
