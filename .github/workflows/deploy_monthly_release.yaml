@@ -158,22 +158,18 @@ jobs:
             run: | 
               {
                 echo "FINAL_SLACK_MESSAGE<<EOF"
-                echo ":rocket: *Monthly Release Deployment triggered by `$TRIGGERED_BY_USER`*"
+                echo ":rocket: *Monthly Release Deployment triggered by ```$TRIGGERED_BY_USER```*"
                 echo ""
                 
                 if [ -n "$PR_URLS" ]; then
                   echo "*:white_check_mark: PRs Created:*"
-                  echo '```'
                   printf '%s\n' "$PR_URLS"
-                  echo '```'
                   echo ""
                 fi
 
                 if [ -n "$FAILED_ENVS" ]; then
                   echo "*:x: Failed Environments:*"
-                  echo '```'
                   printf '%s\n' "$FAILED_ENVS"
-                  echo '```'
                   echo ""
                 fi
 
