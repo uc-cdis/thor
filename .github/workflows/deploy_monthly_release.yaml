@@ -94,7 +94,6 @@ jobs:
               for folder in $FOLDERS; do
                 echo "Processing folder: $folder"
                 {
-                  set -e
                   cd $GEN3_GITOPS_PATH
 
                   # Needed for committing or pushing changes
@@ -133,6 +132,9 @@ jobs:
                   PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME" 2>&1)
                   echo "$PR_URL"
                   echo "$PR_URL" | grep -q "http"
+                  if [ $? -ne 0 ]; then
+                    return 1  # or exit 1
+                  fi
                   PR_URLS+="$PR_URL"$'\n'
                 } || {
                   echo "Failed processing $folder"
