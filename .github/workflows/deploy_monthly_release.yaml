@@ -131,7 +131,7 @@ jobs:
                   # Create a PR on $TARGET_REPO_NAME
                   echo "Perform PR creation"
                   PR_URL=$(gh pr create --title "$PR_NAME" --body "$PR_NAME" --base "$BASE_BRANCH" --head "$BRANCH_NAME" 2>&1)
-                  echo "$PR_URL" | grep -q "http"
+                   echo "$PR_URL" | grep -q "http" || return 1
                   PR_URLS+="$PR_URL"$'\n'
                 }
                 if ! process_folder; then
