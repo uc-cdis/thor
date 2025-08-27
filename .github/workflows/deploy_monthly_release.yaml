@@ -154,19 +154,27 @@ jobs:
                 echo "EOF"
               } >> "$GITHUB_ENV"
 
-          - name: Construct Slack message
-            run: |
-              message="Deploy Monthly Release Workflow Information triggered by ${{ env.TRIGGERED_BY_USER }}\n"
-              if [ -n "${{ env.PR_URLS }}" ]; then
-                message+="\nThe following PRs were created:\n$PR_URLS"
-              fi
-              if [ -n "${{ env.FAILED_ENVS }}" ]; then
-                message+="\nList of envs where PR creation failed:\n$FAILED_ENVS"
-              fi
-              {
+          - name: Construct Slack message 
+            run: | 
+              { 
                 echo "FINAL_SLACK_MESSAGE<<EOF"
-                echo -e "$message"
-                echo "EOF"
+                echo ":rocket: *Monthly Release Deployment triggered by $TRIGGERED_BY_USER*"
+                echo ""
+                if [ -n "$PR_URLS" ]; then
+                  echo "*:white_check_mark: PRs Created:*"
+                  echo '```'
+                  echo "$PR_URLS"
+                  echo '```'
+                  echo ""
+                fi
+                if [ -n "$FAILED_ENVS" ]; then
+                  echo "*:x: Failed Environments:*"
+                  echo '```'
+                  echo "$FAILED_ENVS"
+                  echo '```'
+                  echo ""
+                fi 
+                echo "EOF" 
               } >> "$GITHUB_ENV"
 
           - name: Send Slack message with PR URLs
@@ -176,6 +184,7 @@ jobs:
               method: chat.postMessage
               payload: |
                 {
-                  "channel": "#qa-bot-runs",
-                  "text": "${{ env.FINAL_SLACK_MESSAGE }}"
+                  "channel": "#test-bots",
+                  "text": "${{ env.FINAL_SLACK_MESSAGE }}",
+                  "mrkdwn": true
                 }
