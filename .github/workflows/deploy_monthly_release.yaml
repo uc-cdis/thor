@@ -94,6 +94,7 @@ jobs:
               for folder in $FOLDERS; do
                 echo "Processing folder: $folder"
                 {
+                  set -e
                   cd $GEN3_GITOPS_PATH
 
                   # Needed for committing or pushing changes
@@ -169,7 +170,7 @@ jobs:
             uses: slackapi/slack-github-action@v2.0.0
             with:
               token: ${{ env.CI_SLACK_BOT_TOKEN }}
-              method: chat.postMessage
+              method: chat.postMessage123
               payload: |
                 {
                   "channel": "#qa-bot-runs",
