@@ -189,7 +189,7 @@ jobs:
               method: chat.postMessage
               payload: |
                 {
-                  "channel": "#test-bots",
+                  "channel": "#qa-bot-runs",
                   "text": "${{ env.FINAL_SLACK_MESSAGE }}",
                   "mrkdwn": true
                 }
