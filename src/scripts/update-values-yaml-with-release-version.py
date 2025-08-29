@@ -33,6 +33,12 @@ class MyDumper(yaml.Dumper):
         return super(MyDumper, self).increase_indent(flow, False)
 
 
+def str_presenter(dumper, data):
+    if '\n' in data:  # only use literal block for multi-line strings
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+
+
 def update_version_for_service(service_name, target_file):
     with open(target_file, "r") as f:
         target_file_config = yaml.safe_load(f)
@@ -71,6 +77,7 @@ def update_version_for_service(service_name, target_file):
                     quay_link = container["image"].split(":")[0]
                     container["image"] = f"{quay_link}:{RELEASE_VERSION}"
         # write the updates back to yaml file
+        yaml.add_representer(str, str_presenter, Dumper=MyDumper)
         with open(target_file, "w") as f:
             yaml.dump(target_file_config, f, Dumper=MyDumper, default_flow_style=False, sort_keys=False)
 
