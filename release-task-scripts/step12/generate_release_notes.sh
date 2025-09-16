@@ -41,7 +41,7 @@ cd $DIR
 mkdir $MONTH
 cd $MONTH
 
-cp /src/release-task-scripts/step12/gen3-release-notes.md .
+cp /src/workspace/12/gen3-release-notes.md .
 
 # PUSH in the branch and create a PR
 git add .
