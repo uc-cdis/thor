@@ -36,6 +36,7 @@ else
 fi
 cd $DIR
 mkdir $MONTH
+cd $MONTH
 
 poetry run python /src/release-task-scripts/step12/generate_release_notes.py
 
