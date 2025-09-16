@@ -31,16 +31,6 @@ def get_release_name(release_version):
                 return row[1]
 
 
-def get_release_manifest(year, month):
-    month_str = str(month).zfill(2)
-    manifest_url = f"https://raw.githubusercontent.com/uc-cdis/cdis-manifest/master/releases/{year}/{month_str}/manifest.json"
-    res = requests.get(manifest_url)
-    if res.status_code == 200:
-        return res.text
-    else:
-        raise Exception(f"Failed to fetch the previous manifest. Error code: {res.status_code}")
-
-
 def generate_repo_release_notes(release_version, repo, start_date, end_date):
     command = [
         "gen3git", "--repo", f"uc-cdis/{repo}", "--github-access-token",
@@ -62,11 +52,6 @@ def generate_release_notes(release_version):
     curr_month = int(release_version.split(".")[1])
     prev_year, prev_month = get_previous_year_month(curr_year, curr_month)
     prev_prev_year, prev_prev_month = get_previous_year_month(prev_year, prev_month)
-    prev_manifest = get_release_manifest(prev_year, prev_month)
-
-    print("---- Update release version in the manifest and save to file ----")
-    with open("manifest.json", "w") as f:
-        f.write(prev_manifest.replace(f"{prev_year}.{str(prev_month).zfill(2)}", release_version))
 
     print("---- Compute start and end date ----")
     # use Saturday's date (12am) to exclude all commits of Friday, they are in the previous month's notes

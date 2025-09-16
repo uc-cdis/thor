@@ -31,7 +31,7 @@ tasks = [
     },
     {
         "title": "5. Create gitops-qa PRs to deploy the integration branch to QA environments",
-        "description": "Run the following command to apply the integration branch images against the target QA environment: python gen3release/env_cli.py apply -v integration2020<nn> -e ~/workspace/gitops-qa/qa-<environment>.planx-pla.net",
+        "description": "Kick off this script: src/scripts/update-values-yaml-with-release-version.py with integration branch version and the environment as parameters.",
     },
     {
         "title": "6. Release testing round: automated tests and manual tests against qa envs",
@@ -55,7 +55,7 @@ tasks = [
     },
     {
         "title": "11. Sanity Check the release ",
-        "description": "Kick off this job: https://jenkins.planx-pla.net/job/update-ci-env-with-latest-integration-branch/ with release version and the environment as parameters.",
+        "description": "Kick off this script: src/scripts/update-values-yaml-with-release-version.py with release version and the environment as parameters.",
     },
     {
         "title": "12. Generate release notes and publish release manifest into `cdis-manifest/<year>/<month>` folder",
