@@ -1,5 +1,5 @@
 import os
-import yaml
+from ruamel.yaml import YAML
 
 # Get all environment variables
 TARGET_ENV = os.getenv("TARGET_ENV")
@@ -28,25 +28,27 @@ REPO_DICT = {
 CURRENT_REPO_DICT_KEY = ""
 
 
-class MyDumper(yaml.Dumper):
-    def increase_indent(self, flow=False, indentless=False):
-        return super(MyDumper, self).increase_indent(flow, False)
+# class MyDumper(yaml.Dumper):
+#     def increase_indent(self, flow=False, indentless=False):
+#         return super(MyDumper, self).increase_indent(flow, False)
 
 
-def str_presenter(dumper, data):
-    if '\n' in data:  # only use literal block for multi-line strings
-        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+# def str_presenter(dumper, data):
+#     if '\n' in data:  # only use literal block for multi-line strings
+#         return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+#     return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
 
-yaml.add_representer(str, str_presenter, Dumper=MyDumper)
+# yaml.add_representer(str, str_presenter, Dumper=MyDumper)
+yaml = YAML()
+yaml.preserve_quotes = True
 
 
 def update_version_for_service(service_name, target_file):
     with open(target_file, "r") as f:
-        target_file_config = yaml.safe_load(f)
+        target_file_config = yaml.load(f)
     with open(GEN3_DEFAULT_VALUES_PATH, 'r') as gen3_f:
-        gen3_helm_config = yaml.safe_load(gen3_f)
+        gen3_helm_config = yaml.load(gen3_f)
     # If service is disabled in incoming manifest, don't update anything
     if target_file_config[service_name].get('enabled') is False:
         print(f"{service_name} enabled is set to False")
@@ -81,7 +83,8 @@ def update_version_for_service(service_name, target_file):
                     container["image"] = f"{quay_link}:{RELEASE_VERSION}"
         # write the updates back to yaml file
         with open(target_file, "w") as f:
-            yaml.dump(target_file_config, f, Dumper=MyDumper, default_flow_style=False, sort_keys=False)
+            yaml.dump(target_file_config, f)
+        #     yaml.dump(target_file_config, f, Dumper=MyDumper, default_flow_style=False, sort_keys=False)
 
 
 # Read the REPO_LIST_PATH and add it to a list
@@ -108,7 +111,7 @@ for service_name in REPO_LIST:
         update_version_for_service(service_name, service_file)
     else:
         with open("values.yaml", "r") as f:
-            values_config = yaml.safe_load(f)
+            values_config = yaml.load(f)
         # Check if {service_name} in values.yaml
         if service_name in values_config:
             print(f"Found {service_name} in values.yaml")
