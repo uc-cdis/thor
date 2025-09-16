@@ -14,6 +14,9 @@ BRANCH_NAME="doc/release_artifacts_$TIMESTAMP"
 BASE_BRANCH="master"
 COMMIT_MSG="Storing release artifacts for version $RELEASE_VERSION"
 
+# Generate the release notes
+poetry run python /src/release-task-scripts/step12/generate_release_notes.py
+
 # Set git config and download cdis-manifest folder
 git config --global user.name "${GITHUB_USERNAME}"
 git config --global user.email "cdis@uchicago.edu"
@@ -38,7 +41,7 @@ cd $DIR
 mkdir $MONTH
 cd $MONTH
 
-poetry run python /src/release-task-scripts/step12/generate_release_notes.py
+cp /src/release-task-scripts/step12/gen3-release-notes.md .
 
 # PUSH in the branch and create a PR
 git add .
