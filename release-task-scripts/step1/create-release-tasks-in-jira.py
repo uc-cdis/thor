@@ -55,11 +55,11 @@ tasks = [
     },
     {
         "title": "11. Sanity Check the release ",
-        "description": "Kick off this job: https://jenkins.planx-pla.net/job/update-ci-env-with-latest-integration-branch/ with release version and the environment as parameters.",
+        "description": "Kick off this script: src/scripts/update-values-yaml-with-release-version.py with release version and the environment as parameters.",
     },
     {
         "title": "12. Generate release notes and publish release manifest into `cdis-manifest/<year>/<month>` folder",
-        "description": "Kick off this script: src/scripts/update-values-yaml-with-release-version.py with release version and the environment as parameters.",
+        "description": "Generate the release notes with this Jenkins job: https://jenkins.planx-pla.net/job/gen3-qa-monthly-release-notes-generator. The cdis-manifest PR is tailored manually and it should include release notes and known bugs files (the PR must be labeled with `release-notes`).",
     },
     {
         "title": "13. Announce the release through slack bot",
