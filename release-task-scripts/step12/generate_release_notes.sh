@@ -3,11 +3,11 @@
 set -e
 export GITHUB_USERNAME="PlanXCyborg"
 export GITHUB_TOKEN=${GITHUB_TOKEN//$'\n'/}
-export CDIS_MANIFEST_PATH="$(pwd)/$REPO_NAME"
 org="uc-cdis"
 REPO_NAME="cdis-manifest"
 YEAR="${RELEASE%%.*}" 
 MONTH="${RELEASE#*.}"
+CDIS_MANIFEST_PATH="$(pwd)/$REPO_NAME"
 PR_TITLE="doc(qa) adding release notes for $RELEASE_VERSION"
 TIMESTAMP=$(date +%s)
 BRANCH_NAME="doc/release_artifacts_$TIMESTAMP"
