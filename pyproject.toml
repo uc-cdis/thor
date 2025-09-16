@@ -25,7 +25,6 @@ PyYAML = ">5.0"
 awscli = "^1.27.75"
 boto3 = "^1.18.17"
 psycopg2-binary = "^2.9.9"
-gen3git = {git = "https://github.com/uc-cdis/release-helper.git", rev = "gen3release"}
 
 [tool.poetry.plugins."thor.modules"]
 "dao" = "thor.dao"

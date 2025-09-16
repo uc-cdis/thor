@@ -18,8 +18,7 @@ API documentation is available [here](http://petstore.swagger.io/?url=https://ra
 This new tool (THOR) has the following features:
 * RESTful API to start the release flow and track the status of each step
 * Coordinate each and every step of the Gen3 Release by working with:
-  * The Jenkins API (kicking off Jenkins jobs and tracking its results)
-  * Executing gen3-release-utils scripts & the gen3release-sdk CLI
+  * The Github API (kicking off github workflows and tracking its results)
   * Interacting with JIRA and Slack APIs
 * Provide FULL transparency to the Gen3 Release process through a friendly GUI that should help any Project Manager (PM) observe the progress of the releases throughout the environments they own.
 * Facilitate parameterization of our release automation and make it more flexible (e.g., change cadence / time-frame between releases).
