@@ -1,0 +1,100 @@
+name: Deploy Monthly Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      TARGET_REPO_NAME:
+        description: 'Repository Name where cherrypick needs to be performed'
+        type: string
+      RELEASE_VERSION:
+        description: 'RELEASE VERSION where cherrypick is being deployed to'
+        type: string
+      COMMIT_ID:
+        description: 'Commit id of the cherrypick to apply'
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.repository.name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+    monthly_releases:
+        runs-on: ubuntu-latest
+
+        env:
+          GH_TOKEN: ${{ secrets.PLANXCYBORG_PAT }}
+          GITHUB_USERNAME: "PlanXCyborg"
+          REPO: ${{ github.event.repository.name }}
+          REPO_FN: ${{ github.event.repository.full_name }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_NUM: ${{ github.run_number }}
+          RUN_ID: ${{ github.run_id }}
+          ATTEMPT_NUM: ${{ github.run_attempt }}
+          GH_WORKSPACE: ${{ github.workspace }}
+          TARGET_REPO_NAME: ${{ inputs.TARGET_REPO_NAME }}
+          RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
+          COMMIT_ID: ${{ inputs.COMMIT_ID }}
+
+        steps:
+          # Ensure the PR is run under the same org as an Internal PR
+          # and not by external forks/PRs
+          - name: Check if PR is from the same organization
+            if: ${{ github.repository_owner != 'uc-cdis' }}
+            working-directory: ${{ github.workspace }}
+            run:  |
+              echo "github.repository_owner - ${{ github.repository_owner }}"
+              echo "Skip pull requests from repositories not within the same organization"
+              echo "SKIP_TESTS=true" >> $GITHUB_ENV
+
+          - name: Checkout current repo
+            if: ${{ env.SKIP_TESTS != 'true' }}
+            uses: actions/checkout@v4
+
+          - name: Perform cherrypicking
+            run: |
+                # Install dependencies
+                pip install -U pip
+                pip install poetry
+                poetry install
+
+                # Export needed variables
+                export TARGET_REPO_PATH="$(pwd)/$TARGET_REPO_NAME"
+                export GH_TOKEN=${GH_TOKEN//$'\n'/}
+
+                # Clean up if already cloned
+                rm -rf "$TARGET_REPO_PATH"
+
+                # GH clone target repo
+                gh repo clone uc-cdis/$TARGET_REPO_NAME
+
+                # Change to the directory
+                cd $TARGET_REPO_PATH
+
+                # Needed for committing or pushing changes
+                git config --global user.name $GITHUB_USERNAME
+                git config --global user.email "cdis@uchicago.edu"
+                git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/${TARGET_REPO_NAME}.git
+
+                # Peform cherry picking changes
+                git fetch --all --tags
+                # check out stable
+                git checkout stable
+                # cherry-pick commit and push to stable
+                git cherry-pick -m 1 $COMMIT_ID
+                git push origin stable
+                # print git log top 5 lines
+                git log | cat | head -n5
+                # delete existing tag
+                git tag -d $RELEASE_VERSION
+                git push origin --delete $RELEASE_VERSION
+                # push new tag
+                git tag $RELEASE_VERSION -a -m "Gen3 Core Release ${RELEASE_VERSION}"
+                git push origin --tags
