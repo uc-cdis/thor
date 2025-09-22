@@ -26,11 +26,11 @@ jobs:
           COMMIT_ID: ${{ inputs.COMMIT_ID }}
 
         steps:
-          - name: Perform cherrypicking
+          - name: Cherry-pick commit
             run: |
                 # clone the repo, change to the directory and fetch all
-                git clone https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/${REPO_NAME}.git
-                cd ${REPO_NAME}
+                git clone https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/${TARGET_REPO}.git
+                cd ${TARGET_REPO}
                 git fetch --all --tags
 
                 # check out stable
