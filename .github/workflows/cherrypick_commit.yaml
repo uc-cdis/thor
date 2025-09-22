@@ -28,6 +28,9 @@ jobs:
         steps:
           - name: Cherry-pick commit
             run: |
+                git config --global user.email "cdis@uchicago.edu"
+                git config --global user.name "PlanXCyborg"
+
                 # clone the repo, change to the directory and fetch all
                 git clone https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/${TARGET_REPO}.git
                 cd ${TARGET_REPO}
