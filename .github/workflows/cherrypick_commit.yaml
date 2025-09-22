@@ -1,81 +1,52 @@
-name: Perform Cherry-Picking
+name: Cherry-pick commit
 
 on:
   workflow_dispatch:
     inputs:
-      TARGET_REPO_NAME:
-        description: 'Repository Name where cherrypick needs to be performed'
+      TARGET_REPO:
+        description: 'Repository where cherry-pick needs to be performed'
         type: string
       RELEASE_VERSION:
-        description: 'RELEASE VERSION where cherrypick is being deployed to'
+        description: 'Release version being updated'
         type: string
       COMMIT_ID:
-        description: 'Commit id of the cherrypick to apply'
+        description: 'Merge commit to cherry-pick'
         type: string
 
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-  issues: write
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.repository.name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
     cherry_picking:
         runs-on: ubuntu-latest
 
         env:
-          GH_TOKEN: ${{ secrets.PLANXCYBORG_PAT }}
+          GITHUB_TOKEN: ${{ secrets.PLANXCYBORG_PAT }}
           GITHUB_USERNAME: "PlanXCyborg"
-          TARGET_REPO_NAME: ${{ inputs.TARGET_REPO_NAME }}
+          TARGET_REPO: ${{ inputs.TARGET_REPO }}
           RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
           COMMIT_ID: ${{ inputs.COMMIT_ID }}
 
         steps:
-          - name: Checkout current repo
-            if: ${{ env.SKIP_TESTS != 'true' }}
-            uses: actions/checkout@v4
-
           - name: Perform cherrypicking
             run: |
-                # Install dependencies
-                pip install -U pip
-                pip install poetry
-                poetry install
-
-                # Export needed variables
-                export TARGET_REPO_PATH="$(pwd)/$TARGET_REPO_NAME"
-                export GH_TOKEN=${GH_TOKEN//$'\n'/}
-
-                # Clean up if already cloned
-                rm -rf "$TARGET_REPO_PATH"
-
-                # GH clone target repo
-                gh repo clone uc-cdis/$TARGET_REPO_NAME
-
-                # Change to the directory
-                cd $TARGET_REPO_PATH
-
-                # Needed for committing or pushing changes
-                git config --global user.name $GITHUB_USERNAME
-                git config --global user.email "cdis@uchicago.edu"
-                git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/uc-cdis/${TARGET_REPO_NAME}.git
-
-                # Peform cherry picking changes
+                # clone the repo, change to the directory and fetch all
+                git clone https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/${REPO_NAME}.git
+                cd ${REPO_NAME}
                 git fetch --all --tags
+
                 # check out stable
                 git checkout stable
+
                 # cherry-pick commit and push to stable
-                git cherry-pick -m 1 $COMMIT_ID
+                git cherry-pick -m 1 ${COMMIT_ID}
                 git push origin stable
+
                 # print git log top 5 lines
                 git log | cat | head -n5
+
                 # delete existing tag
-                git tag -d $RELEASE_VERSION
-                git push origin --delete $RELEASE_VERSION
+                git tag -d ${RELEASE_VERSION}
+                git push origin --delete ${RELEASE_VERSION}
+
                 # push new tag
-                git tag $RELEASE_VERSION -a -m "Gen3 Core Release ${RELEASE_VERSION}"
+                git tag ${RELEASE_VERSION} -a -m "Gen3 Core Release ${RELEASE_VERSION}"
                 git push origin --tags
