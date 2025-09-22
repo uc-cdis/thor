@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-    monthly_releases:
+    cherry_picking:
         runs-on: ubuntu-latest
 
         env:
