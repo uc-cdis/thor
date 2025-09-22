@@ -1,4 +1,4 @@
-name: Deploy Monthly Release
+name: Perform Cherry-Picking
 
 on:
   workflow_dispatch:
