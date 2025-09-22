@@ -30,30 +30,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PLANXCYBORG_PAT }}
           GITHUB_USERNAME: "PlanXCyborg"
-          REPO: ${{ github.event.repository.name }}
-          REPO_FN: ${{ github.event.repository.full_name }}
-          BRANCH: ${{ github.event.pull_request.head.ref }}
-          PR_NUM: ${{ github.event.pull_request.number }}
-          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          RUN_NUM: ${{ github.run_number }}
-          RUN_ID: ${{ github.run_id }}
-          ATTEMPT_NUM: ${{ github.run_attempt }}
-          GH_WORKSPACE: ${{ github.workspace }}
           TARGET_REPO_NAME: ${{ inputs.TARGET_REPO_NAME }}
           RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
           COMMIT_ID: ${{ inputs.COMMIT_ID }}
 
         steps:
-          # Ensure the PR is run under the same org as an Internal PR
-          # and not by external forks/PRs
-          - name: Check if PR is from the same organization
-            if: ${{ github.repository_owner != 'uc-cdis' }}
-            working-directory: ${{ github.workspace }}
-            run:  |
-              echo "github.repository_owner - ${{ github.repository_owner }}"
-              echo "Skip pull requests from repositories not within the same organization"
-              echo "SKIP_TESTS=true" >> $GITHUB_ENV
-
           - name: Checkout current repo
             if: ${{ env.SKIP_TESTS != 'true' }}
             uses: actions/checkout@v4
