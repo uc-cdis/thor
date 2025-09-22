@@ -1,0 +1,55 @@
+name: Cherry-pick commit
+
+on:
+  workflow_dispatch:
+    inputs:
+      TARGET_REPO:
+        description: 'Repository where cherry-pick needs to be performed'
+        type: string
+      RELEASE_VERSION:
+        description: 'Release version being updated'
+        type: string
+      COMMIT_ID:
+        description: 'Merge commit to cherry-pick'
+        type: string
+
+
+jobs:
+    cherry_picking:
+        runs-on: ubuntu-latest
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.PLANXCYBORG_PAT }}
+          GITHUB_USERNAME: "PlanXCyborg"
+          TARGET_REPO: ${{ inputs.TARGET_REPO }}
+          RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
+          COMMIT_ID: ${{ inputs.COMMIT_ID }}
+
+        steps:
+          - name: Cherry-pick commit
+            run: |
+                git config --global user.email "cdis@uchicago.edu"
+                git config --global user.name "PlanXCyborg"
+
+                # clone the repo, change to the directory and fetch all
+                git clone https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/uc-cdis/${TARGET_REPO}.git
+                cd ${TARGET_REPO}
+                git fetch --all --tags
+
+                # check out stable
+                git checkout stable
+
+                # cherry-pick commit and push to stable
+                git cherry-pick -m 1 ${COMMIT_ID}
+                git push origin stable
+
+                # print git log top 5 lines
+                git log | cat | head -n5
+
+                # delete existing tag
+                git tag -d ${RELEASE_VERSION}
+                git push origin --delete ${RELEASE_VERSION}
+
+                # push new tag
+                git tag ${RELEASE_VERSION} -a -m "Gen3 Core Release ${RELEASE_VERSION}"
+                git push origin --tags
