@@ -63,6 +63,8 @@ env:
 volumeMounts:
   - name: thor-g3auto
     mountPath: "/src/thor.env"
+    subPath: thor.env
+    readOnly: true
 
 # -- (list) Volumes to attach to the container.
 volumes:
