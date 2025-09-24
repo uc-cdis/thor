@@ -89,4 +89,12 @@ secretStoreServiceAccount:
   roleArn: arn:aws:iam::707767160287:role/devplanetv2-external-secrets-sa
 externalSecrets:
   secretName: devplanetv2-thor-g3auto #pragma: allowlist secret
-  
+
+# -- (map) Configuration for ingress.
+ingress:
+  scheme: internal
+  environment: "devplanetv2"
+  certArn: "arn:aws:acm:us-east-1:707767160287:certificate/f427a646-94fd-4b91-8bcd-80f5920c1e46"
+  group: "devplanetv2-allure"
+  sslPolicy: "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04"
+  host: thor.ci.planx-pla.net
