@@ -25,7 +25,7 @@ image:
   # -- (string) Docker pull policy.
   pullPolicy: Always
   # -- (string) Overrides the image tag whose default is the chart appVersion.
-  tag: "master"
+  tag: "chore_add_dns_changes_helm_chart"
 
 # Service and Pod
 # -- (map) Kubernetes service information.
@@ -93,8 +93,4 @@ externalSecrets:
 # -- (map) Configuration for ingress.
 ingress:
   scheme: internal
-  environment: "devplanetv2"
-  certArn: "arn:aws:acm:us-east-1:707767160287:certificate/f427a646-94fd-4b91-8bcd-80f5920c1e46"
-  group: "devplanetv2-allure"
-  sslPolicy: "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04"
-  host: thor.ci.planx-pla.net
+  group: "devplanetv2-internal"
