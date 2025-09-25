@@ -30,6 +30,7 @@ image:
 # Service and Pod
 # -- (map) Kubernetes service information.
 service:
+  type: ClusterIP
   # -- (int) The port number that the service exposes.
   port: 80
   targetPort: 8000
