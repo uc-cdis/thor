@@ -23,4 +23,4 @@ spec:
               service:
                 name:  thor-service
                 port:
-                  number: 80
+                  number: {{ .Values.service.port }}
