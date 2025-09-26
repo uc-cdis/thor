@@ -20,11 +20,6 @@ spec:
       labels:
         {{- include "thor.selectorLabels" . | nindent 8 }}
         public: "yes"
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
-      {{- with .Values.podAnnotations }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
     spec:
       affinity:
         podAntiAffinity:
@@ -75,6 +70,10 @@ spec:
       - name: thor
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
         env:
           {{- toYaml .Values.env | nindent 12 }}
         resources:
