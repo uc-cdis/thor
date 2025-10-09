@@ -66,6 +66,7 @@ spec:
             - "-c"
             - |
               poetry run python /src/src/thor/create_all_tables.py
+      serviceAccountName: thor-sa
       containers:
       - name: thor
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
