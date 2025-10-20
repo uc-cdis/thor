@@ -14,7 +14,7 @@ WORKDIR /src
 
 USER gen3
 
-RUN poerty env use 3.13
+RUN poerty env use python3.13
 
 RUN poetry install --no-interaction --only main
 
