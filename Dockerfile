@@ -1,6 +1,6 @@
-ARG PYTHON_VERSION=feat_python3.13-alias
+ARG AZLINUX_BASE_VERSION=master
 
-FROM quay.io/cdis/python-build-base:${PYTHON_VERSION} AS builder
+FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS base
 
 # Install vim and findutils (which provides `find`)
 RUN dnf install -y vim findutils jq && \
@@ -14,6 +14,7 @@ WORKDIR /src
 
 USER gen3
 
-RUN poetry install --no-interaction --only main
+RUN python --version
+#RUN poetry install --no-interaction --only main
 
-CMD ["poetry", "run", "gunicorn", "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
+#CMD ["poetry", "run", "gunicorn", "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
