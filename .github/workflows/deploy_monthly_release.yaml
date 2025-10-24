@@ -109,7 +109,7 @@ jobs:
                   TIMESTAMP=$(date +%s)
                   PR_NAME="Gen3 Monthly Release ${RELEASE_VERSION} ${TARGET_ENV} ${TIMESTAMP}"
                   SANITIZED_ENV="${TARGET_ENV//\//_}"
-                  BRANCH_NAME="chore/apply_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
+                  BRANCH_NAME="chore/apply_monthly_release_${RELEASE_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
                   COMMIT_MSG="Updating $TARGET_ENV with $RELEASE_VERSION"
                   REPO_OWNER="uc-cdis"
                   BASE_BRANCH="master"
