@@ -23,7 +23,8 @@ REPO_DICT = {
     "gen3-spark": "etl",
     "tube": "etl",
     "workspace-token-service": "wts",
-    "indexs3client": "ssjdispatcher"
+    "indexs3client": "ssjdispatcher",
+    "gen3-statics": "dashboard"
 }
 CURRENT_REPO_DICT_KEY = ""
 
