@@ -20,7 +20,7 @@ for ENV in "${ENVS[@]}"; do
   TIMESTAMP=$(date +%s)
   PR_NAME="${PR_TITLE} ${IMAGE_TAG_VERSION} ${ENV} ${TIMESTAMP}"
   SANITIZED_ENV="${TARGET_ENV//\//_}"
-  BRANCH_NAME="chore/apply_${IMAGE_TAG_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
+  BRANCH_NAME="chore/apply_monthly_release_${IMAGE_TAG_VERSION}_to_${SANITIZED_ENV}_${TIMESTAMP}"
   COMMIT_MSG="Updating $TARGET_ENV with $IMAGE_TAG_VERSION"
   REPO_OWNER="uc-cdis"
   BASE_BRANCH="master"
