@@ -78,7 +78,7 @@
         "job_name":  "run_load_tests",  
         "job_description": "Run load tests on jenkins-perf", 
         "job_params": {
-            "RELEASE_VERSION":"{{ RELEASE_VERSION }}"
+            "RELEASE_VERSION":"{{ INTEGRATION_BRANCH }}"
         },  
         "schedule": null,  
         "script": "run_load_tests.sh",
