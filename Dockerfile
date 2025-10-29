@@ -9,6 +9,8 @@ RUN dnf install -y vim findutils jq && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
+RUN chown -R gen3:gen3 /venv
+
 COPY --chown=gen3:gen3 . /src
 
 WORKDIR /src
