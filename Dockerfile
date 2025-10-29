@@ -15,7 +15,6 @@ WORKDIR /src
 
 USER gen3
 
-RUN ls -ltr /usr/bin/python*
-#RUN poetry install --no-interaction --only main
+RUN poetry install --no-interaction --only main
 
-#CMD ["poetry", "run", "gunicorn", "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
+CMD ["poetry", "run", "gunicorn", "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "1800", "thor.main:app"]
