@@ -2,6 +2,7 @@ ARG AZLINUX_BASE_VERSION=3.13-pythonnginx
 
 FROM quay.io/cdis/amazonlinux-base:${AZLINUX_BASE_VERSION} AS base
 
+USER root
 # Install vim and findutils (which provides `find`)
 RUN dnf install -y vim findutils jq && \
     dnf install -y openssl && \
