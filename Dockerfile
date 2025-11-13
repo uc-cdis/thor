@@ -1,6 +1,8 @@
 FROM quay.io/cdis/amazonlinux-base:3.13-pythonnginx AS builder
 
 # Install vim and findutils (which provides `find`)
+USER root
+
 RUN dnf install -y vim findutils jq && \
     dnf install -y openssl && \
     dnf clean all && \
