@@ -1,12 +1,14 @@
-ARG AZLINUX_BASE_VERSION=master
-
-FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS base
+FROM quay.io/cdis/amazonlinux-base:3.13-pythonnginx AS builder
 
 # Install vim and findutils (which provides `find`)
+USER root
+
 RUN dnf install -y vim findutils jq && \
     dnf install -y openssl && \
     dnf clean all && \
     rm -rf /var/cache/dnf
+
+RUN chown -R gen3:gen3 /venv
 
 COPY --chown=gen3:gen3 . /src
 

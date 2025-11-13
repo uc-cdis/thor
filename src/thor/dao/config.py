@@ -9,11 +9,11 @@ if os.getenv("DEVELOPMENT") == "true":
 else:
     config = dotenv_values("/src/thor.env")
 
-DB_HOST = config.get("DB_HOST", None)
-DB_PORT = config.get("DB_PORT", None)
-DB_USER = config.get("DB_USER", None)
+DB_HOST = os.getenv("DB_HOST") or config.get("DB_HOST", "localhost")  # for handling docker-compose use case
+DB_PORT = config.get("DB_PORT", 5432)
+DB_USER = config.get("DB_USER", "postgres")
 DB_PASSWORD = config.get("DB_PASSWORD", "")
-DB_DATABASE = config.get("DB_DATABASE", None)
+DB_DATABASE = config.get("DB_DATABASE", "thor_db")
 
 DATABASE_URL = (
     "postgresql+psycopg2://"  # pragma: allowlist secret

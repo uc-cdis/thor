@@ -12,7 +12,13 @@ from contextlib import contextmanager
 
 # Implements CRUD functions on the database.
 
-engine = sa.create_engine(config.DATABASE_URL, echo = False)
+engine = sa.create_engine(
+    config.DATABASE_URL,
+    pool_size=10,        # default is 5
+    max_overflow=20,     # default is 10
+    pool_timeout=60,
+    echo=False
+)
 Session = sessionmaker(bind=engine)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
