@@ -113,7 +113,7 @@ epic_dict = {
 }
 
 new_story = jira.create_issue(fields=epic_dict)
-RELEASE_EPIC = new_story.key
+RELEASE_EPIC = new_story.get("key")
 
 print("start adding tasks to " + RELEASE_TITLE)
 
@@ -126,7 +126,7 @@ def create_ticket(issue_dict, team_member_index):
         + " has been assigned to "
         + task["title"]
     )
-    return new_issue.key
+    return new_issue.get("key")
 
 
 for task in tasks:
