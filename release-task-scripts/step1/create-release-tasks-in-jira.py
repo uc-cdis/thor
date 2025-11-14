@@ -1,13 +1,15 @@
-from jira import JIRA
+from atlassian import Jira
 import re
 import os
 import datetime
 
 release = os.environ["RELEASE_VERSION"]
 
-options = {"server": "https://ctds-planx.atlassian.net"}
-jira = JIRA(
-    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip())
+jira = Jira(
+    url="https://ctds-planx.atlassian.net",
+    username=os.environ["JIRA_SVC_ACCOUNT"].strip(),
+    password=os.environ["JIRA_API_TOKEN"].strip(),
+    cloud=True,
 )
 
 tasks = [
@@ -111,7 +113,7 @@ epic_dict = {
 }
 
 new_story = jira.create_issue(fields=epic_dict)
-RELEASE_EPIC = new_story.key
+RELEASE_EPIC = new_story.get("key")
 
 print("start adding tasks to " + RELEASE_TITLE)
 
@@ -124,7 +126,7 @@ def create_ticket(issue_dict, team_member_index):
         + " has been assigned to "
         + task["title"]
     )
-    return new_issue.key
+    return new_issue.get("key")
 
 
 for task in tasks:
