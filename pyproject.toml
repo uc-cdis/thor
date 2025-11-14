@@ -11,7 +11,6 @@ fastapi = "^0.65.1"
 uvicorn = {extras = ["standard"], version="^0.18.2"}
 gunicorn = "^23.0.0"
 cdislogging = "^1.0.0"
-jira = "3.0.1"
 SQLAlchemy = "^1.4.23"
 pytest = "^6.2.4"
 pytest-cov = "^2.8"
@@ -26,6 +25,7 @@ awscli = "^1.27.75"
 boto3 = "^1.18.17"
 psycopg2-binary = "^2.9.9"
 gen3git = {git = "https://github.com/uc-cdis/release-helper.git", rev = "gen3release"}
+atlassian-python-api = "^4.0.7"
 
 [tool.poetry.plugins."thor.modules"]
 "dao" = "thor.dao"
