@@ -64,6 +64,12 @@ jobs:
             if: ${{ env.SKIP_TESTS != 'true' }}
             uses: actions/checkout@v4
 
+          - name: Set up Python
+            if: ${{ env.SKIP_TESTS != 'true' }}
+            uses: actions/setup-python@v5
+            with:
+              python-version: '3.13'
+
           - name: Split List of envs into folders
             run: |
               echo "FOLDERS=$(echo '${{ env.LIST_OF_ENVIRONMENTS }}' | tr ',' ' ')" >> $GITHUB_ENV
