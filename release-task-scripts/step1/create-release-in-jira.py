@@ -8,7 +8,7 @@ monthinteger = int(os.environ["RELEASE_VERSION"].split(".")[1])
 month = datetime.date(1900, monthinteger, 1).strftime("%B")
 year = os.environ["RELEASE_VERSION"].split(".")[0]
 
-url = "https://ctds-planx.atlassian.net//rest/api/3/version"
+url = "https://ctds-planx.atlassian.net/rest/api/3/version"
 auth = HTTPBasicAuth(
     os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip()
 )

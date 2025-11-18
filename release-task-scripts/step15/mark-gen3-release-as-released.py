@@ -1,12 +1,11 @@
-from jira import JIRA
-import re
+from atlassian import Jira
 import os
-import sys
-import datetime
 
-options = {"server": "https://ctds-planx.atlassian.net", "rest_api_version": "3"}
-jira = JIRA(
-    options, basic_auth=(os.environ["JIRA_SVC_ACCOUNT"].strip(), os.environ["JIRA_API_TOKEN"].strip())
+jira = Jira(
+    url="https://ctds-planx.atlassian.net",
+    username=os.environ["JIRA_SVC_ACCOUNT"].strip(),
+    password=os.environ["JIRA_API_TOKEN"].strip(),
+    cloud=True,
 )
 
 version = jira.get_project_version_by_name(
