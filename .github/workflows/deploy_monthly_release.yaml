@@ -16,6 +16,9 @@ on:
       TRIGGERED_BY_USER:
         description: 'Github handle of user triggering monthly release deployment'
         type: string
+      SLACK_THREAD_TS:
+        description: 'Slack thread to reply on'
+        type: string
 
 permissions:
   id-token: write
@@ -47,6 +50,7 @@ jobs:
           LIST_OF_ENVIRONMENTS: ${{ inputs.LIST_OF_ENVIRONMENTS }}
           TARGET_REPO_NAME: ${{ inputs.TARGET_REPO_NAME }}
           TRIGGERED_BY_USER: ${{ inputs.TRIGGERED_BY_USER }}
+          SLACK_THREAD_TS: ${{ inputs.SLACK_THREAD_TS }}
           CI_SLACK_BOT_TOKEN: ${{ secrets.CI_SLACK_BOT_TOKEN }}
 
         steps:
@@ -197,5 +201,6 @@ jobs:
                 {
                   "channel": "#qa-bot-runs",
                   "text": "${{ env.FINAL_SLACK_MESSAGE }}",
-                  "mrkdwn": true
+                  "mrkdwn": true,
+                  "thread_ts": "${{ env.SLACK_THREAD_TS }}"
                 }
