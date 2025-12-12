@@ -8,11 +8,13 @@ jira = Jira(
     cloud=True,
 )
 
-version = jira.get_project_version_by_name(
-    os.environ["JIRA_PROJECT"], os.environ["RELEASE_VERSION"]
-)
+versions = jira.get_project_versions(key=os.environ["JIRA_PROJECT"])
+version = next((v for v in versions if v["name"] == os.environ["RELEASE_VERSION"]), None)
+
 if version:
-    version.update(released=True)
-    print("Release marked as RELEASED successfully!")
+    version_id = version.get("id", None)
+
+if version_id:
+    jira.update_version(version=version_id, is_released=True)
 else:
     print("version not found :(")
