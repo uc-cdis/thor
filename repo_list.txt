@@ -26,3 +26,5 @@ ssjdispatcher
 tube
 workspace-token-service
 gen3-user-data-library
+gen3-workflow
+cohort-middleware
