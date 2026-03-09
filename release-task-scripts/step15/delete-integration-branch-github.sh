@@ -22,6 +22,7 @@ while IFS= read -r repo; do
   git clone "${urlPrefix}${repo}"
   echo "### stepping into ${repo} directory ..."
   cd ${repo} || exit 1
+  echo "Deleting ${targetBranchName} branch on ${repo}"
   result=$(git push origin --delete "$targetBranchName" 2>&1)
   RC=$?
   if [ $RC -ne 0 ]; then
