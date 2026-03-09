@@ -72,7 +72,11 @@ tasks = [
         "description": "Deleting the integration-branch will help lower the cost on the AWS",
     },
     {
-        "title": "15. Mark the release as released",
+        "title": "15. Delete integration-branch from github",
+        "description": "Deleting integration-branch from github",
+    },
+    {
+        "title": "16. Mark the release as released",
         "description": "Kick off this job: https://jenkins.planx-pla.net/job/mark-gen3-monthly-release-as-released.",
     },
 ]
