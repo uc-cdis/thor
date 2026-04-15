@@ -43,8 +43,6 @@ with open("../../repo_list.txt") as repoList:
         elif repo == "sower-jobs":
             print("Iterating through the list of images for sower-jobs")
             sower_jobs = [
-                "metadata-manifest-ingestion",
-                "get-dbgap-metadata",
                 "manifest-indexing",
                 "download-indexd-manifest",
                 "batch-export",
