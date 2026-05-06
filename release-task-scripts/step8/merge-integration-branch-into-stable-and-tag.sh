@@ -50,8 +50,9 @@ while IFS= read -r repo; do
   fi
   result=$(git tag "${tagName}" -a -m "Gen3 Core Release ${tagName}" 2>&1)
   if [[ "$result" == *"already exists"* ]]; then
-    echo "meh. Tag ${tagName} already exists for repo ${repo}... skipping it."
-    continue
+    # delete existing tag
+    git tag -d ${tagName}
+    git push origin --delete ${tagName}
   fi
 
   RC=$?
