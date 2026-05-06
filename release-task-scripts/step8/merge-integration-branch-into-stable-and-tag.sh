@@ -53,6 +53,7 @@ while IFS= read -r repo; do
     # delete existing tag
     git tag -d ${tagName}
     git push origin --delete ${tagName}
+    result=$(git tag "${tagName}" -a -m "Gen3 Core Release ${tagName}" 2>&1)
   fi
 
   RC=$?
