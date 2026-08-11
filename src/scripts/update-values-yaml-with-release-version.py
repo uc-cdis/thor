@@ -11,20 +11,21 @@ TARGET_ENV_PATH = f"{GEN3_GITOPS_PATH}/{TARGET_ENV}"
 GEN3_DEFAULT_VALUES_PATH = f"{GEN3_HELM_PATH}/helm/gen3/values.yaml"
 REPO_LIST = []
 REPO_DICT = {
-    "pelican": "pelican-export",
-    "docker-nginx": "revproxy",
-    "gen3-fuse": "gen3fuse-sidecar",
-    "cloud-automation": "awshelper",
     "ACCESS-backend": "access-backend",
-    "cdis-data-client": "gen3-client",
-    "data-portal": "portal",
     "audit-service": "audit",
-    "metadata-service": "metadata",
+    "cdis-data-client": "gen3-client",
+    "cloud-automation": "awshelper",
+    "data-portal": "portal",
+    "docker-nginx": "revproxy",
+    "gen3-ai": "gen3-embeddings",
+    "gen3-fuse": "gen3fuse-sidecar",
     "gen3-spark": "etl",
+    "gen3-statics": "dashboard",
+    "indexs3client": "ssjdispatcher",
+    "metadata-service": "metadata",
+    "pelican": "pelican-export",
     "tube": "etl",
     "workspace-token-service": "wts",
-    "indexs3client": "ssjdispatcher",
-    "gen3-statics": "dashboard"
 }
 CURRENT_REPO_DICT_KEY = ""
 
