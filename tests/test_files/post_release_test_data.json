@@ -2,6 +2,7 @@
     "release": 
       {
         "release_id": 0,
+        "release_start_time": null,
         "version": "test_release_5",
         "result": "PENDING"
       }

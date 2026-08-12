@@ -31,6 +31,10 @@ def test_post_release(release_name: str):
     assert release_get_response.status_code == 200
     json_response = release_get_response.json()
     expected_output_for_post_release["release"]["release_id"] = release_id
+    expected_output_for_post_release["release"]["release_start_time"] = (
+        json_response["release"]["release_start_time"]
+    )
+
     assert json_response == expected_output_for_post_release
 
     tasks_get_response = client.get(f"/releases/{release_name}/tasks")
@@ -76,6 +80,10 @@ def test_post_release_when_empty():
     assert release_get_response.status_code == 200
     json_response = release_get_response.json()
     expected_output_for_post_release["release"]["release_id"] = release_id
+    expected_output_for_post_release["release"]["release_start_time"] = (
+        json_response["release"]["release_start_time"]
+    )
+
     assert json_response == expected_output_for_post_release
 
     tasks_get_response = client.get(f"/releases/test_release_5/tasks")
