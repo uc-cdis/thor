@@ -7,7 +7,11 @@ import requests
 import subprocess
 
 from pathlib import Path
-
+from zoneinfo import ZoneInfo
+from thor.dao.release_dao import (
+    release_id_lookup_class,
+    get_release_start_time,
+)
 
 def get_previous_year_month(year, month):
     current_date = datetime.date(year, month, 1)
@@ -54,8 +58,26 @@ def generate_release_notes(release_version):
     prev_prev_year, prev_prev_month = get_previous_year_month(prev_year, prev_month)
 
     print("---- Compute start and end date ----")
-    # use Saturday's date (12am) to exclude all commits of Friday, they are in the previous month's notes
-    start_date = str(get_second_friday(prev_prev_year, prev_prev_month) + datetime.timedelta(days=1))
+    # Here the release start time is pulled from the releases database table and converted to
+    # CDT Time keeping in mind the daylight savings time.
+    release_id = release_id_lookup_class().release_id_lookup(
+        release_version
+    )
+    if release_id is None:
+        raise ValueError(
+            f"Could not find release_id for release {release_version}"
+        )
+    release_start_time = get_release_start_time(release_id)
+    if release_start_time is None:
+        raise ValueError(
+            f"release_start_time is not set for release {release_version}"
+        )
+    central_time = release_start_time.astimezone(
+        ZoneInfo("America/Chicago")
+    )
+    start_date = central_time.strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Release start date/time: {start_date}")
+
     # use Saturday's date (12am) to include all commits of Friday
     end_date = str(get_second_friday(prev_year, prev_month) + datetime.timedelta(days=1))
     print(f"Start date - {start_date}")

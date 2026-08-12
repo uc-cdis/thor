@@ -5,6 +5,7 @@ import logging
 
 from thor.dao import config
 from thor.dao.models import Release
+from datetime import datetime, timezone
 
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
@@ -108,7 +109,7 @@ def create_release(version, result):
         # to gracefully handle the UniqueViolation, but 
         # a better solution probably exists. 
         create_session = Session()
-        current_release = Release(version=version, result=result)
+        current_release = Release(version=version, result=result, release_start_time=datetime.now(timezone.utc))
         try:
             create_session.add(current_release)
             create_session.commit()
@@ -232,6 +233,22 @@ def get_release_keys():
 
     with session_scope() as session:
         return [release.release_id for release in session.query(Release)]
+
+def get_release_start_time(release_id):
+    session = Session()
+
+    try:
+        release = session.query(Release).filter(
+            Release.release_id == release_id
+        ).first()
+
+        if release is None:
+            return None
+
+        return release.release_start_time
+
+    finally:
+        session.close()
 
 
 class release_id_lookup_class:
