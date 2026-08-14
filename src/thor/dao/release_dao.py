@@ -74,7 +74,7 @@ def manual_create_release(release_id, version, result):
                     f"ERROR: That keyvalue {str(release_id)} is already in the database. "
                 )
             current_release = Release(
-                release_id=release_id, version=version, result=result
+                release_id=release_id, version=version, result=result,release_start_time=datetime.now(timezone.utc)
             )
 
         except ValueError as value_error:

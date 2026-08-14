@@ -75,7 +75,7 @@ def generate_release_notes(release_version):
     central_time = release_start_time.astimezone(
         ZoneInfo("America/Chicago")
     )
-    start_date = central_time.strftime("%Y-%m-%d %H:%M:%S")
+    start_date = central_time.strftime("%Y-%m-%d")
     print(f"Release start date/time: {start_date}")
 
     # use Saturday's date (12am) to include all commits of Friday
