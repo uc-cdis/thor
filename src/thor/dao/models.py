@@ -3,7 +3,7 @@ import enum
 import json
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import Column, Integer, String, Enum, DateTime
 from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 
 Base = declarative_base()
@@ -34,6 +34,16 @@ class Release(Base):
             return self.name
 
     result = Column(Enum(ReleaseResults))
+
+    release_start_time = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    release_end_time = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     # Note: When pulling a Release object, wrap as str(r.result) 
     # as this will be an enum otherwise
 

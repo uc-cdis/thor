@@ -1,8 +1,9 @@
 {
-    "release": 
-      {
-        "release_id": 0,
-        "version": "test_release_5",
-        "result": "PENDING"
-      }
+  "release": {
+    "release_id": 0,
+    "version": "test_release_5",
+    "release_start_time": null,
+    "release_end_time": null,
+    "result": "PENDING"
   }
+}

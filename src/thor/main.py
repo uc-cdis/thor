@@ -1,5 +1,6 @@
 # main.py
 
+import re
 import os
 import logging
 import datetime
@@ -8,7 +9,9 @@ import json
 import requests
 # from platform import release
 # from turtle import update
+import calendar
 
+from zoneinfo import ZoneInfo
 from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
@@ -17,7 +20,7 @@ from pydantic import BaseModel
 
 from thor.dao.release_dao import \
     create_release, read_release, read_all_releases, get_release_keys, \
-        update_release, delete_releases, release_id_lookup_class
+        update_release, delete_releases, release_id_lookup_class, get_release_start_time
 from thor.dao.task_dao import \
     create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, get_release_task_step,\
         update_task, delete_task
@@ -41,6 +44,153 @@ class TaskStatus(BaseModel):
 class TaskIdentifier(BaseModel):
     release_name: str
     step_num: int
+
+CENTRAL_TIMEZONE = ZoneInfo("America/Chicago")
+
+
+def get_second_friday(year, month):
+    month_calendar = calendar.monthcalendar(year, month)
+
+    fridays = [
+        week[calendar.FRIDAY]
+        for week in month_calendar
+        if week[calendar.FRIDAY] != 0
+    ]
+
+    return datetime.date(
+        year,
+        month,
+        fridays[1],
+    )
+
+
+def get_previous_year_month(year, month):
+    if month == 1:
+        return year - 1, 12
+
+    return year, month - 1
+
+def get_release_cycle_year_month(version_year, version_month):
+    """
+    Release version is one month ahead of the actual release cycle.
+
+    Examples:
+        2026.09 -> August 2026
+        2026.10 -> September 2026
+        2027.01 -> December 2026
+    """
+    return get_previous_year_month(
+        version_year,
+        version_month,
+    )
+
+def is_release_version(release_name):
+    return bool(
+        re.fullmatch(
+            r"\d{4}\.(0[1-9]|1[0-2])",
+            release_name,
+        )
+    )
+
+def get_release_window(
+    release_name,
+    step2_run_time,
+    is_rerun=False,
+):
+    version_year, version_month = map(
+        int,
+        release_name.split("."),
+    )
+
+    step2_run_time = step2_run_time.astimezone(
+        CENTRAL_TIMEZONE
+    )
+
+    execution_time = datetime.time(
+        step2_run_time.hour,
+        step2_run_time.minute,
+        step2_run_time.second,
+        step2_run_time.microsecond,
+    )
+
+    # The release version is one month ahead.
+    # Example: 2026.09 means the August 2026 release cycle.
+    release_year, release_month = (
+        get_release_cycle_year_month(
+            version_year,
+            version_month,
+        )
+    )
+
+    # Previous month of the actual release cycle.
+    prev_year, prev_month = get_previous_year_month(
+        release_year,
+        release_month,
+    )
+
+    # Scheduled start:
+    # Saturday after previous month's second Friday.
+    previous_second_friday = get_second_friday(
+        prev_year,
+        prev_month,
+    )
+
+    scheduled_start_date = (
+        previous_second_friday
+        + datetime.timedelta(days=1)
+    )
+
+    scheduled_start_time = datetime.datetime.combine(
+        scheduled_start_date,
+        execution_time,
+        tzinfo=CENTRAL_TIMEZONE,
+    )
+
+    # Scheduled end:
+    # Saturday after the actual release month's second Friday.
+    release_second_friday = get_second_friday(
+        release_year,
+        release_month,
+    )
+
+    scheduled_end_date = (
+        release_second_friday
+        + datetime.timedelta(days=1)
+    )
+
+    scheduled_end_time = datetime.datetime.combine(
+        scheduled_end_date,
+        execution_time,
+        tzinfo=CENTRAL_TIMEZONE,
+    )
+
+    # First Step 2 call:
+    # use the scheduled start date.
+    #
+    # Step 2 rerun:
+    # use the actual rerun timestamp as the new start.
+    if is_rerun:
+        release_start_time = step2_run_time
+    else:
+        release_start_time = scheduled_start_time
+
+    # If Step 2 occurs after the scheduled end,
+    # use the actual Step 2 timestamp as the end.
+    if step2_run_time > scheduled_end_time:
+        release_end_time = step2_run_time
+    else:
+        release_end_time = scheduled_end_time
+
+    return (
+        release_start_time.astimezone(
+            datetime.timezone.utc
+        ),
+        release_end_time.astimezone(
+            datetime.timezone.utc
+        ),
+    )
+
+
 
 def post_slack(text):
     if DEVELOPMENT!="true":
@@ -338,6 +488,10 @@ async def restart_release(release_name: str):
 @app.post("/thor-admin/tasks/start")
 async def start_task(task_identifier: TaskIdentifier):
     """ This endpoint is used to run a specific step in a release. """
+    task_requested_at = datetime.datetime.now(
+        datetime.timezone.utc
+    )
+
     # Identifying task
     release_name = task_identifier.release_name
     step_num = task_identifier.step_num
@@ -356,6 +510,38 @@ async def start_task(task_identifier: TaskIdentifier):
 
     task_id = current_task.task_id
     release_id = current_task.release_id
+
+    if step_num == 2 and is_release_version(release_name):
+        existing_release_start_time = get_release_start_time(
+            release_id
+        )
+
+        is_rerun = existing_release_start_time is not None
+
+        release_start_time, release_end_time = get_release_window(
+            release_name,
+            task_requested_at,
+            is_rerun=is_rerun,
+        )
+
+        update_release(
+            release_id,
+            "release_start_time",
+            release_start_time,
+        )
+
+        update_release(
+            release_id,
+            "release_end_time",
+            release_end_time,
+        )
+
+        log.info(
+            f"Release {release_name} window updated: "
+            f"start={release_start_time}, "
+            f"end={release_end_time}, "
+            f"rerun={is_rerun}"
+        )
 
     # Running task
 

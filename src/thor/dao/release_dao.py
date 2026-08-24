@@ -165,6 +165,38 @@ def read_release(release_id):
             session.expunge_all()
             return release
 
+def get_release_start_time(release_id):
+    session = Session()
+
+    try:
+        release = session.query(Release).filter(
+            Release.release_id == release_id
+        ).first()
+
+        if release is None:
+            return None
+
+        return release.release_start_time
+
+    finally:
+        session.close()
+
+
+def get_release_end_time(release_id):
+    session = Session()
+
+    try:
+        release = session.query(Release).filter(
+            Release.release_id == release_id
+        ).first()
+
+        if release is None:
+            return None
+
+        return release.release_end_time
+
+    finally:
+        session.close()
 
 def read_all_releases():
     """ Returns a list of all Release objects in the Releases table of the database. 
