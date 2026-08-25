@@ -1,4 +1,5 @@
 import csv
+import datetime
 import glob
 import os
 import subprocess
@@ -82,7 +83,7 @@ def generate_release_notes(release_version):
     )
 
     end_date = (
-        release_end_time
+        (release_end_time + datetime.timedelta(days=1))
         .astimezone(central)
         .strftime("%Y-%m-%d")
     )

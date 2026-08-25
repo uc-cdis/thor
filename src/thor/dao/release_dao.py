@@ -198,6 +198,22 @@ def get_release_end_time(release_id):
     finally:
         session.close()
 
+def get_release_end_time_by_version(version):
+    session = Session()
+
+    try:
+        release = session.query(Release).filter(
+            Release.version == version
+        ).first()
+
+        if release is None:
+            return None
+
+        return release.release_end_time
+
+    finally:
+        session.close()
+
 def read_all_releases():
     """ Returns a list of all Release objects in the Releases table of the database. 
     Primarily to be used by main:app/releases, as it must call get_all_releases
