@@ -35,12 +35,12 @@ class Release(Base):
 
     result = Column(Enum(ReleaseResults))
 
-    release_start_time = Column(
+    release_start_date = Column(
         DateTime(timezone=True),
         nullable=True,
     )
 
-    release_end_time = Column(
+    release_end_date = Column(
         DateTime(timezone=True),
         nullable=True,
     )

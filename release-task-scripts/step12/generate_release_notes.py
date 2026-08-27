@@ -8,8 +8,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from thor.dao.release_dao import (
-    get_release_start_time,
-    get_release_end_time,
+    get_release_start_date,
+    get_release_end_date,
     release_id_lookup_class,
 )
 
@@ -54,36 +54,36 @@ def generate_release_notes(release_version):
             f"was not found in the database."
         )
 
-    release_start_time = get_release_start_time(
+    release_start_date = get_release_start_date(
         release_id
     )
 
-    release_end_time = get_release_end_time(
+    release_end_date = get_release_end_date(
         release_id
     )
 
-    if release_start_time is None:
+    if release_start_date is None:
         raise ValueError(
-            f"release_start_time is not set for "
+            f"release_start_date is not set for "
             f"release {release_version}"
         )
 
-    if release_end_time is None:
+    if release_end_date is None:
         raise ValueError(
-            f"release_end_time is not set for "
+            f"release_end_date is not set for "
             f"release {release_version}"
         )
 
     central = ZoneInfo("America/Chicago")
 
     start_date = (
-        release_start_time
+        release_start_date
         .astimezone(central)
         .strftime("%Y-%m-%d")
     )
 
     end_date = (
-        (release_end_time + datetime.timedelta(days=1))
+        (release_end_date + datetime.timedelta(days=1))
         .astimezone(central)
         .strftime("%Y-%m-%d")
     )

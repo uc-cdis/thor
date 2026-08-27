@@ -165,7 +165,7 @@ def read_release(release_id):
             session.expunge_all()
             return release
 
-def get_release_start_time(release_id):
+def get_release_start_date(release_id):
     session = Session()
 
     try:
@@ -176,13 +176,13 @@ def get_release_start_time(release_id):
         if release is None:
             return None
 
-        return release.release_start_time
+        return release.release_start_date
 
     finally:
         session.close()
 
 
-def get_release_end_time(release_id):
+def get_release_end_date(release_id):
     session = Session()
 
     try:
@@ -193,12 +193,12 @@ def get_release_end_time(release_id):
         if release is None:
             return None
 
-        return release.release_end_time
+        return release.release_end_date
 
     finally:
         session.close()
 
-def get_release_end_time_by_version(version):
+def get_release_end_date_by_version(version):
     session = Session()
 
     try:
@@ -209,7 +209,7 @@ def get_release_end_time_by_version(version):
         if release is None:
             return None
 
-        return release.release_end_time
+        return release.release_end_date
 
     finally:
         session.close()

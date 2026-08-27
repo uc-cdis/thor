@@ -27,7 +27,7 @@ def setup_db_and_create_test_data():
                 """
                 ALTER TABLE releases
                 ADD COLUMN IF NOT EXISTS
-                release_start_time TIMESTAMP WITH TIME ZONE
+                release_start_date TIMESTAMP WITH TIME ZONE
                 """
             )
         )
@@ -37,7 +37,7 @@ def setup_db_and_create_test_data():
                 """
                 ALTER TABLE releases
                 ADD COLUMN IF NOT EXISTS
-                release_end_time TIMESTAMP WITH TIME ZONE
+                release_end_date TIMESTAMP WITH TIME ZONE
                 """
             )
         )

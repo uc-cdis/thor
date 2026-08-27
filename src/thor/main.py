@@ -20,7 +20,7 @@ from pydantic import BaseModel
 
 from thor.dao.release_dao import \
     create_release, read_release, read_all_releases, get_release_keys, \
-        update_release, delete_releases, release_id_lookup_class, get_release_start_time, get_release_end_time_by_version
+        update_release, delete_releases, release_id_lookup_class, get_release_start_date, get_release_end_date_by_version
 from thor.dao.task_dao import \
     create_task, read_task, read_all_tasks, get_task_keys, get_release_tasks, get_release_task_step,\
         update_task, delete_task
@@ -387,54 +387,54 @@ async def start_task(task_identifier: TaskIdentifier):
 
     # When Step2 is run it updates the current release start date with previous release end date.
     if step_num == 2 and is_release_version(release_name):
-        existing_release_start_time = get_release_start_time(
+        existing_release_start_date = get_release_start_date(
             release_id
         )
         # Always set/update the end time whenever Step 2 runs.
-        release_end_time = task_requested_at
+        release_end_date = task_requested_at
         # Only calculate start time if it has not already been set.
-        if existing_release_start_time is None:
+        if existing_release_start_date is None:
             previous_release_version = get_previous_release_version(
                 release_name
             )
-            previous_release_end_time = (
-                get_release_end_time_by_version(
+            previous_release_end_date = (
+                get_release_end_date_by_version(
                     previous_release_version
                 )
             )
             # If the previous release has an end time,
             # use previous end + 1 day as this release's start.
-            if previous_release_end_time is not None:
-                release_start_time = (
-                        previous_release_end_time
+            if previous_release_end_date is not None:
+                release_start_date = (
+                        previous_release_end_date
                         + datetime.timedelta(days=1)
                 )
                 update_release(
                     release_id,
-                    "release_start_time",
-                    release_start_time,
+                    "release_start_date",
+                    release_start_date,
                 )
                 log.info(
                     f"Release {release_name} start time set to "
-                    f"{release_start_time} from previous release "
+                    f"{release_start_date} from previous release "
                     f"{previous_release_version}"
                 )
             else:
                 log.warning(
                     f"Previous release {previous_release_version} "
-                    f"does not have a release_end_time. "
-                    f"release_start_time will remain unset."
+                    f"does not have a release_end_date. "
+                    f"release_start_date will remain unset."
                 )
         # IMPORTANT:
         # End time is ALWAYS updated whenever Step 2 runs.
         update_release(
             release_id,
-            "release_end_time",
-            release_end_time,
+            "release_end_date",
+            release_end_date,
         )
         log.info(
             f"Release {release_name} end time updated to "
-            f"{release_end_time}"
+            f"{release_end_date}"
         )
 
     # Running task
