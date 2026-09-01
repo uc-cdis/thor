@@ -1,26 +1,17 @@
-import calendar
 import csv
 import datetime
 import glob
 import os
-import requests
 import subprocess
 
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
-
-def get_previous_year_month(year, month):
-    current_date = datetime.date(year, month, 1)
-    previous_month = current_date.replace(day=1) - datetime.timedelta(days=1)
-    return (previous_month.year, previous_month.month)
-
-
-def get_second_friday(year, month):
-    c = calendar.Calendar(firstweekday=calendar.SUNDAY)
-    monthcal = c.monthdatescalendar(year, month)
-    fridays = [day for week in monthcal for day in week if day.weekday() == calendar.FRIDAY]
-    return fridays[1]
-
+from thor.dao.release_dao import (
+    get_release_start_date,
+    get_release_end_date,
+    release_id_lookup_class,
+)
 
 def get_release_name(release_version):
     release_names_file = Path(__file__).parent.parent.parent / "release_names.csv"
@@ -47,17 +38,56 @@ def generate_release_notes(release_version):
     release_name = get_release_name(release_version)
     release = f"Core Gen3 Release {release_version} ({release_name})"
 
-    print("---- Fetching previous release manifest ----")
-    curr_year = int(release_version.split(".")[0])
-    curr_month = int(release_version.split(".")[1])
-    prev_year, prev_month = get_previous_year_month(curr_year, curr_month)
-    prev_prev_year, prev_prev_month = get_previous_year_month(prev_year, prev_month)
+    print(
+        "---- Fetching release start and end time "
+        "from database ----"
+    )
 
-    print("---- Compute start and end date ----")
-    # use Saturday's date (12am) to exclude all commits of Friday, they are in the previous month's notes
-    start_date = str(get_second_friday(prev_prev_year, prev_prev_month) + datetime.timedelta(days=1))
-    # use Saturday's date (12am) to include all commits of Friday
-    end_date = str(get_second_friday(prev_year, prev_month) + datetime.timedelta(days=1))
+    release_id = (
+        release_id_lookup_class()
+        .release_id_lookup(release_version)
+    )
+
+    if release_id is None:
+        raise ValueError(
+            f"Release {release_version} "
+            f"was not found in the database."
+        )
+
+    release_start_date = get_release_start_date(
+        release_id
+    )
+
+    release_end_date = get_release_end_date(
+        release_id
+    )
+
+    if release_start_date is None:
+        raise ValueError(
+            f"release_start_date is not set for "
+            f"release {release_version}"
+        )
+
+    if release_end_date is None:
+        raise ValueError(
+            f"release_end_date is not set for "
+            f"release {release_version}"
+        )
+
+    central = ZoneInfo("America/Chicago")
+
+    start_date = (
+        release_start_date
+        .astimezone(central)
+        .strftime("%Y-%m-%d")
+    )
+
+    end_date = (
+        (release_end_date + datetime.timedelta(days=1))
+        .astimezone(central)
+        .strftime("%Y-%m-%d")
+    )
+
     print(f"Start date - {start_date}")
     print(f"End date - {end_date}")
 
