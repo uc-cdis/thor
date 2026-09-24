@@ -72,12 +72,14 @@ def update_version_for_service(service_name, target_file):
         # Handle hatchery sidecar update
         if service_name == "hatchery":
             print("Updating hatchery sidecar image")
-            hatchery_json = json.loads(target_file_config["hatchery"]["hatchery"]["json"])
-            sidecar_image = hatchery_json.get("sidecar", {}).get("image", "")
-            if sidecar_image and "ecs-ws-sidecar" in sidecar_image:
-                image_base = sidecar_image.rsplit(":", 1)[0]
-                hatchery_json["sidecar"]["image"] = f"{image_base}:{RELEASE_VERSION}"
-                target_file_config["hatchery"]["hatchery"]["json"] = json.dumps(hatchery_json, indent=2)
+            hatchery_json = target_file_config.get("hatchery", {}).get("hatchery", {}).get("json")
+            if hatchery_json:
+                hatchery_json = json.loads(hatchery_json)
+                sidecar_image = hatchery_json.get("sidecar", {}).get("image", "")
+                if sidecar_image and "ecs-ws-sidecar" in sidecar_image:
+                    image_base = sidecar_image.rsplit(":", 1)[0]
+                    hatchery_json["sidecar"]["image"] = f"{image_base}:{RELEASE_VERSION}"
+                    target_file_config["hatchery"]["hatchery"]["json"] = json.dumps(hatchery_json, indent=2)
         # Handle sowerConfig update
         if service_name == "sower":
             print("Updating sowerConfig")
