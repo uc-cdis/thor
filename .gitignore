@@ -31,3 +31,4 @@ workspace/
 
 # Pyenv
 .python-version
+.idea/

@@ -2,11 +2,15 @@
   "releases": [
     {
       "version": "2021.09",
+      "release_start_date": null,
+      "release_end_date": null,
       "result": "PENDING",
       "release_id": 3
     },
     {
       "version": "2021.07",
+      "release_start_date": null,
+      "release_end_date": null,
       "result": "RELEASED",
       "release_id": 4
     }
