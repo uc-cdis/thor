@@ -7,7 +7,6 @@ data-portal
 docker-nginx
 ecs-ws-sidecar
 fence
-gen3-fuse
 gen3-spark
 gen3-statics
 guppy
