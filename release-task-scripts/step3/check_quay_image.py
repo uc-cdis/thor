@@ -31,7 +31,6 @@ def get_image():
 repo_dict = {
     "pelican": "pelican-export",
     "docker-nginx": "nginx",
-    "gen3-fuse": "gen3fuse-sidecar",
     "cloud-automation": "awshelper",
     "ACCESS-backend": "access-backend",
     "cdis-data-client": "gen3-client",

@@ -14,7 +14,6 @@ REPO_LIST = []
 REPO_DICT = {
     "pelican": "pelican-export",
     "docker-nginx": "revproxy",
-    "gen3-fuse": "gen3fuse-sidecar",
     "cloud-automation": "awshelper",
     "ACCESS-backend": "access-backend",
     "cdis-data-client": "gen3-client",
