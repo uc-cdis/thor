@@ -3,12 +3,16 @@ arborist
 audit-service
 cdis-data-client
 cloud-automation
+cohort-middleware
 data-portal
 docker-nginx
 ecs-ws-sidecar
 fence
+gen3-ai
 gen3-spark
 gen3-statics
+gen3-user-data-library
+gen3-workflow
 guppy
 hatchery
 indexd
@@ -24,6 +28,3 @@ sower-jobs
 ssjdispatcher
 tube
 workspace-token-service
-gen3-user-data-library
-gen3-workflow
-cohort-middleware
