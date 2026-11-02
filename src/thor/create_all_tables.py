@@ -20,6 +20,28 @@ def setup_db_and_create_test_data():
 
     meta.create_all(engine)
 
+    # Changes to existing releases table
+    with engine.begin() as connection:
+        connection.execute(
+            sa.text(
+                """
+                ALTER TABLE releases
+                ADD COLUMN IF NOT EXISTS
+                release_start_date TIMESTAMP WITH TIME ZONE
+                """
+            )
+        )
+
+        connection.execute(
+            sa.text(
+                """
+                ALTER TABLE releases
+                ADD COLUMN IF NOT EXISTS
+                release_end_date TIMESTAMP WITH TIME ZONE
+                """
+            )
+        )
+
     s.commit()
     s.close()
 

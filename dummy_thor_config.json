@@ -179,6 +179,18 @@
 
     "step15": {
         "step_num": 15,
+        "job_name":  "delete-integration-branch-github",  
+        "job_description": "Deleting integration-branch from github",
+        "job_params": {
+            "INTEGRATION_BRANCH": "{{ INTEGRATION_BRANCH }}"
+        },  
+        "schedule":  null,
+        "script": "dummy15.sh",
+        "run_next": "step16"
+    },
+
+    "step16": {
+        "step_num": 16,
         "job_name":  "mark-gen3-release-as-released",  
         "job_description": "Mark the release as released",
         "job_params": {
@@ -186,7 +198,7 @@
             "JIRA_PROJECT":"QAT" 
         },  
         "schedule":  null,
-        "script": "dummy15.sh",
+        "script": "dummy16.sh",
         "run_next": null
     }
 }

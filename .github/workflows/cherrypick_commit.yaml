@@ -40,7 +40,19 @@ jobs:
                 git checkout stable
 
                 # cherry-pick commit and push to stable
-                git cherry-pick -m 1 ${COMMIT_ID}
+                if ! git cherry-pick -m 1 ${COMMIT_ID}; then
+                  echo "❌ Cherry-pick failed — conflicts detected:"
+                  git diff --name-only --diff-filter=U
+                  
+                  # abort only if cherry-pick is still in progress               
+                  if [ -f .git/CHERRY_PICK_HEAD ]; then
+                    git cherry-pick --abort
+                  else
+                    # cherry-pick already exited, just reset working tree
+                    git reset --hard HEAD
+                  fi
+                  exit 1
+                fi
                 git push origin stable
 
                 # print git log top 5 lines

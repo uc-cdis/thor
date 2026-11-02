@@ -542,7 +542,7 @@
 			"response": []
 		},
 		{
-			"name": "Step 15 - Mark release as RELEASED in Jira",
+			"name": "Step 15 - Deleting integration-branch from github",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -559,6 +559,43 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"15\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ADMIN_URL}}/tasks/start",
+					"host": [
+						"{{ADMIN_URL}}"
+					],
+					"path": [
+						"tasks",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Step 16 - Mark release as RELEASED in Jira",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"release_name\": \"{{RELEASE_NAME}}\",\n  \"step_num\": \"16\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
