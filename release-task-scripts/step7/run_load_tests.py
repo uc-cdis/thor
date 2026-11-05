@@ -2,7 +2,7 @@ import requests
 import os
 
 # Variables needed in code
-release_version = os.environ["RELEASE_VERSION"]
+release_version = f"integration{os.environ['RELEASE_VERSION'].replace('.', '')}"
 github_url = "https://api.github.com/repos/uc-cdis/gen3-code-vigil/actions/workflows/load_tests.yaml/dispatches"
 
 # Headers for API Call
