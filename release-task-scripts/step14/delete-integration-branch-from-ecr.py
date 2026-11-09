@@ -36,6 +36,7 @@ def delete_ecr_image(services):
 repo_dict = {
     "pelican": "pelican-export",
     "docker-nginx": "nginx",
+    "gen3-ai": "gen3_embeddings",
     "cloud-automation": "awshelper",
     "ACCESS-backend": "access-backend",
     "cdis-data-client": "gen3-client",
